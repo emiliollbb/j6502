@@ -12,12 +12,7 @@ public class TrainerWindow {
     {
         // Declaring a Frame and Label
         Frame frame = new Frame("Basic Program");
-        TrainerScreen screen = new TrainerScreen(5);
-        
-        Label label = new Label("Hello World!");
-
-        // Aligning the label to CENTER
-        label.setAlignment(Label.CENTER);
+        TrainerScreen screen = new TrainerScreen(6);
 
         // Adding Label and Setting the Size of the Frame
         frame.add(screen);
