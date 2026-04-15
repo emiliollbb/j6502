@@ -2,7 +2,9 @@ package net.emiliollbb.j6502.chips;
 
 import java.awt.Color;
 
-public class ScreenDriver {
+import net.emiliollbb.j6502.computers.trainer.VirtualScreen;
+
+public class ScreenDriver extends AbstractBusDevice {
 	private static final Color[] palette = new Color[] {
 			Color.decode("000000"),
 			Color.decode("800000"),
@@ -260,4 +262,26 @@ public class ScreenDriver {
 			Color.decode("dadada"),
 			Color.decode("e4e4e4"),
 			Color.decode("eeeeee")};
+	
+	private byte[] vram;
+	private VirtualScreen virtualScreen;
+	
+	public ScreenDriver(int startAddress, int size) {
+		super(startAddress, size);
+		vram=new byte[128*128];
+	}
+
+	@Override
+	protected byte ioRead(int addr) {
+		return vram[addr-startAddress];
+	}
+
+	@Override
+	protected void ioWrite(int addr, byte data) {
+		int relativeAddr = addr-startAddress;
+		vram[relativeAddr]=data;
+		virtualScreen.setPixel(relativeAddr%128, (int)relativeAddr/128, palette[data]);
+		virtualScreen.repaint();
+	}
+	
 }

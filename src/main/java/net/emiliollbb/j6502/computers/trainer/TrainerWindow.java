@@ -12,7 +12,7 @@ public class TrainerWindow {
     {
         // Declaring a Frame and Label
         Frame frame = new Frame("Basic Program");
-        TrainerScreen screen = new TrainerScreen(6);
+        VirtualScreen screen = new VirtualScreen(6);
 
         // Adding Label and Setting the Size of the Frame
         frame.add(screen);

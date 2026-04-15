@@ -6,13 +6,13 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.geom.Line2D;
  
-public class TrainerScreen  extends Canvas {
+public class VirtualScreen  extends Canvas {
     private static final long serialVersionUID = 6458825515816507486L;
     
     private int zoom;
     private Color[][] pic;
     
-    public TrainerScreen(int zoom) {
+    public VirtualScreen(int zoom) {
     	super();
     	this.zoom=zoom;
     	pic = new Color[128][128];
@@ -41,6 +41,10 @@ public class TrainerScreen  extends Canvas {
     protected void drawPixel(Graphics g, int x, int y, Color color) {
     	g.setColor(color);
     	g.fillRect(x*zoom, y*zoom, zoom, zoom);
+    }
+    
+    public void setPixel(int x, int y, Color color) {
+    	pic[x][y]=color;
     }
  
     @Override
