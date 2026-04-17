@@ -1,4 +1,4 @@
-package net.emiliollbb.j6502.computers.trainer;
+package net.emiliollbb.j6502.computers.hid;
 
 import java.awt.Canvas;
 import java.awt.Color;
