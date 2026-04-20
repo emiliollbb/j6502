@@ -41,7 +41,8 @@ public class LCD16x2 extends Canvas {
 	}
 	
 	private class Character {
-		private static final String PIXEL_OFF = "#70902C";
+		private final Color PIXEL_OFF = Color.decode("#70902C");
+		private final Color PIXEL_ON = Color.decode("#4A5E1D");
 		private int x;
 		private int y;
 		
@@ -55,7 +56,7 @@ public class LCD16x2 extends Canvas {
 			g.fillRect(x, y, 29, 47);
 			int xx=x;
 			int yy=y;
-			g.setColor(Color.decode(PIXEL_OFF));
+			g.setColor(PIXEL_OFF);
 			for(int f=0; f<8; f++) {
 				for(int c=0; c<5; c++) {
 					g.fillRect(xx, yy, 5, 5);
