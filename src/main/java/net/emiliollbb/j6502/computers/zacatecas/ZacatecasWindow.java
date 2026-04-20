@@ -22,6 +22,8 @@ public class ZacatecasWindow {
 
         // Making the Frame visible
         frame.setVisible(true);
+        lcd.setText1("Hello!");
+        lcd.setText2("World!");
 
         // Using WindowListener for closing the window
         frame.addWindowListener(new WindowAdapter() {

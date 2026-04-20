@@ -10,9 +10,13 @@ public class LCD16x2 extends Canvas {
 	private final Color BACKGROUND_ON=Color.decode("#87ad34");
 
 	private Character[] characters;
+	private String buffer1;
+	private String buffer2;
 	
 	public LCD16x2() {
 		characters = new Character[32];
+		buffer1="";
+		buffer2="";
 		int x=30;
 		int y=30;
 		for(int i=0; i<characters.length; i++) {
@@ -22,6 +26,22 @@ public class LCD16x2 extends Canvas {
 				y+=49;
 				x=30;
 			}
+		}
+	}
+	
+	public void setText1(String text) {
+		buffer1 = text;
+		char[] data = buffer1.toCharArray();
+		for(int i=0; i<data.length && i<16; i++) {
+			characters[i].loadChar(data[i]);
+		}
+	}
+	
+	public void setText2(String text) {
+		buffer2 = text;
+		char[] data = buffer2.toCharArray();
+		for(int i=0; i<data.length && i<16; i++) {
+			characters[i+16].loadChar(data[i]);
 		}
 	}
 	
@@ -54,7 +74,6 @@ public class LCD16x2 extends Canvas {
 			this.x=x;
 			this.y=y;
 			data = new boolean[40];
-			loadChar('A');
 		}
 		
 		public void paint(Graphics g) {
