@@ -54,6 +54,7 @@ public class LCD16x2 extends Canvas {
 			this.x=x;
 			this.y=y;
 			data = new boolean[40];
+			loadChar('A');
 		}
 		
 		public void paint(Graphics g) {
@@ -70,6 +71,17 @@ public class LCD16x2 extends Canvas {
 				}
 				yy+=6;
 				xx=x;
+			}
+		}
+		
+		public void loadChar(char character) {
+			int[] letter = FONT[character];
+			int j=0;
+			for(int i=0; i<7; i++) {
+				// Pixel row
+				for (int k = 4; k >= 0; k--) {
+			        data[j++] = (letter[i] & (1 << k)) != 0;
+			    }
 			}
 		}
 		
