@@ -45,10 +45,12 @@ public class LCD16x2 extends Canvas {
 		private final Color PIXEL_ON = Color.decode("#4A5E1D");
 		private int x;
 		private int y;
+		private boolean[] data;
 		
 		public Character(int x, int y) {
 			this.x=x;
 			this.y=y;
+			data = new boolean[40];
 		}
 		
 		public void paint(Graphics g) {
@@ -56,9 +58,10 @@ public class LCD16x2 extends Canvas {
 			g.fillRect(x, y, 29, 47);
 			int xx=x;
 			int yy=y;
-			g.setColor(PIXEL_OFF);
+			int i=0;
 			for(int f=0; f<8; f++) {
 				for(int c=0; c<5; c++) {
+					g.setColor(data[i++]?PIXEL_ON:PIXEL_OFF);
 					g.fillRect(xx, yy, 5, 5);
 					xx+=6;
 				}
