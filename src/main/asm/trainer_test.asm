@@ -7,7 +7,7 @@ _main:
 .(
 	; Set video mode
 	LDX #$55
-	STA $8000
+	STX $8000
 .)
 
 

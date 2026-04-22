@@ -27,7 +27,20 @@ public class Cpu6502 {
 		busDevices.addAll(devices);
 	}
 	
+	public List<IBusDevice> getBusDevices() {
+		return busDevices;
+	}
+
+	public void setVerbose(int verbose) {
+		this.ver = verbose;
+	}
+	
+	private String printByte(int b) {
+		return String.format("0x%02X", b)+ "("+b+")";
+	}
+	
 	private byte peek(int addr) {
+		if(ver>5) System.out.println("peek "+printByte(addr));
 		return busDevices.stream().filter(d -> d.isInRange(addr)).findFirst().get().peek(addr);
 	}
 	private void poke(int addr, byte data) {
@@ -35,7 +48,8 @@ public class Cpu6502 {
 	}
 	
 	public void reset() {
-		pc = peek(0xFFFC) | peek(0xFFFD)<<8;	// RESET vector
+		pc = peek(0xFFFC) | peek(0xFFFD)<<8 & 0x0000FFFF;	// RESET vector
+		if(ver>1) System.out.println("RESET! "+printByte(pc));
 	}
 	
 	/* execute a single opcode, returning cycle count */
@@ -635,7 +649,7 @@ public class Cpu6502 {
 			case (byte) 0xA2:
 				x = peek(pc++);
 				bits_nz(x);
-				if (ver > 3) System.out.println("[LDX#]");
+				if (ver > 3) System.out.println("[LDX#] "+printByte(x));
 				break;
 //			case 0xAE:
 //				x = peek(am_a());

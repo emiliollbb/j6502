@@ -11,20 +11,12 @@ import net.emiliollbb.j6502.computers.hid.VirtualScreen;
 public class TrainerWindow {
 	
     // main function
-    public static void main(String[] args)
+    public static void main(String[] args) throws Exception
     {
         // Declaring a Frame and Label
         Frame frame = new Frame("Trainer");
-        VirtualScreen screen = new VirtualScreen(6);
-        ScreenDriver driver = new ScreenDriver(0x4000, 128*128);
-        driver.setVirtualScreen(screen);
-        int addr=0x4000;
-        for(int j=0; j<128; j++) {
-        	for(int i=0; i<128; i++) {
-	        	driver.poke(addr, (byte)i);
-	        	addr++;
-	        }
-        }
+        Trainer trainer = new Trainer();
+        VirtualScreen screen = trainer.getScreen();
 
         // Adding Label and Setting the Size of the Frame
         frame.add(screen);

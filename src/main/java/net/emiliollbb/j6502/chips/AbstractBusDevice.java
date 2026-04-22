@@ -21,14 +21,14 @@ public abstract class AbstractBusDevice implements IBusDevice {
 		if(!isInRange(addr)) {
 			throw new IndexOutOfBoundsException(addr);
 		}
-		return ioRead(addr);
+		return ioRead(addr-startAddress);
 	}
 	
 	public void poke(int addr, byte data) {
 		if(!isInRange(addr)) {
 			throw new IndexOutOfBoundsException(addr);
 		}
-		ioWrite(addr, data);
+		ioWrite(addr-startAddress, data);
 	}
 	
 	protected abstract byte ioRead(int addr);

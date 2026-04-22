@@ -1,5 +1,7 @@
 package net.emiliollbb.j6502.computers.trainer;
 
+import java.io.File;
+
 import net.emiliollbb.j6502.chips.Cpu6502;
 import net.emiliollbb.j6502.chips.RamChip;
 import net.emiliollbb.j6502.chips.RomChip;
@@ -13,9 +15,9 @@ public class Trainer {
 	private ScreenDriver screenDriver;
 	private ConsoleOutput console;
 	private RomChip rom;
-	private Cpu6502 cpu6502;
+	private Cpu6502 cpu;
 
-	public Trainer() {
+	public Trainer() throws Exception{
 		// 16K RAM
 		ram = new RamChip(0x0000, 0x4000);
 		// 16k SCREEN
@@ -25,8 +27,25 @@ public class Trainer {
 		// 16k DEVICES
 		console = new ConsoleOutput(0x8000);
 		// 16K ROM
-		rom = new RomChip(0xc000, 0x8000, new byte[0x8000]);
+		System.out.println("Size: "+0x4000);
+		rom = new RomChip(0xc000, 0x4000, new File("/home/emilio/proyectos/j6502/workspace/j6502/src/main/asm/trainer_test.bin"));
 		
-		cpu6502 = new Cpu6502();
+		cpu = new Cpu6502();
+		cpu.setVerbose(10);
+		cpu.getBusDevices().add(ram);
+		cpu.getBusDevices().add(screenDriver);
+		cpu.getBusDevices().add(console);
+		cpu.getBusDevices().add(rom);
+		
+		cpu.reset();
+		cpu.step();
+	}
+
+	public VirtualScreen getScreen() {
+		return screen;
+	}
+	
+	public static void main(String[] args) throws Exception {
+		 new Trainer();
 	}
 }
