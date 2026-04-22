@@ -27,11 +27,15 @@ public class Cpu6502 {
 		busDevices.addAll(devices);
 	}
 	
-	byte peek(int addr) {
+	private byte peek(int addr) {
 		return busDevices.stream().filter(d -> d.isInRange(addr)).findFirst().get().peek(addr);
 	}
-	void poke(int addr, byte data) {
+	private void poke(int addr, byte data) {
 		busDevices.stream().filter(d -> d.isInRange(addr)).findFirst().get().poke(addr, data);
+	}
+	
+	public void reset() {
+		pc = peek(0xFFFC) | peek(0xFFFD)<<8;	// RESET vector
 	}
 	
 	/* execute a single opcode, returning cycle count */

@@ -36,5 +36,9 @@ public class RomChip extends AbstractBusDevice implements IBusDevice {
 	protected void ioWrite(int addr, byte data) {
 		// Do nothing. Rom can NOT be modified
 	}
+	
+	public byte[] getData() {
+		return rom;
+	}
 
 }
