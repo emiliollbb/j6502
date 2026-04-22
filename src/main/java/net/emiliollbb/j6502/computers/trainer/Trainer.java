@@ -38,7 +38,10 @@ public class Trainer {
 		cpu.getBusDevices().add(rom);
 		
 		cpu.reset();
-		cpu.step();
+		System.out.println(cpu.step());
+		System.out.println(cpu.step());
+		System.out.println(cpu.step());
+		System.out.println(cpu.step());
 	}
 
 	public VirtualScreen getScreen() {

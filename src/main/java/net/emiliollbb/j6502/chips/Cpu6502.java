@@ -35,6 +35,9 @@ public class Cpu6502 {
 		this.ver = verbose;
 	}
 	
+	private String printByte(byte b) {
+		return String.format("0x%02X", b)+ "("+b+")";
+	}
 	private String printByte(int b) {
 		return String.format("0x%02X", b)+ "("+b+")";
 	}
@@ -60,7 +63,7 @@ public class Cpu6502 {
 		short adr;
 
 		opcode = peek(pc++);	// get opcode and point to next one (or operand)
-
+		if(ver>5) System.out.println("OPCODE: "+printByte(opcode));
 		switch(opcode) {
 //	/* *** ADC: Add Memory to Accumulator with Carry *** */
 //			case 0x69:
@@ -1176,11 +1179,11 @@ public class Cpu6502 {
 ////				stat();
 //				run = 1;		// pause execution
 //				break;
-//	/* *** Graceful Halt (STP on WDC) *** */
-//			case 0xDB:
-//				System.out.println(" ...HALT!");
-//				run = per = 0;	// definitively stop execution
-//				break;
+	/* *** Graceful Halt (STP on WDC) *** */
+			case (byte)0xDB:
+				System.out.println(" ...HALT!");
+				per = 0;	// definitively stop execution
+				break;
 //	/* *** *** unused (illegal?) opcodes *** *** */
 //	/* *** remaining opcodes (illegal on NMOS) executed as pseudoNOPs, according to 65C02 byte and cycle usage *** */
 //			case 0x03:
