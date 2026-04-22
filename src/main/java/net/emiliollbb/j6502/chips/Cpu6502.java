@@ -299,7 +299,7 @@ public class Cpu6502 {
 //					p |= 0b00010000;		// set B, just in case
 //					intack();
 //					p &= 0b11101111;		// clear B, just in case
-//					pc = peek(0xFFFE) | peek(0xFFFF)<<8;	// IRQ/BRK vector
+//					pc = peek(0xFFFE) | peek(0xFFFF)<<8 & 0x0000FFFF;	// IRQ/BRK vector
 //					if (ver > 1) System.out.println("\b PC=>%04X]", pc);
 //				}
 //				break;
@@ -1412,7 +1412,7 @@ public class Cpu6502 {
 	/* *** addressing modes *** */
 	/* absolute */
 	private int am_a() {
-		int pt = peek(pc) | (peek(pc+1) <<8);
+		int pt = peek(pc) | (peek(pc+1) <<8 & 0x0000FFFF);
 		pc += 2;
 
 		return pt;
@@ -1438,7 +1438,7 @@ public class Cpu6502 {
 //
 //	/* indirect */
 //	word am_iz(void) {
-//		word pt = peek(peek(pc)) | (peek((peek(pc)+1)&255)<<8);	// EEEEEEEK
+//		word pt = peek(peek(pc)) | (peek((peek(pc)+1)&255)<<8 & 0x0000FFFF;);	// EEEEEEEK
 //		pc++;
 //
 //		return pt;
@@ -1455,7 +1455,7 @@ public class Cpu6502 {
 //
 //	/* pre-indexed indirect */
 //	word am_ix(void) {
-//		word pt = (peek((peek(pc)+x)&255)|(peek((peek(pc)+x+1)&255)<<8));	// EEEEEEK
+//		word pt = (peek((peek(pc)+x)&255)|(peek((peek(pc)+x+1)&255)<<8) & 0x0000FFFF);	// EEEEEEK
 //		pc++;
 //
 //		return pt;
