@@ -47,6 +47,7 @@ public class Cpu6502 {
 		return busDevices.stream().filter(d -> d.isInRange(addr)).findFirst().get().peek(addr);
 	}
 	private void poke(int addr, byte data) {
+		if(ver>5) System.out.println("poke "+printByte(addr));
 		busDevices.stream().filter(d -> d.isInRange(addr)).findFirst().get().poke(addr, data);
 	}
 	
@@ -1047,8 +1048,8 @@ public class Cpu6502 {
 //				break;
 	/* *** STX: Store Index X in Memory *** */
 			case (byte) 0x8E:
-				poke(am_a(), x);
 				if (ver > 3) System.out.println("[STXa]");
+				poke(am_a(), x);
 				per = 4;
 				break;
 //			case 0x86:
