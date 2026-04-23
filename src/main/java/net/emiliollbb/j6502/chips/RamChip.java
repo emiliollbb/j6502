@@ -6,7 +6,7 @@ public class RamChip extends AbstractBusDevice implements IBusDevice {
 	private byte[] sram;
 	
 	public RamChip(int startAddress, int size) {
-		super(startAddress, size);
+		super("RAM", startAddress, size);
 		sram=new byte[size];
 	}
 

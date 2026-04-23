@@ -2,6 +2,7 @@ package net.emiliollbb.j6502.chips;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Stream;
 
 import net.emiliollbb.j6502.interfaces.IBusDevice;
 
@@ -49,6 +50,12 @@ public class Cpu6502 {
 	private void poke(int addr, byte data) {
 		if(ver>5) System.out.println("poke "+printByte(addr));
 		busDevices.stream().filter(d -> d.isInRange(addr)).findFirst().get().poke(addr, data);
+	}
+	
+	public void listDevices() {
+		System.out.println("DEVICES\n----------------------------------------------");
+		busDevices.stream().forEach(d -> System.out.println(d));
+		System.out.println("----------------------------------------------");
 	}
 	
 	public void reset() {

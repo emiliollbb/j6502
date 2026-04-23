@@ -8,6 +8,9 @@ _main:
 	; Set video mode
 	LDX #$55
 	STX $8000
+	
+	
+	end: BRA end
 .)
 
 

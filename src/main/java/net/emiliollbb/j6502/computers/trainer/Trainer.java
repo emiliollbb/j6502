@@ -10,10 +10,14 @@ import net.emiliollbb.j6502.computers.hid.ConsoleOutput;
 import net.emiliollbb.j6502.computers.hid.VirtualScreen;
 
 public class Trainer {
+	/* 16K RAM $0000 - $3FFF */
 	private RamChip ram;
+	/* 16K VIDEO RAM $4000 - $7FFF */
 	private VirtualScreen screen;
 	private ScreenDriver screenDriver;
+	/* 16K Devices $8000 - BFFF */
 	private ConsoleOutput console;
+	/* 16k ROM $C000 - $FFFFF */
 	private RomChip rom;
 	private Cpu6502 cpu;
 
@@ -36,12 +40,13 @@ public class Trainer {
 		cpu.getBusDevices().add(screenDriver);
 		cpu.getBusDevices().add(console);
 		cpu.getBusDevices().add(rom);
+		cpu.listDevices();
 		
 		cpu.reset();
 		System.out.println(cpu.step());
 		System.out.println(cpu.step());
-		System.out.println(cpu.step());
-		System.out.println(cpu.step());
+		//System.out.println(cpu.step());
+		//System.out.println(cpu.step());
 	}
 
 	public VirtualScreen getScreen() {

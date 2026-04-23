@@ -44,7 +44,7 @@ public class ScreenDriver extends AbstractBusDevice {
 	private VirtualScreen virtualScreen;
 	
 	public ScreenDriver(int startAddress, int size) {
-		super(startAddress, size);
+		super("SCREEN", startAddress, size);
 		vram=new byte[128*128];
 	}
 

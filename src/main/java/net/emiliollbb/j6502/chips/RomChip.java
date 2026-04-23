@@ -11,7 +11,7 @@ public class RomChip extends AbstractBusDevice implements IBusDevice {
 	private byte[] rom;
 	
 	public RomChip(int startAddress, int size, byte[] data) {
-		super(startAddress, size);
+		super("ROM", startAddress, size);
 		rom=new byte[size];
 		load(data);
 	}

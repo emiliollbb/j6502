@@ -5,7 +5,7 @@ import net.emiliollbb.j6502.chips.AbstractBusDevice;
 public class ConsoleOutput extends AbstractBusDevice {
 	
 	public ConsoleOutput(int startAddress) {
-		super(startAddress, 1);
+		super("CONSOLE", startAddress, 1);
 	}
 
 	@Override
@@ -15,7 +15,7 @@ public class ConsoleOutput extends AbstractBusDevice {
 
 	@Override
 	protected void ioWrite(int addr, byte data) {
-		System.out.println(String.format("0x%02X", data));
+		System.out.println("OUTPUT: "+String.format("0x%02X", data));
 	}
 
 	
