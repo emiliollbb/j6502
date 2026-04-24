@@ -35,6 +35,7 @@ public class Trainer {
 		rom = new RomChip(0xc000, 0x4000, new File("/home/emilio/proyectos/j6502/workspace/j6502/src/main/asm/trainer_test.bin"));
 		
 		cpu = new Cpu6502();
+		cpu.setSpeed(10);
 		cpu.setVerbose(10);
 		cpu.getBusDevices().add(ram);
 		cpu.getBusDevices().add(screenDriver);
@@ -43,7 +44,10 @@ public class Trainer {
 		cpu.listDevices();
 		
 		cpu.reset();
-		new Thread(cpu).start();
+		//new Thread(cpu).start();
+		for(int i=0; i<5; i++) {
+			cpu.timedStep();
+		}
 		
 	}
 

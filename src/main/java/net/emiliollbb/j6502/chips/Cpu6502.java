@@ -1,9 +1,12 @@
 package net.emiliollbb.j6502.chips;
 
 import java.time.Duration;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalField;
+import java.time.temporal.TemporalUnit;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.stream.Stream;
 
 import net.emiliollbb.j6502.interfaces.IBusDevice;
 
@@ -67,17 +70,37 @@ public class Cpu6502 implements Runnable {
 	
 	@Override
 	public void run() {
-		int cycles;
+		reset();
 		while(true) {
-			cycles=step();
-			try {
-				Thread.sleep(Duration.ofMillis(100));
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
+			timedStep();
+		}
+	}
+
+	public void timedStep() {
+		int cycles;
+		Instant start;
+		Instant end;
+		start = Instant.now();
+		cycles=step();
+		end= Instant.now();
+		long expectedTime=cycles*1000/speed;
+		long actualTime=start.until(end, ChronoUnit.MILLIS);
+		long sleepTime=expectedTime-actualTime;
+		System.out.println("Sleep time: "+sleepTime);
+		try {
+			Thread.sleep(Duration.ofMillis(sleepTime));
+		} catch (InterruptedException e) {
+			e.printStackTrace();
 		}
 	}
 	
+	public int getSpeed() {
+		return speed;
+	}
+	public void setSpeed(int speed) {
+		this.speed = speed;
+	}
+
 	/* execute a single opcode, returning cycle count */
 	public int step() {
 		int per = 2;			// base cycle count
