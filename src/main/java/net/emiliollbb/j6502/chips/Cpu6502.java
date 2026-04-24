@@ -83,9 +83,8 @@ public class Cpu6502 implements Runnable {
 		start = Instant.now();
 		cycles=step();
 		end= Instant.now();
-		long expectedTime=cycles*1000/speed;
 		long actualTime=start.until(end, ChronoUnit.MILLIS);
-		long sleepTime=expectedTime-actualTime;
+		long sleepTime=cycles*1000/speed-actualTime;
 		System.out.println("Sleep time: "+sleepTime);
 		try {
 			Thread.sleep(Duration.ofMillis(sleepTime));
