@@ -1,12 +1,13 @@
 package net.emiliollbb.j6502.chips;
 
+import java.time.Duration;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Stream;
 
 import net.emiliollbb.j6502.interfaces.IBusDevice;
 
-public class Cpu6502 {
+public class Cpu6502 implements Runnable {
 	private byte a; 
 	private byte x;
 	private byte y;
@@ -15,6 +16,7 @@ public class Cpu6502 {
 	private int pc;					// program counter
 	private int ver;
 	private int dec;
+	private int speed;
 	
 	private List<IBusDevice> busDevices;
 	
@@ -61,6 +63,19 @@ public class Cpu6502 {
 	public void reset() {
 		pc = peek(0xFFFC) | peek(0xFFFD)<<8 & 0x0000FFFF;	// RESET vector
 		if(ver>1) System.out.println("RESET! "+printByte(pc));
+	}
+	
+	@Override
+	public void run() {
+		int cycles;
+		while(true) {
+			cycles=step();
+			try {
+				Thread.sleep(Duration.ofMillis(100));
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 	
 	/* execute a single opcode, returning cycle count */
@@ -1479,8 +1494,7 @@ public class Cpu6502 {
 		bound = ((old & 0xFFFFFF00)==(pc & 0xFFFFFF00))?0:1;	// check page crossing
 		return bound;
 	}
-	
-	
+
 	
 	
 }

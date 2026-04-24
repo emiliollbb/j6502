@@ -43,10 +43,8 @@ public class Trainer {
 		cpu.listDevices();
 		
 		cpu.reset();
-		System.out.println(cpu.step());
-		System.out.println(cpu.step());
-		System.out.println(cpu.step());
-		System.out.println(cpu.step());
+		new Thread(cpu).start();
+		
 	}
 
 	public VirtualScreen getScreen() {
