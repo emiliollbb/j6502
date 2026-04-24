@@ -3,8 +3,6 @@ package net.emiliollbb.j6502.chips;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.time.temporal.TemporalField;
-import java.time.temporal.TemporalUnit;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -77,6 +75,9 @@ public class Cpu6502 implements Runnable {
 	}
 	public byte getY() {
 		return y;
+	}
+	public int getPc() {
+		return pc;
 	}
 	public int getSpeed() {
 		return speed;
