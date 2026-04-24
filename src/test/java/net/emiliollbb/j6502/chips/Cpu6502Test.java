@@ -46,7 +46,8 @@ public class Cpu6502Test {
 	
 	@Test
 	void testBRA() {
-		setProgram(new int[] {0x80, 0x01});
+		Mockito.when(device.peek(0x0200)).thenReturn((byte)0x80);
+		Mockito.when(device.peek(0x0201)).thenReturn((byte)0x01);
 		cpu.reset();
 		int cycles = cpu.step();
 		Assertions.assertEquals(0x203, cpu.getPc());
