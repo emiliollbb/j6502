@@ -63,8 +63,12 @@ public class Cpu6502 implements Runnable {
 	}
 	
 	public void reset() {
-		pc = peek(0xFFFC) | peek(0xFFFD)<<8 & 0x0000FFFF;	// RESET vector
+		pc = getWord(peek(0xFFFC), peek(0xFFFD));	// RESET vector
 		if(ver>1) System.out.println("RESET! "+printByte(pc));
+	}
+	
+	private int getWord(byte a, byte b) {
+		return  a & 0x000000FF | (b & 0x0000FF)<<8;
 	}
 	
 	public byte getA() {
