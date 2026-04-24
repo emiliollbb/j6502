@@ -77,17 +77,10 @@ public class Cpu6502 implements Runnable {
 	}
 
 	public void timedStep() {
-		int cycles;
-		Instant start;
-		Instant end;
-		start = Instant.now();
-		cycles=step();
-		end= Instant.now();
-		long actualTime=start.until(end, ChronoUnit.MILLIS);
-		long sleepTime=cycles*1000/speed-actualTime;
-		System.out.println("Sleep time: "+sleepTime);
+		Instant start = Instant.now();
+		int cycles=step();
 		try {
-			Thread.sleep(Duration.ofMillis(sleepTime));
+			Thread.sleep(Duration.ofMillis(cycles*1000/speed-start.until(Instant.now(), ChronoUnit.MILLIS)));
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
