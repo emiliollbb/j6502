@@ -1,6 +1,7 @@
 package net.emiliollbb.j6502.computers.trainer;
 
 import java.io.File;
+import java.util.Arrays;
 
 import net.emiliollbb.j6502.chips.Cpu6502;
 import net.emiliollbb.j6502.chips.RamChip;
@@ -34,13 +35,8 @@ public class Trainer {
 		System.out.println("Size: "+0x4000);
 		rom = new RomChip(0xc000, 0x4000, new File("/home/emilio/proyectos/j6502/workspace/j6502/src/main/asm/trainer_test.bin"));
 		
-		cpu = new Cpu6502();
-		cpu.setSpeed(10);
+		cpu = new Cpu6502(10, Arrays.asList(ram, screenDriver, console, rom));
 		cpu.setVerbose(10);
-		cpu.getBusDevices().add(ram);
-		cpu.getBusDevices().add(screenDriver);
-		cpu.getBusDevices().add(console);
-		cpu.getBusDevices().add(rom);
 		cpu.listDevices();
 		
 		cpu.reset();

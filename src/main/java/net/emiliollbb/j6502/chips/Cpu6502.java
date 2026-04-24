@@ -23,13 +23,14 @@ public class Cpu6502 implements Runnable {
 	
 	private List<IBusDevice> busDevices;
 	
-	public Cpu6502() {
+	public Cpu6502(int speed) {
 		pc=0;
+		this.speed=speed;
 		busDevices=new LinkedList<>();
 	}
 	
-	public Cpu6502(List<IBusDevice> devices) {
-		super();
+	public Cpu6502(int speed, List<IBusDevice> devices) {
+		this(speed);
 		busDevices.addAll(devices);
 	}
 	
@@ -68,6 +69,22 @@ public class Cpu6502 implements Runnable {
 		if(ver>1) System.out.println("RESET! "+printByte(pc));
 	}
 	
+	public byte getA() {
+		return a;
+	}
+	public byte getX() {
+		return x;
+	}
+	public byte getY() {
+		return y;
+	}
+	public int getSpeed() {
+		return speed;
+	}
+	public void setSpeed(int speed) {
+		this.speed = speed;
+	}
+
 	@Override
 	public void run() {
 		reset();
@@ -86,13 +103,6 @@ public class Cpu6502 implements Runnable {
 		}
 	}
 	
-	public int getSpeed() {
-		return speed;
-	}
-	public void setSpeed(int speed) {
-		this.speed = speed;
-	}
-
 	/* execute a single opcode, returning cycle count */
 	public int step() {
 		int per = 2;			// base cycle count
@@ -1504,9 +1514,8 @@ public class Cpu6502 implements Runnable {
 		int off = peek(pc++);	// read offset and skip operand
 		int old = pc;
 		pc += off;
-		System.out.println("Branch to: "+printByte(pc));
-
-		bound = ((old & 0xFFFFFF00)==(pc & 0xFFFFFF00))?0:1;	// check page crossing
+		// Old page == new page ?
+		bound = ((old & 0x0000FF00)==(pc & 0x0000FF00))?0:1;	// check page crossing
 		return bound;
 	}
 
