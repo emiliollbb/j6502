@@ -45,8 +45,8 @@ public class Trainer {
 		cpu.reset();
 		System.out.println(cpu.step());
 		System.out.println(cpu.step());
-		//System.out.println(cpu.step());
-		//System.out.println(cpu.step());
+		System.out.println(cpu.step());
+		System.out.println(cpu.step());
 	}
 
 	public VirtualScreen getScreen() {

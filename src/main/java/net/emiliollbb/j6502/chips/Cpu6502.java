@@ -292,11 +292,11 @@ public class Cpu6502 {
 //				} else pc++;	// must skip offset if not done EEEEEK
 //				if (ver > 2) System.out.println("[BPL]");
 //				break;
-//			case 0x80:			// CMOS only
-//				rel(&page);
-//				per = 3 + page;
-//				if (ver > 2) System.out.println("[BRA]");
-//				break;
+			case (byte)0x80:			// CMOS only
+				if (ver > 2) System.out.println("[BRA]");
+				page=rel(page);
+				per = 3 + page;
+				break;
 //	/* *** BRK: force break *** */
 //			case 0x00:
 //				pc++;
@@ -604,9 +604,9 @@ public class Cpu6502 {
 //				break;
 	/* *** LDA: Load Accumulator with Memory *** */
 			case (byte) 0xA9:
+				if (ver > 3) System.out.println("[LDA#]");
 				a = peek(pc++);
 				bits_nz(a);
-				if (ver > 3) System.out.println("[LDA#]");
 				break;
 //			case (byte) 0xAD:
 //				a = peek(am_a());
@@ -658,9 +658,9 @@ public class Cpu6502 {
 //				break;
 	/* *** LDX: Load Index X with Memory *** */
 			case (byte) 0xA2:
+				if (ver > 3) System.out.println("[LDX#] "+printByte(x));
 				x = peek(pc++);
 				bits_nz(x);
-				if (ver > 3) System.out.println("[LDX#] "+printByte(x));
 				break;
 //			case 0xAE:
 //				x = peek(am_a());
@@ -1194,68 +1194,69 @@ public class Cpu6502 {
 				break;
 //	/* *** *** unused (illegal?) opcodes *** *** */
 //	/* *** remaining opcodes (illegal on NMOS) executed as pseudoNOPs, according to 65C02 byte and cycle usage *** */
-//			case 0x03:
-//			case 0x13:
-//			case 0x23:
-//			case 0x33:
-//			case 0x43:
-//			case 0x53:
-//			case 0x63:
-//			case 0x73:
-//			case 0x83:
-//			case 0x93:
-//			case 0xA3:
-//			case 0xB3:
-//			case 0xC3:
-//			case 0xD3:
-//			case 0xE3:
-//			case 0xF3:
-//			case 0x0B:
-//			case 0x1B:
-//			case 0x2B:
-//			case 0x3B:
-//			case 0x4B:
-//			case 0x5B:
-//			case 0x6B:
-//			case 0x7B:
-//			case 0x8B:
-//			case 0x9B:
-//			case 0xAB:
-//			case 0xBB:
-//			case 0xEB:
-//			case 0xFB:	// minus WDC opcodes, used for emulator control
-//			case 0x07:
-//			case 0x17:
-//			case 0x27:
-//			case 0x37:
-//			case 0x47:
-//			case 0x57:
-//			case 0x67:
-//			case 0x77:
-//			case 0x87:
-//			case 0x97:
-//			case 0xA7:
-//			case 0xB7:
-//			case 0xC7:
-//			case 0xD7:
-//			case 0xE7:
-//			case 0xF7:	// Rockwell RMB/SMB opcodes
-//			case 0x0F:
-//			case 0x1F:
-//			case 0x2F:
-//			case 0x3F:
-//			case 0x4F:
-//			case 0x5F:
-//			case 0x6F:
-//			case 0x7F:
-//			case 0x8F:
-//			case 0x9F:
-//			case 0xAF:
-//			case 0xBF:
-//			case 0xCF:
-//			case 0xDF:
-//			case 0xEF:
-//			case 0xFF:	// Rockwell BBR/BBS opcodes
+//			case (byte)0xDB:
+//			case (byte)0x03:
+//			case (byte)0x13:
+//			case (byte)0x23:
+//			case (byte)0x33:
+//			case (byte)0x43:
+//			case (byte)0x53:
+//			case (byte)0x63:
+//			case (byte)0x73:
+//			case (byte)0x83:
+//			case (byte)0x93:
+//			case (byte)0xA3:
+//			case (byte)0xB3:
+//			case (byte)0xC3:
+//			case (byte)0xD3:
+//			case (byte)0xE3:
+//			case (byte)0xF3:
+//			case (byte)0x0B:
+//			case (byte)0x1B:
+//			case (byte)0x2B:
+//			case (byte)0x3B:
+//			case (byte)0x4B:
+//			case (byte)0x5B:
+//			case (byte)0x6B:
+//			case (byte)0x7B:
+//			case (byte)0x8B:
+//			case (byte)0x9B:
+//			case (byte)0xAB:
+//			case (byte)0xBB:
+//			case (byte)0xEB:
+//			case (byte)0xFB:	// minus WDC opcodes, used for emulator control
+//			case (byte)0x07:
+//			case (byte)0x17:
+//			case (byte)0x27:
+//			case (byte)0x37:
+//			case (byte)0x47:
+//			case (byte)0x57:
+//			case (byte)0x67:
+//			case (byte)0x77:
+//			case (byte)0x87:
+//			case (byte)0x97:
+//			case (byte)0xA7:
+//			case (byte)0xB7:
+//			case (byte)0xC7:
+//			case (byte)0xD7:
+//			case (byte)0xE7:
+//			case (byte)0xF7:	// Rockwell RMB/SMB opcodes
+//			case (byte)0x0F:
+//			case (byte)0x1F:
+//			case (byte)0x2F:
+//			case (byte)0x3F:
+//			case (byte)0x4F:
+//			case (byte)0x5F:
+//			case (byte)0x6F:
+//			case (byte)0x7F:
+//			case (byte)0x8F:
+//			case (byte)0x9F:
+//			case (byte)0xAF:
+//			case (byte)0xBF:
+//			case (byte)0xCF:
+//			case (byte)0xDF:
+//			case (byte)0xEF:
+//			case (byte)0xFF:	// Rockwell BBR/BBS opcodes
 //				per = 1;		// ultra-fast 1 byte NOPs!
 //				if (ver)	System.out.println("[NOP!]");
 //				if (safe)	illegal(1, opcode);
@@ -1468,16 +1469,16 @@ public class Cpu6502 {
 //		return pt;
 //	}
 //
-//	/* relative branch */
-//	void rel(int *bound) {
-//		byte off = peek(pc++);	// read offset and skip operand
-//		word old = pc;
-//
-//		pc += off;
-//		pc -= (off & 128)?256:0;						// check negative displacement
-//
-//		*bound = ((old & 0xFF00)==(pc & 0xFF00))?0:1;	// check page crossing
-//	}
+	/* relative branch */
+	private int rel(int bound) {
+		int off = peek(pc++);	// read offset and skip operand
+		int old = pc;
+		pc += off;
+		System.out.println("Branch to: "+printByte(pc));
+
+		bound = ((old & 0xFFFFFF00)==(pc & 0xFFFFFF00))?0:1;	// check page crossing
+		return bound;
+	}
 	
 	
 	
