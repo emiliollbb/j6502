@@ -710,23 +710,23 @@ public class Cpu6502 implements Runnable {
 				bits_nz(x);
 				break;
 			case (byte) 0xAE:
+				if (ver > 3) System.out.println("[LDXa]");
 				x = peek(am_a());
 				bits_nz(x);
-				if (ver > 3) System.out.println("[LDXa]");
 				cycles = 4;
 				break;
 			case (byte) 0xA6:
+				if (ver > 3) System.out.println("[LDXz]");
 				x = peek(peek(pc++));
 				bits_nz(x);
-				if (ver > 3) System.out.println("[LDXz]");
 				cycles = 3;
 				break;
-//			case (byte) 0xB6:
-//				x = peek(am_zy());
-//				bits_nz(x);
-//				if (ver > 3) System.out.println("[LDXzy]");
-//				cycles = 4;
-//				break;
+			case (byte) 0xB6:
+				if (ver > 3) System.out.println("[LDXzy]");
+				x = peek(am_zy());
+				bits_nz(x);
+				cycles = 4;
+				break;
 //			case 0xBE:
 //				x = peek(am_ay(&page));
 //				bits_nz(x);
@@ -734,11 +734,11 @@ public class Cpu6502 implements Runnable {
 //				per = 4 + page;
 //				break;
 //	/* *** LDY: Load Index Y with Memory *** */
-//			case 0xA0:
-//				y = peek(pc++);
-//				bits_nz(y);
-//				if (ver > 3) System.out.println("[LDY#]");
-//				break;
+			case (byte) 0xA0:
+				if (ver > 3) System.out.println("[LDY#]");
+				y = peek(pc++);
+				bits_nz(y);
+				break;
 //			case 0xAC:
 //				y = peek(am_a());
 //				bits_nz(y);
@@ -1472,9 +1472,10 @@ public class Cpu6502 implements Runnable {
 
 		return pt;
 	}
-//	private byte am_zy() { 
-//		return peek(peek(pc++) + y) & 255; 
-//	}
+	// Zero Page,Y
+	private int am_zy() { 
+		return ((int)peek(pc++) & 0x000000FF) + ((int)y & 0x000000FF);
+	}
 
 //	/* absolute indexed X */
 //	word am_ax(int *bound) {
