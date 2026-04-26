@@ -53,12 +53,32 @@ public class Cpu6502Test {
 	}
 	
 	@Test
-	void testLDX() {
+	void testLDXInmediate() {
 		loadProgram(0x0200, new int[] {0xA2, 0x55});
 		cpu.reset();
 		int cycles = cpu.step();
 		Assertions.assertEquals(0x55, cpu.getX());
 		Assertions.assertEquals(2, cycles);
+	}
+	
+	@Test
+	void testLDXAbsolute() {
+		Mockito.when(device.peek(0x0305)).thenReturn((byte)0x55);
+		loadProgram(0x0200, new int[] {0xAE, 0x05, 0x03});
+		cpu.reset();
+		int cycles = cpu.step();
+		Assertions.assertEquals(0x55, cpu.getX());
+		Assertions.assertEquals(4, cycles);
+	}
+	
+	@Test
+	void testLDXZeroPage() {
+		Mockito.when(device.peek(0x0005)).thenReturn((byte)0x55);
+		loadProgram(0x0200, new int[] {0xA6, 0x05});
+		cpu.reset();
+		int cycles = cpu.step();
+		Assertions.assertEquals(0x55, cpu.getX());
+		Assertions.assertEquals(3, cycles);
 	}
 	
 	@Test
