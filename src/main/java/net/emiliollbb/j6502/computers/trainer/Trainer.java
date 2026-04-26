@@ -42,7 +42,7 @@ public class Trainer {
 		cpu.reset();
 		//new Thread(cpu).start();
 		for(int i=0; i<5; i++) {
-			cpu.timedStep();
+			cpu.step();
 		}
 		
 	}

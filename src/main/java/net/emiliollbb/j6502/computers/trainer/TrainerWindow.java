@@ -1,10 +1,9 @@
 package net.emiliollbb.j6502.computers.trainer;
 
-import java.awt.*;
+import java.awt.Frame;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
-import net.emiliollbb.j6502.chips.ScreenDriver;
 import net.emiliollbb.j6502.computers.hid.VirtualScreen;
 
 // Driver Class

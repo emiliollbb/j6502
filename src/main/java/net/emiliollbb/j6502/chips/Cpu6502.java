@@ -92,25 +92,27 @@ public class Cpu6502 implements Runnable {
 
 	@Override
 	public void run() {
+		int cycles;
 		reset();
 		while(true) {
-			timedStep();
+			Instant start = Instant.now();
+			Instant end = Instant.now();
+			cycles = step();
+			long expectedTime=cycles*1000/speed;
+			long actualTime=start.until(end, ChronoUnit.MILLIS);
+			long sleepTime=expectedTime-actualTime;
+			System.out.println("Sleep time: "+sleepTime);
+			try {
+				Thread.sleep(Duration.ofMillis(sleepTime));
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 
-	public void timedStep() {
-		Instant start = Instant.now();
-		int cycles=step();
-		try {
-			Thread.sleep(Duration.ofMillis(cycles*1000/speed-start.until(Instant.now(), ChronoUnit.MILLIS)));
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-	}
-	
 	/* execute a single opcode, returning cycle count */
 	public int step() {
-		int per = 2;			// base cycle count
+		int cycles = 2;			// base cycle count
 		int page = 0;			// page boundary flag, for speed penalties
 		byte opcode, temp;
 		short adr;
@@ -340,7 +342,7 @@ public class Cpu6502 implements Runnable {
 			case (byte)0x80:			// CMOS only
 				if (ver > 2) System.out.println("[BRA]");
 				page=rel(page);
-				per = 3 + page;
+				cycles = 3 + page;
 				break;
 //	/* *** BRK: force break *** */
 //			case 0x00:
@@ -1102,7 +1104,7 @@ public class Cpu6502 implements Runnable {
 			case (byte) 0x8E:
 				if (ver > 3) System.out.println("[STXa]");
 				poke(am_a(), x);
-				per = 4;
+				cycles = 4;
 				break;
 //			case 0x86:
 //				poke(peek(pc++), x);
@@ -1235,7 +1237,7 @@ public class Cpu6502 implements Runnable {
 	/* *** Graceful Halt (STP on WDC) *** */
 			case (byte)0xDB:
 				System.out.println(" ...HALT!");
-				per = 0;	// definitively stop execution
+				cycles = 0;	// definitively stop execution
 				break;
 //	/* *** *** unused (illegal?) opcodes *** *** */
 //	/* *** remaining opcodes (illegal on NMOS) executed as pseudoNOPs, according to 65C02 byte and cycle usage *** */
@@ -1345,8 +1347,8 @@ public class Cpu6502 implements Runnable {
 //				if (safe)	illegal(3, opcode);
 //				break;			// not needed as it's the last one, but just in case
 		}
-
-		return per;
+		
+		return cycles;
 	}
 	
 	/* *** opcode assistants *** */

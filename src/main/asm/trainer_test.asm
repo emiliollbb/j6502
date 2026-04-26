@@ -5,12 +5,10 @@
 ; -- main method --
 _main:
 .(
-	; Set video mode
+	loop:
 	LDX #$55
 	STX $8000
-	
-	
-	end: BRA end
+	BRA loop
 .)
 
 
