@@ -232,6 +232,40 @@ public class Cpu6502 implements Runnable {
 			y++;
 			bits_nz(y);
 			break;
+			/* *** STX: Store Index X in Memory *** */
+		case (byte) 0x86:
+			if (ver > 3) System.out.println("[STXz]");
+			poke(peek(pc++) & 0X000000FF, x);
+			cycles = 3;
+			break;
+		case (byte) 0x96:
+			if (ver > 3) System.out.println("[STXzy]");
+			poke(am_zy(), x);
+			cycles = 4;
+			break;	
+		case (byte) 0x8E:
+			if (ver > 3) System.out.println("[STXa]");
+			poke(am_a(), x);
+			cycles = 4;
+			break;
+		
+		
+			/* *** STY: Store Index Y in Memory *** */
+		case (byte) 0x8C:
+			if (ver > 3) System.out.println("[STYa]");
+			poke(am_a(), y);
+			cycles = 4;
+			break;
+		case (byte) 0x84:
+			if (ver > 3) System.out.println("[STYz]");
+			poke(peek(pc++), y);
+			cycles = 3;
+			break;
+		case (byte) 0x94:
+			if (ver > 3) System.out.println("[STYzx]");
+			poke(am_zx(), y);
+			cycles = 4;
+			break;			
 			
 //	/* *** ADC: Add Memory to Accumulator with Carry *** */
 //			case 0x69:
@@ -1133,38 +1167,7 @@ public class Cpu6502 implements Runnable {
 //				if (ver > 3) System.out.println("[STA(z)]");
 //				per = 5;
 //				break;
-	/* *** STX: Store Index X in Memory *** */
-			case (byte) 0x8E:
-				if (ver > 3) System.out.println("[STXa]");
-				poke(am_a(), x);
-				cycles = 4;
-				break;
-//			case 0x86:
-//				poke(peek(pc++), x);
-//				if (ver > 3) System.out.println("[STXz]");
-//				per = 3;
-//				break;
-//			case 0x96:
-//				poke(am_zy(), x);
-//				if (ver > 3) System.out.println("[STXzy]");
-//				per = 4;
-//				break;
-//	/* *** STY: Store Index Y in Memory *** */
-//			case 0x8C:
-//				poke(am_a(), y);
-//				if (ver > 3) System.out.println("[STYa]");
-//				per = 4;
-//				break;
-//			case 0x84:
-//				poke(peek(pc++), y);
-//				if (ver > 3) System.out.println("[STYz]");
-//				per = 3;
-//				break;
-//			case 0x94:
-//				poke(am_zx(), y);
-//				if (ver > 3) System.out.println("[STYzx]");
-//				per = 4;
-//				break;
+
 //	// *** STZ: Store Zero in Memory, CMOS only ***
 //			case 0x9C:
 //				poke(am_a(), 0);
