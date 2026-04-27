@@ -162,7 +162,7 @@ public class Cpu6502Test {
 		Assertions.assertEquals(3, cycles);
 	}
 	@Test
-	void testLDXZeroPageX() {
+	void testLDYZeroPageX() {
 		Mockito.when(device.peek(0x008F)).thenReturn((byte)0x55);
 		loadProgram(0x0200, new int[] {
 				// LDX #0F
@@ -395,7 +395,65 @@ public class Cpu6502Test {
 		Assertions.assertEquals(0x55, cpu.getY());
 		Assertions.assertEquals(2, cycles);
 	}
-	
+	@Test
+	void testLDAInmediate() {
+		loadProgram(0x0200, new int[] {0xA9, 0x55});
+		cpu.reset();
+		int cycles = cpu.step();
+		Assertions.assertEquals(0x55, cpu.getA());
+		Assertions.assertEquals(0x00, cpu.getP());
+		Assertions.assertEquals(2, cycles);
+	}
+	@Test
+	void testANDInmediate() {
+		loadProgram(0x0200, new int[] {
+				// LDA #$55
+				0xA9, 0x55,
+				// AND #$34
+				0X29, 0x34
+				});
+		cpu.reset();
+		cpu.step();
+		int cycles = cpu.step();
+		Assertions.assertEquals(0x14, cpu.getA());
+		Assertions.assertEquals(0x00, cpu.getP());
+		Assertions.assertEquals(2, cycles);
+	}
+	@Test
+	void testANDZeroPage() {
+		Mockito.when(device.peek(0x0003)).thenReturn((byte)0x34);
+		loadProgram(0x0200, new int[] {
+				// LDA #$55
+				0xA9, 0x55,
+				// AND #$03
+				0X25, 0x03
+				});
+		cpu.reset();
+		cpu.step();
+		int cycles = cpu.step();
+		Assertions.assertEquals(0x14, cpu.getA());
+		Assertions.assertEquals(0x00, cpu.getP());
+		Assertions.assertEquals(3, cycles);
+	}
+	@Test
+	void testANDZeroPageX() {
+		Mockito.when(device.peek(0x0012)).thenReturn((byte)0x34);
+		loadProgram(0x0200, new int[] {
+				// LDX #0F
+				0xA2, 0x0F,
+				// LDA #$55
+				0xA9, 0x55,
+				// AND #$03
+				0x35, 0x03
+				});
+		cpu.reset();
+		cpu.step();
+		cpu.step();
+		int cycles = cpu.step();
+		Assertions.assertEquals(0x14, cpu.getA());
+		Assertions.assertEquals(0x00, cpu.getP());
+		Assertions.assertEquals(4, cycles);
+	}
 	
 	
 	

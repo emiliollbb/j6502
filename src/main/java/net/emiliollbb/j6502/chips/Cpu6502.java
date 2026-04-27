@@ -124,6 +124,7 @@ public class Cpu6502 implements Runnable {
 		opcode = peek(pc++);	// get opcode and point to next one (or operand)
 		if(ver>5) System.out.println("OPCODE: "+printByte(opcode));
 		switch(opcode) {
+		/** INDEX REGISTERS MANIPULATION **/
 		/* *** LDX: Load Index X with Memory *** */
 		case (byte) 0xA2:
 			if (ver > 3) System.out.println("[LDX#] "+printByte(x));
@@ -264,108 +265,167 @@ public class Cpu6502 implements Runnable {
 			poke(am_a(), y);
 			cycles = 4;
 			break;
-		
+		/** ACUMULATOR OPERATIONS **/
+			/* *** LDA: Load Accumulator with Memory *** */
+		case (byte) 0xA9:
+			if (ver > 3) System.out.println("[LDA#]");
+			a = peek(pc++);
+			bits_nz(a);
+			break;
+//		case (byte) 0xAD:
+//			a = peek(am_a());
+//			bits_nz(a);
+//			if (ver > 3) System.out.println("[LDAa]");
+//			cycles = 4;
+//			break;
+//		case (byte) 0xA5:
+//			a = peek(peek(pc++));
+//			bits_nz(a);
+//			if (ver > 3) System.out.println("[LDAz]");
+//			cycles = 3;
+//			break;
+//		case (byte) 0xA1:
+//			a = peek(am_ix());
+//			bits_nz(a);
+//			if (ver > 3) System.out.println("[LDA(x)]");
+//			cycles = 6;
+//			break;
+//		case (byte) 0xB1:
+//			a = peek(am_iy(&page));
+//			bits_nz(a);
+//			if (ver > 3) System.out.println("[LDA(y)]");
+//			cycles = 5 + page;
+//			break;
+//		case (byte) 0xB5:
+//			a = peek(am_zx());
+//			bits_nz(a);
+//			if (ver > 3) System.out.println("[LDAzx]");
+//			cycles = 4;
+//			break;
+//		case (byte) 0xBD:
+//			a = peek(am_ax(&page));
+//			bits_nz(a);
+//			if (ver > 3) System.out.println("[LDAx]");
+//			cycles = 4 + page;
+//			break;
+//		case (byte) 0xB9:
+//			a = peek(am_ay(&page));
+//			bits_nz(a);
+//			if (ver > 3) System.out.println("[LDAy]");
+//			cycles = 4 + page;
+//			break;
+//		case (byte) 0xB2:			// CMOS only
+//			a = peek(am_iz());
+//			bits_nz(a);
+//			if (ver > 3) System.out.println("[LDA(z)]");
+//			cycles = 5;
+//			break;		
+			
+		/* *** AND: "And" Memory with Accumulator *** */
+		case (byte) 0x29:
+			if (ver > 3) System.out.println("[AND#]");
+			a &= peek(pc++);
+			bits_nz(a);
+			break;
+		case (byte) 0x25:
+			if (ver > 3) System.out.println("[ANDz]");
+			a &= peek(peek(pc++));
+			bits_nz(a);
+			cycles = 3;
+			break;
+		case (byte) 0x35:
+			if (ver > 3) System.out.println("[ANDzx]");
+			a &= peek(am_zx());
+			bits_nz(a);
+			cycles = 4;
+			break;			
+		case (byte) 0x2D:
+			if (ver > 3) System.out.println("[ANDa]");
+			a &= peek(am_a());
+			bits_nz(a);
+			cycles = 4;
+			break;
+//			case 0x3D:
+//			a &= peek(am_ax(&page));
+//			bits_nz(a);
+//			if (ver > 3) System.out.println("[ANDx]");
+//			cycles = 4 + page;
+//			break;		
+			
+		case (byte) 0x21:
+			if (ver > 3) System.out.println("[AND(x)]");
+			a &= peek(am_ix());
+			bits_nz(a);
+			cycles = 6;
+			break;
+//		case 0x31:
+//			a &= peek(am_iy(&page));
+//			bits_nz(a);
+//			if (ver > 3) System.out.println("[AND(y)]");
+//			cycles = 5 + page;
+//			break;
+
+
+//		case 0x39:
+//			a &= peek(am_ay(&page));
+//			bits_nz(a);
+//			if (ver > 3) System.out.println("[ANDy]");
+//			cycles = 4 + page;
+//			break;
+//		case 0x32:			// CMOS only
+//			a &= peek(am_iz());
+//			bits_nz(a);
+//			if (ver > 3) System.out.println("[AND(z)]");
+//			cycles = 5;
+//			break;
 			
 //	/* *** ADC: Add Memory to Accumulator with Carry *** */
 //			case 0x69:
 //				adc(peek(pc++));
 //				if (ver > 3) System.out.println("[ADC#]");
-//				per += dec;
+//				cycles += dec;
 //				break;
 //			case 0x6D:
 //				adc(peek(am_a()));
 //				if (ver > 3) System.out.println("[ADCa]");
-//				per = 4 + dec;
+//				cycles = 4 + dec;
 //				break;
 //			case 0x65:
 //				adc(peek(peek(pc++)));
 //				if (ver > 3) System.out.println("[ADCz]");
-//				per = 3 + dec;
+//				cycles = 3 + dec;
 //				break;
 //			case 0x61:
 //				adc(peek(am_ix()));
 //				if (ver > 3) System.out.println("[ADC(x)]");
-//				per = 6 + dec;
+//				cycles = 6 + dec;
 //				break;
 //			case 0x71:
 //				adc(peek(am_iy(&page)));
 //				if (ver > 3) System.out.println("[ADC(y)]");
-//				per = 5 + dec + page;
+//				cycles = 5 + dec + page;
 //				break;
 //			case 0x75:
 //				adc(peek(am_zx()));
 //				if (ver > 3) System.out.println("[ADCzx]");
-//				per = 4 + dec;
+//				cycles = 4 + dec;
 //				break;
 //			case 0x7D:
 //				adc(peek(am_ax(&page)));
 //				if (ver > 3) System.out.println("[ADCx]");
-//				per = 4 + dec + page;
+//				cycles = 4 + dec + page;
 //				break;
 //			case 0x79:
 //				adc(peek(am_ay(&page)));
 //				if (ver > 3) System.out.println("[ADCy]");
-//				per = 4 + dec + page;
+//				cycles = 4 + dec + page;
 //				break;
 //			case 0x72:			// CMOS only
 //				adc(peek(am_iz()));
 //				if (ver > 3) System.out.println("[ADC(z)]");
-//				per = 5 + dec;
+//				cycles = 5 + dec;
 //				break;
-//	/* *** AND: "And" Memory with Accumulator *** */
-//			case 0x29:
-//				a &= peek(pc++);
-//				bits_nz(a);
-//				if (ver > 3) System.out.println("[AND#]");
-//				break;
-//			case 0x2D:
-//				a &= peek(am_a());
-//				bits_nz(a);
-//				if (ver > 3) System.out.println("[ANDa]");
-//				per = 4;
-//				break;
-//			case 0x25:
-//				a &= peek(peek(pc++));
-//				bits_nz(a);
-//				if (ver > 3) System.out.println("[ANDz]");
-//				per = 3;
-//				break;
-//			case 0x21:
-//				a &= peek(am_ix());
-//				bits_nz(a);
-//				if (ver > 3) System.out.println("[AND(x)]");
-//				per = 6;
-//				break;
-//			case 0x31:
-//				a &= peek(am_iy(&page));
-//				bits_nz(a);
-//				if (ver > 3) System.out.println("[AND(y)]");
-//				per = 5 + page;
-//				break;
-//			case 0x35:
-//				a &= peek(am_zx());
-//				bits_nz(a);
-//				if (ver > 3) System.out.println("[ANDzx]");
-//				per = 4;
-//				break;
-//			case 0x3D:
-//				a &= peek(am_ax(&page));
-//				bits_nz(a);
-//				if (ver > 3) System.out.println("[ANDx]");
-//				per = 4 + page;
-//				break;
-//			case 0x39:
-//				a &= peek(am_ay(&page));
-//				bits_nz(a);
-//				if (ver > 3) System.out.println("[ANDy]");
-//				per = 4 + page;
-//				break;
-//			case 0x32:			// CMOS only
-//				a &= peek(am_iz());
-//				bits_nz(a);
-//				if (ver > 3) System.out.println("[AND(z)]");
-//				per = 5;
-//				break;
+
 //	/* *** ASL: Shift Left one Bit (Memory or Accumulator) *** */
 //			case 0x0E:
 //				adr = am_a();
@@ -373,14 +433,14 @@ public class Cpu6502 implements Runnable {
 //				asl(&temp);
 //				poke(adr, temp);
 //				if (ver > 3) System.out.println("[ASLa]");
-//				per = 6;
+//				cycles = 6;
 //				break;
 //			case 0x06:
 //				temp = peek(peek(pc));
 //				asl(&temp);
 //				poke(peek(pc++), temp);
 //				if (ver > 3) System.out.println("[ASLz]");
-//				per = 5;
+//				cycles = 5;
 //				break;
 //			case 0x0A:
 //				asl(&a);
@@ -392,7 +452,7 @@ public class Cpu6502 implements Runnable {
 //				asl(&temp);
 //				poke(adr, temp);
 //				if (ver > 3) System.out.println("[ASLzx]");
-//				per = 6;
+//				cycles = 6;
 //				break;
 //			case 0x1E:
 //				adr = am_ax(&page);
@@ -400,27 +460,27 @@ public class Cpu6502 implements Runnable {
 //				asl(&temp);
 //				poke(adr, temp);
 //				if (ver > 3) System.out.println("[ASLx]");
-//				per = 6 + page;	// 7 on NMOS
+//				cycles = 6 + page;	// 7 on NMOS
 //				break;
 //	/* *** Bxx: Branch on flag condition *** */
 //			case 0x90:
 //				if(!(p & 0b00000001)) {
 //					rel(&page);
-//					per = 3 + page;
+//					cycles = 3 + page;
 //					if (ver > 2) System.out.println("[BCC]");
 //				} else pc++;	// must skip offset if not done EEEEEK
 //				break;
 //			case 0xB0:
 //				if(p & 0b00000001) {
 //					rel(&page);
-//					per = 3 + page;
+//					cycles = 3 + page;
 //					if (ver > 2) System.out.println("[BCS]");
 //				} else pc++;	// must skip offset if not done EEEEEK
 //				break;
 //			case 0xF0:
 //				if(p & 0b00000010) {
 //					rel(&page);
-//					per = 3 + page;
+//					cycles = 3 + page;
 //					if (ver > 2) System.out.println("[BEQ]");
 //				} else pc++;	// must skip offset if not done EEEEEK
 //				break;
@@ -431,7 +491,7 @@ public class Cpu6502 implements Runnable {
 //				p |= (temp & 0b11000000);	// copy bits 7 & 6 as N & Z
 //				p |= (a & temp)?0:2;		// set Z accordingly
 //				if (ver > 3) System.out.println("[BITa]");
-//				per = 4;
+//				cycles = 4;
 //				break;
 //			case 0x24:
 //				temp = peek(peek(pc++));
@@ -439,7 +499,7 @@ public class Cpu6502 implements Runnable {
 //				p |= (temp & 0b11000000);	// copy bits 7 & 6 as N & Z
 //				p |= (a & temp)?0:2;		// set Z accordingly
 //				if (ver > 3) System.out.println("[BITz]");
-//				per = 3;
+//				cycles = 3;
 //				break;
 //			case 0x89:			// CMOS only
 //				temp = peek(pc++);
@@ -453,7 +513,7 @@ public class Cpu6502 implements Runnable {
 //				p |= (temp & 0b11000000);	// copy bits 7 & 6 as N & Z
 //				p |= (a & temp)?0:2;		// set Z accordingly
 //				if (ver > 3) System.out.println("[BITx]");
-//				per = 4 + page;
+//				cycles = 4 + page;
 //				break;
 //			case 0x34:			// CMOS only
 //				temp = peek(am_zx());
@@ -461,27 +521,27 @@ public class Cpu6502 implements Runnable {
 //				p |= (temp & 0b11000000);	// copy bits 7 & 6 as N & Z
 //				p |= (a & temp)?0:2;		// set Z accordingly
 //				if (ver > 3) System.out.println("[BITzx]");
-//				per = 4;
+//				cycles = 4;
 //				break;
 //	/* *** Bxx: Branch on flag condition *** */
 //			case 0x30:
 //				if(p & 0b10000000) {
 //					rel(&page);
-//					per = 3 + page;
+//					cycles = 3 + page;
 //				} else pc++;	// must skip offset if not done EEEEEK
 //				if (ver > 2) System.out.println("[BMI]");
 //				break;
 //			case 0xD0:
 //				if(!(p & 0b00000010)) {
 //					rel(&page);
-//					per = 3 + page;
+//					cycles = 3 + page;
 //				} else pc++;	// must skip offset if not done EEEEEK
 //				if (ver > 2) System.out.println("[BNE]");
 //				break;
 //			case 0x10:
 //				if(!(p & 0b10000000)) {
 //					rel(&page);
-//					per = 3 + page;
+//					cycles = 3 + page;
 //				} else pc++;	// must skip offset if not done EEEEEK
 //				if (ver > 2) System.out.println("[BPL]");
 //				break;
@@ -507,14 +567,14 @@ public class Cpu6502 implements Runnable {
 //			case 0x50:
 //				if(!(p & 0b01000000)) {
 //					rel(&page);
-//					per = 3 + page;
+//					cycles = 3 + page;
 //				} else pc++;	// must skip offset if not done EEEEEK
 //				if (ver > 2) System.out.println("[BVC]");
 //				break;
 //			case 0x70:
 //				if(p & 0b01000000) {
 //					rel(&page);
-//					per = 3 + page;
+//					cycles = 3 + page;
 //				} else pc++;	// must skip offset if not done EEEEEK
 //				if (ver > 2) System.out.println("[BVS]");
 //				break;
@@ -544,42 +604,42 @@ public class Cpu6502 implements Runnable {
 //			case 0xCD:
 //				cmp(a, peek(am_a()));
 //				if (ver > 3) System.out.println("[CMPa]");
-//				per = 4;
+//				cycles = 4;
 //				break;
 //			case 0xC5:
 //				cmp(a, peek(peek(pc++)));
 //				if (ver > 3) System.out.println("[CMPz]");
-//				per = 3;
+//				cycles = 3;
 //				break;
 //			case 0xC1:
 //				cmp(a, peek(am_ix()));
 //				if (ver > 3) System.out.println("[CMP(x)]");
-//				per = 6;
+//				cycles = 6;
 //				break;
 //			case 0xD1:
 //				cmp(a, peek(am_iy(&page)));
 //				if (ver > 3) System.out.println("[CMP(y)]");
-//				per = 5 + page;
+//				cycles = 5 + page;
 //				break;
 //			case 0xD5:
 //				cmp(a, peek(am_zx()));
 //				if (ver > 3) System.out.println("[CMPzx]");
-//				per = 4;
+//				cycles = 4;
 //				break;
 //			case 0xDD:
 //				cmp(a, peek(am_ax(&page)));
 //				if (ver > 3) System.out.println("[CMPx]");
-//				per = 4 + page;
+//				cycles = 4 + page;
 //				break;
 //			case 0xD9:
 //				cmp(a, peek(am_ay(&page)));
 //				if (ver > 3) System.out.println("[CMPy]");
-//				per = 4 + page;
+//				cycles = 4 + page;
 //				break;
 //			case 0xD2:			// CMOS only
 //				cmp(a, peek(am_iz()));
 //				if (ver > 3) System.out.println("[CMP(z)]");
-//				per = 5;
+//				cycles = 5;
 //				break;
 //	/* *** CPX: Compare Memory And Index X *** */
 //			case 0xE0:
@@ -589,12 +649,12 @@ public class Cpu6502 implements Runnable {
 //			case 0xEC:
 //				cmp(x, peek(am_a()));
 //				if (ver > 3) System.out.println("[CPXa]");
-//				per = 4;
+//				cycles = 4;
 //				break;
 //			case 0xE4:
 //				cmp(x, peek(peek(pc++)));
 //				if (ver > 3) System.out.println("[CPXz]");
-//				per = 3;
+//				cycles = 3;
 //				break;
 //	/* *** CPY: Compare Memory And Index Y *** */
 //			case 0xC0:
@@ -604,12 +664,12 @@ public class Cpu6502 implements Runnable {
 //			case 0xCC:
 //				cmp(y, peek(am_a()));
 //				if (ver > 3) System.out.println("[CPYa]");
-//				per = 4;
+//				cycles = 4;
 //				break;
 //			case 0xC4:
 //				cmp(y, peek(peek(pc++)));
 //				if (ver > 3) System.out.println("[CPYz]");
-//				per = 3;
+//				cycles = 3;
 //				break;
 //	/* *** DEC: Decrement Memory (or Accumulator) by One *** */
 //			case 0xCE:
@@ -619,7 +679,7 @@ public class Cpu6502 implements Runnable {
 //				poke(adr, temp);
 //				bits_nz(temp);
 //				if (ver > 3) System.out.println("[DECa]");
-//				per = 6;
+//				cycles = 6;
 //				break;
 //			case 0xC6:
 //				temp = peek(peek(pc));
@@ -627,7 +687,7 @@ public class Cpu6502 implements Runnable {
 //				poke(peek(pc++), temp);
 //				bits_nz(temp);
 //				if (ver > 3) System.out.println("[DECz]");
-//				per = 5;
+//				cycles = 5;
 //				break;
 //			case 0xD6:
 //				adr = am_zx();	// EEEEEEEEEEK
@@ -636,7 +696,7 @@ public class Cpu6502 implements Runnable {
 //				poke(adr, temp);
 //				bits_nz(temp);
 //				if (ver > 3) System.out.println("[DECzx]");
-//				per = 6;
+//				cycles = 6;
 //				break;
 //			case 0xDE:
 //				adr = am_ax(&page);	// EEEEEEEEK
@@ -645,7 +705,7 @@ public class Cpu6502 implements Runnable {
 //				poke(adr, temp);
 //				bits_nz(temp);
 //				if (ver > 3) System.out.println("[DECx]");
-//				per = 7;		// 6+page for WDC?
+//				cycles = 7;		// 6+page for WDC?
 //				break;
 //			case 0x3A:			// CMOS only (OK)
 //				a--;
@@ -663,49 +723,49 @@ public class Cpu6502 implements Runnable {
 //				a ^= peek(am_a());
 //				bits_nz(a);
 //				if (ver > 3) System.out.println("[EORa]");
-//				per = 4;
+//				cycles = 4;
 //				break;
 //			case 0x45:
 //				a ^= peek(peek(pc++));
 //				bits_nz(a);
 //				if (ver > 3) System.out.println("[EORz]");
-//				per = 3;
+//				cycles = 3;
 //				break;
 //			case 0x41:
 //				a ^= peek(am_ix());
 //				bits_nz(a);
 //				if (ver > 3) System.out.println("[EOR(x)]");
-//				per = 6;
+//				cycles = 6;
 //				break;
 //			case 0x51:
 //				a ^= peek(am_iy(&page));
 //				bits_nz(a);
 //				if (ver > 3) System.out.println("[EOR(y)]");
-//				per = 5 + page;
+//				cycles = 5 + page;
 //				break;
 //			case 0x55:
 //				a ^= peek(am_zx());
 //				bits_nz(a);
 //				if (ver > 3) System.out.println("[EORzx]");
-//				per = 4;
+//				cycles = 4;
 //				break;
 //			case 0x5D:
 //				a ^= peek(am_ax(&page));
 //				bits_nz(a);
 //				if (ver > 3) System.out.println("[EORx]");
-//				per = 4 + page;
+//				cycles = 4 + page;
 //				break;
 //			case 0x59:
 //				a ^= peek(am_ay(&page));
 //				bits_nz(a);
 //				if (ver > 3) System.out.println("[EORy]");
-//				per = 4 + page;
+//				cycles = 4 + page;
 //				break;
 //			case 0x52:			// CMOS only
 //				a ^= peek(am_iz());
 //				bits_nz(a);
 //				if (ver > 3) System.out.println("[EOR(z)]");
-//				per = 5;
+//				cycles = 5;
 //				break;
 //	/* *** INC: Increment Memory (or Accumulator) by One *** */
 //			case 0xEE:
@@ -715,7 +775,7 @@ public class Cpu6502 implements Runnable {
 //				poke(adr, temp);
 //				bits_nz(temp);
 //				if (ver > 3) System.out.println("[INCa]");
-//				per = 6;
+//				cycles = 6;
 //				break;
 //			case 0xE6:
 //				temp = peek(peek(pc));
@@ -723,7 +783,7 @@ public class Cpu6502 implements Runnable {
 //				poke(peek(pc++), temp);
 //				bits_nz(temp);
 //				if (ver > 3) System.out.println("[INCz]");
-//				per = 5;
+//				cycles = 5;
 //				break;
 //			case 0xF6:
 //				adr = am_zx();	// EEEEEEEEEEK
@@ -732,7 +792,7 @@ public class Cpu6502 implements Runnable {
 //				poke(adr, temp);
 //				bits_nz(temp);
 //				if (ver > 3) System.out.println("[INCzx]");
-//				per = 6;
+//				cycles = 6;
 //				break;
 //			case 0xFE:
 //				adr = am_ax(&page);	// EEEEEEEEEEK
@@ -741,7 +801,7 @@ public class Cpu6502 implements Runnable {
 //				poke(adr, temp);
 //				bits_nz(temp);
 //				if (ver > 3) System.out.println("[INCx]");
-//				per = 7;		// 6+page for WDC?
+//				cycles = 7;		// 6+page for WDC?
 //				break;
 //			case 0x1A:			// CMOS only
 //				a++;
@@ -753,80 +813,27 @@ public class Cpu6502 implements Runnable {
 //			case 0x4C:
 //				pc = am_a();
 //				if (ver > 2)	System.out.println("[JMP]");
-//				per = 3;
+//				cycles = 3;
 //				break;
 //			case 0x6C:
 //				pc = am_ai();
 //				if (ver > 2)	System.out.println("[JMP()]");
-//				per = 6;		// 5 for NMOS!
+//				cycles = 6;		// 5 for NMOS!
 //				break;
 //			case 0x7C:			// CMOS only
 //				pc = am_aix();
 //				if (ver > 2)	System.out.println("[JMP(x)]");
-//				per = 6;
+//				cycles = 6;
 //				break;
 //	/* *** JSR: Jump to New Location Saving Return Address *** */
 //			case 0x20:
 //				push((pc+1)>>8);		// stack one byte before return address, right at MSB
 //				push((pc+1)&255);
-//				pc = am_a();			// get operand
+//				pc = am_a();			// get ocyclesand
 //				if (ver > 2)	System.out.println("[JSR]");
-//				per = 6;
+//				cycles = 6;
 //				break;
-	/* *** LDA: Load Accumulator with Memory *** */
-			case (byte) 0xA9:
-				if (ver > 3) System.out.println("[LDA#]");
-				a = peek(pc++);
-				bits_nz(a);
-				break;
-//			case (byte) 0xAD:
-//				a = peek(am_a());
-//				bits_nz(a);
-//				if (ver > 3) System.out.println("[LDAa]");
-//				per = 4;
-//				break;
-//			case (byte) 0xA5:
-//				a = peek(peek(pc++));
-//				bits_nz(a);
-//				if (ver > 3) System.out.println("[LDAz]");
-//				per = 3;
-//				break;
-//			case (byte) 0xA1:
-//				a = peek(am_ix());
-//				bits_nz(a);
-//				if (ver > 3) System.out.println("[LDA(x)]");
-//				per = 6;
-//				break;
-//			case (byte) 0xB1:
-//				a = peek(am_iy(&page));
-//				bits_nz(a);
-//				if (ver > 3) System.out.println("[LDA(y)]");
-//				per = 5 + page;
-//				break;
-//			case (byte) 0xB5:
-//				a = peek(am_zx());
-//				bits_nz(a);
-//				if (ver > 3) System.out.println("[LDAzx]");
-//				per = 4;
-//				break;
-//			case (byte) 0xBD:
-//				a = peek(am_ax(&page));
-//				bits_nz(a);
-//				if (ver > 3) System.out.println("[LDAx]");
-//				per = 4 + page;
-//				break;
-//			case (byte) 0xB9:
-//				a = peek(am_ay(&page));
-//				bits_nz(a);
-//				if (ver > 3) System.out.println("[LDAy]");
-//				per = 4 + page;
-//				break;
-//			case (byte) 0xB2:			// CMOS only
-//				a = peek(am_iz());
-//				bits_nz(a);
-//				if (ver > 3) System.out.println("[LDA(z)]");
-//				per = 5;
-//				break;
+	
 	
 
 //	/* *** LSR: Shift One Bit Right (Memory or Accumulator) *** */
@@ -836,14 +843,14 @@ public class Cpu6502 implements Runnable {
 //				lsr(&temp);
 //				poke(adr, temp);
 //				if (ver > 3) System.out.println("[LSRa]");
-//				per = 6;
+//				cycles = 6;
 //				break;
 //			case 0x46:
 //				temp = peek(peek(pc));
 //				lsr(&temp);
 //				poke(peek(pc++), temp);
 //				if (ver > 3) System.out.println("[LSRz]");
-//				per = 5;
+//				cycles = 5;
 //				break;
 //			case 0x4A:
 //				lsr(&a);
@@ -855,7 +862,7 @@ public class Cpu6502 implements Runnable {
 //				lsr(&temp);
 //				poke(adr, temp);
 //				if (ver > 3) System.out.println("[LSRzx]");
-//				per = 6;
+//				cycles = 6;
 //				break;
 //			case 0x5E:
 //				adr = am_ax(&page);
@@ -863,9 +870,9 @@ public class Cpu6502 implements Runnable {
 //				lsr(&temp);
 //				poke(adr, temp);
 //				if (ver > 3) System.out.println("[LSRx]");
-//				per = 6 + page;	// 7 for NMOS
+//				cycles = 6 + page;	// 7 for NMOS
 //				break;
-//	/* *** NOP: No Operation *** */
+//	/* *** NOP: No Ocyclesation *** */
 //			case 0xEA:
 //				if (ver > 3) System.out.println("[NOP]");
 //				break;
@@ -879,80 +886,80 @@ public class Cpu6502 implements Runnable {
 //				a |= peek(am_a());
 //				bits_nz(a);
 //				if (ver > 3) System.out.println("[ORAa]");
-//				per = 4;
+//				cycles = 4;
 //				break;
 //			case 0x05:
 //				a |= peek(peek(pc++));
 //				bits_nz(a);
 //				if (ver > 3) System.out.println("[ORAz]");
-//				per = 3;
+//				cycles = 3;
 //				break;
 //			case 0x01:
 //				a |= peek(am_ix());
 //				bits_nz(a);
 //				if (ver > 3) System.out.println("[ORA(x)]");
-//				per = 6;
+//				cycles = 6;
 //				break;
 //			case 0x11:
 //				a |= peek(am_iy(&page));
 //				bits_nz(a);
 //				if (ver > 3) System.out.println("[ORA(y)]");
-//				per = 5 + page;
+//				cycles = 5 + page;
 //				break;
 //			case 0x15:
 //				a |= peek(am_zx());
 //				bits_nz(a);
 //				if (ver > 3) System.out.println("[ORAzx]");
-//				per = 4;
+//				cycles = 4;
 //				break;
 //			case 0x1D:
 //				a |= peek(am_ax(&page));
 //				bits_nz(a);
 //				if (ver > 3) System.out.println("[ORAx]");
-//				per = 4 + page;
+//				cycles = 4 + page;
 //				break;
 //			case 0x19:
 //				a |= peek(am_ay(&page));
 //				bits_nz(a);
 //				if (ver > 3) System.out.println("[ORAy]");
-//				per = 4 + page;
+//				cycles = 4 + page;
 //				break;
 //			case 0x12:			// CMOS only
 //				a |= peek(am_iz());
 //				bits_nz(a);
 //				if (ver > 3) System.out.println("[ORA(z)]");
-//				per = 5;
+//				cycles = 5;
 //				break;
 //	/* *** PHA: Push Accumulator on Stack *** */
 //			case 0x48:
 //				push(a);
 //				if (ver > 3) System.out.println("[PHA]");
-//				per = 3;
+//				cycles = 3;
 //				break;
 //	/* *** PHP: Push Processor Status on Stack *** */
 //			case 0x08:
 //				push(p);
 //				if (ver > 3) System.out.println("[PHP]");
-//				per = 3;
+//				cycles = 3;
 //				break;
 //	/* *** PHX: Push Index X on Stack *** */
 //			case 0xDA:			// CMOS only
 //				push(x);
 //				if (ver > 3) System.out.println("[PHX]");
-//				per = 3;
+//				cycles = 3;
 //				break;
 //	/* *** PHY: Push Index Y on Stack *** */
 //			case 0x5A:			// CMOS only
 //				push(y);
 //				if (ver > 3) System.out.println("[PHY]");
-//				per = 3;
+//				cycles = 3;
 //				break;
 //	/* *** PLA: Pull Accumulator from Stack *** */
 //			case 0x68:
 //				a = pop();
 //				if (ver > 3) System.out.println("[PLA]");
 //				bits_nz(a);
-//				per = 4;
+//				cycles = 4;
 //				break;
 //	/* *** PLP: Pull Processor Status from Stack *** */
 //			case 0x28:
@@ -960,21 +967,21 @@ public class Cpu6502 implements Runnable {
 //				if (p & 0b00001000)	dec = 1;	// check for decimal flag
 //				else				dec = 0;
 //				if (ver > 3) System.out.println("[PLP]");
-//				per = 4;
+//				cycles = 4;
 //				break;
 //	/* *** PLX: Pull Index X from Stack *** */
 //			case 0xFA:			// CMOS only
 //				x = pop();
 //				if (ver > 3) System.out.println("[PLX]");
 //				bits_nz(x);		// EEEEEEEEEEEEEEEEEEEEK
-//				per = 4;
+//				cycles = 4;
 //				break;
 //	/* *** PLX: Pull Index X from Stack *** */
 //			case 0x7A:			// CMOS only
 //				y = pop();
 //				if (ver > 3) System.out.println("[PLY]");
 //				bits_nz(y);		// EEEEEEEEEEEEEEEEEEEEK
-//				per = 4;
+//				cycles = 4;
 //				break;
 //	/* *** ROL: Rotate One Bit Left (Memory or Accumulator) *** */
 //			case 0x2E:
@@ -983,14 +990,14 @@ public class Cpu6502 implements Runnable {
 //				rol(&temp);
 //				poke(adr, temp);
 //				if (ver > 3) System.out.println("[ROLa]");
-//				per = 6;
+//				cycles = 6;
 //				break;
 //			case 0x26:
 //				temp = peek(peek(pc));
 //				rol(&temp);
 //				poke(peek(pc++), temp);
 //				if (ver > 3) System.out.println("[ROLz]");
-//				per = 5;
+//				cycles = 5;
 //				break;
 //			case 0x36:
 //				adr = am_zx();
@@ -998,7 +1005,7 @@ public class Cpu6502 implements Runnable {
 //				rol(&temp);
 //				poke(adr, temp);
 //				if (ver > 3) System.out.println("[ROLzx]");
-//				per = 6;
+//				cycles = 6;
 //				break;
 //			case 0x3E:
 //				adr = am_ax(&page);
@@ -1006,7 +1013,7 @@ public class Cpu6502 implements Runnable {
 //				rol(&temp);
 //				poke(adr, temp);
 //				if (ver > 3) System.out.println("[ROLx]");
-//				per = 6 + page;	// 7 for NMOS
+//				cycles = 6 + page;	// 7 for NMOS
 //				break;
 //			case 0x2A:
 //				rol(&a);
@@ -1019,14 +1026,14 @@ public class Cpu6502 implements Runnable {
 //				ror(&temp);
 //				poke(adr, temp);
 //				if (ver > 3) System.out.println("[RORa]");
-//				per = 6;
+//				cycles = 6;
 //				break;
 //			case 0x66:
 //				temp = peek(peek(pc));
 //				ror(&temp);
 //				poke(peek(pc++), temp);
 //				if (ver > 3) System.out.println("[RORz]");
-//				per = 5;
+//				cycles = 5;
 //				break;
 //			case 0x6A:
 //				ror(&a);
@@ -1038,7 +1045,7 @@ public class Cpu6502 implements Runnable {
 //				ror(&temp);
 //				poke(adr, temp);
 //				if (ver > 3) System.out.println("[RORzx]");
-//				per = 6;
+//				cycles = 6;
 //				break;
 //			case 0x7E:
 //				adr = am_ax(&page);
@@ -1046,7 +1053,7 @@ public class Cpu6502 implements Runnable {
 //				ror(&temp);
 //				poke(adr, temp);
 //				if (ver > 3) System.out.println("[RORx]");
-//				per = 6 + page;	// 7 for NMOS
+//				cycles = 6 + page;	// 7 for NMOS
 //				break;
 //	/* *** RTI: Return from Interrupt *** */
 //			case 0x40:
@@ -1055,7 +1062,7 @@ public class Cpu6502 implements Runnable {
 //				pc = pop();					// extract LSB...
 //				pc |= (pop() << 8);			// ...and MSB, address is correct
 //				if (ver > 2)	System.out.println("[RTI]");
-//				per = 6;
+//				cycles = 6;
 //				break;
 //	/* *** RTS: Return from Subroutine *** */
 //			case 0x60:
@@ -1063,53 +1070,53 @@ public class Cpu6502 implements Runnable {
 //				pc |= (pop() << 8);			// ...and MSB, but is one byte off
 //				pc++;						// return instruction address
 //				if (ver > 2)	System.out.println("[RTS]");
-//				per = 6;
+//				cycles = 6;
 //				break;
 //	/* *** SBC: Subtract Memory from Accumulator with Borrow *** */
 //			case 0xE9:
 //				sbc(peek(pc++));
 //				if (ver > 3) System.out.println("[SBC#]");
-//				per += dec;
+//				cycles += dec;
 //				break;
 //			case 0xED:
 //				sbc(peek(am_a()));
 //				if (ver > 3) System.out.println("[SBCa]");
-//				per = 4 + dec;
+//				cycles = 4 + dec;
 //				break;
 //			case 0xE5:
 //				sbc(peek(peek(pc++)));
 //				if (ver > 3) System.out.println("[SBCz]");
-//				per = 3 + dec;
+//				cycles = 3 + dec;
 //				break;
 //			case 0xE1:
 //				sbc(peek(am_ix()));
 //				if (ver > 3) System.out.println("[SBC(x)]");
-//				per = 6 + dec;
+//				cycles = 6 + dec;
 //				break;
 //			case 0xF1:
 //				sbc(peek(am_iy(&page)));
 //				if (ver > 3) System.out.println("[SBC(y)]");
-//				per = 5 + dec + page;
+//				cycles = 5 + dec + page;
 //				break;
 //			case 0xF5:
 //				sbc(peek(am_zx()));
 //				if (ver > 3) System.out.println("[SBCzx]");
-//				per = 4 + dec;
+//				cycles = 4 + dec;
 //				break;
 //			case 0xFD:
 //				sbc(peek(am_ax(&page)));
 //				if (ver > 3) System.out.println("[SBCx]");
-//				per = 4 + dec + page;
+//				cycles = 4 + dec + page;
 //				break;
 //			case 0xF9:
 //				sbc(peek(am_ay(&page)));
 //				if (ver > 3) System.out.println("[SBCy]");
-//				per = 4 + dec + page;
+//				cycles = 4 + dec + page;
 //				break;
 //			case 0xF2:			// CMOS only
 //				sbc(peek(am_iz()));
 //				if (ver > 3) System.out.println("[SBC(z)]");
-//				per = 5 + dec;
+//				cycles = 5 + dec;
 //				break;
 //	// *** SEx: Set Flags *** */
 //			case 0x38:
@@ -1129,64 +1136,64 @@ public class Cpu6502 implements Runnable {
 //			case 0x8D:
 //				poke(am_a(), a);
 //				if (ver > 3) System.out.println("[STAa]");
-//				per = 4;
+//				cycles = 4;
 //				break;
 //			case 0x85:
 //				poke(peek(pc++), a);
 //				if (ver > 3) System.out.println("[STAz]");
-//				per = 3;
+//				cycles = 3;
 //				break;
 //			case 0x81:
 //				poke(am_ix(), a);
 //				if (ver > 3) System.out.println("[STA(x)]");
-//				per = 6;
+//				cycles = 6;
 //				break;
 //			case 0x91:
 //				poke(am_iy(&page), a);
 //				if (ver > 3) System.out.println("[STA(y)]");
-//				per = 6;		// ...and not 5, as expected
+//				cycles = 6;		// ...and not 5, as expected
 //				break;
 //			case 0x95:
 //				poke(am_zx(), a);
 //				if (ver > 3) System.out.println("[STAzx]");
-//				per = 4;
+//				cycles = 4;
 //				break;
 //			case 0x9D:
 //				poke(am_ax(&page), a);
 //				if (ver > 3) System.out.println("[STAx]");
-//				per = 5;		// ...and not 4, as expected
+//				cycles = 5;		// ...and not 4, as expected
 //				break;
 //			case 0x99:
 //				poke(am_ay(&page), a);
 //				if (ver > 3) System.out.println("[STAy]");
-//				per = 5;		// ...and not 4, as expected
+//				cycles = 5;		// ...and not 4, as expected
 //				break;
 //			case 0x92:			// CMOS only
 //				poke(am_iz(), a);
 //				if (ver > 3) System.out.println("[STA(z)]");
-//				per = 5;
+//				cycles = 5;
 //				break;
 
 //	// *** STZ: Store Zero in Memory, CMOS only ***
 //			case 0x9C:
 //				poke(am_a(), 0);
 //				if (ver > 3) System.out.println("[STZa]");
-//				per = 4;
+//				cycles = 4;
 //				break;
 //			case 0x64:
 //				poke(peek(pc++), 0);
 //				if (ver > 3) System.out.println("[STZz]");
-//				per = 3;
+//				cycles = 3;
 //				break;
 //			case 0x74:
 //				poke(am_zx(), 0);
 //				if (ver > 3) System.out.println("[STZzx]");
-//				per = 4;
+//				cycles = 4;
 //				break;
 //			case 0x9E:
 //				poke(am_ax(&page), 0);
 //				if (ver > 3) System.out.println("[STZx]");
-//				per = 5;		// ...and not 4, as expected
+//				cycles = 5;		// ...and not 4, as expected
 //				break;
 
 
@@ -1198,7 +1205,7 @@ public class Cpu6502 implements Runnable {
 //				else 				p |= 0b00000010;
 //				poke(adr, temp & ~a);
 //				if (ver > 3) System.out.println("[TRBa]");
-//				per = 6;
+//				cycles = 6;
 //				break;
 //			case 0x14:
 //				adr = peek(pc++);
@@ -1207,7 +1214,7 @@ public class Cpu6502 implements Runnable {
 //				else 				p |= 0b00000010;
 //				poke(adr, temp & ~a);
 //				if (ver > 3) System.out.println("[TRBz]");
-//				per = 5;
+//				cycles = 5;
 //				break;
 //	/* *** TSB: Test and Set Bits, CMOS only *** */
 //			case 0x0C:
@@ -1217,7 +1224,7 @@ public class Cpu6502 implements Runnable {
 //				else 				p |= 0b00000010;
 //				poke(adr, temp | a);
 //				if (ver > 3) System.out.println("[TSBa]");
-//				per = 6;
+//				cycles = 6;
 //				break;
 //			case 0x04:
 //				adr = peek(pc++);
@@ -1226,7 +1233,7 @@ public class Cpu6502 implements Runnable {
 //				else 				p |= 0b00000010;
 //				poke(adr, temp | a);
 //				if (ver > 3) System.out.println("[TSBz]");
-//				per = 5;
+//				cycles = 5;
 //				break;
 //	/* *** TSX: Transfer Stack Pointer to Index X *** */
 //			case 0xBA:
@@ -1319,7 +1326,7 @@ public class Cpu6502 implements Runnable {
 //			case (byte)0xDF:
 //			case (byte)0xEF:
 //			case (byte)0xFF:	// Rockwell BBR/BBS opcodes
-//				per = 1;		// ultra-fast 1 byte NOPs!
+//				cycles = 1;		// ultra-fast 1 byte NOPs!
 //				if (ver)	System.out.println("[NOP!]");
 //				if (safe)	illegal(1, opcode);
 //				break;
@@ -1336,7 +1343,7 @@ public class Cpu6502 implements Runnable {
 //				break;
 //			case 0x44:
 //				pc++;
-//				per++;			// only case of 2-byte, 3-cycle NOP
+//				cycles++;			// only case of 2-byte, 3-cycle NOP
 //				if (ver)	System.out.println("[NOPz]");
 //				if (safe)	illegal(2, opcode);
 //				break;
@@ -1344,20 +1351,20 @@ public class Cpu6502 implements Runnable {
 //			case 0xD4:
 //			case 0xF4:
 //				pc++;
-//				per = 4;		// only cases of 2-byte, 4-cycle NOP
+//				cycles = 4;		// only cases of 2-byte, 4-cycle NOP
 //				if (ver)	System.out.println("[NOPzx]");
 //				if (safe)	illegal(2, opcode);
 //				break;
 //			case 0xDC:
 //			case 0xFC:
 //				pc += 2;
-//				per = 4;		// only cases of 3-byte, 4-cycle NOP
+//				cycles = 4;		// only cases of 3-byte, 4-cycle NOP
 //				if (ver)	System.out.println("[NOPa]");
 //				if (safe)	illegal(3, opcode);
 //				break;
 //			case 0x5C:
 //				pc += 2;
-//				per = 8;		// extremely slow 8-cycle NOP
+//				cycles = 8;		// extremely slow 8-cycle NOP
 //				if (ver)	System.out.println("[NOP?]");
 //				if (safe)	illegal(3, opcode);
 //				break;			// not needed as it's the last one, but just in case
@@ -1530,14 +1537,14 @@ public class Cpu6502 implements Runnable {
 //		return pt;
 //	}
 //
-//	/* pre-indexed indirect */
-//	word am_ix(void) {
-//		word pt = (peek((peek(pc)+x)&255)|(peek((peek(pc)+x+1)&255)<<8) & 0x0000FFFF);	// EEEEEEK
-//		pc++;
-//
-//		return pt;
-//	}
-//
+	/* pre-indexed indirect */
+	private int am_ix() {
+		int pt = (peek((peek(pc)+x)&255)|(peek((peek(pc)+x+1)&255)<<8) & 0x0000FFFF);	// EEEEEEK
+		pc++;
+
+		return pt;
+	}
+
 	/* relative branch */
 	private int rel(int bound) {
 		int off = peek(pc++);	// read offset and skip operand
