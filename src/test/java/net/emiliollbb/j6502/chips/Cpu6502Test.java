@@ -75,8 +75,8 @@ public class Cpu6502Test {
 		loadProgram(0x0200, new int[] {0xA2, 0xA0});
 		cpu.reset();
 		int cycles = cpu.step();
-		Assertions.assertEquals(0xA0, cpu.getX()&0x000000FF);
-		Assertions.assertEquals(0x80, cpu.getP()&0x000000FF);
+		Assertions.assertEquals((byte) 0xA0, cpu.getX());
+		Assertions.assertEquals((byte) 0x80, cpu.getP());
 		Assertions.assertEquals(2, cycles);
 	}
 	@Test
@@ -148,8 +148,8 @@ public class Cpu6502Test {
 		Assertions.assertEquals(2, cycles);
 		// Negative
 		cycles = cpu.step();
-		Assertions.assertEquals(0xF0, cpu.getY()&0x000000FF);
-		Assertions.assertEquals(0x80, cpu.getP()&0x000000FF);
+		Assertions.assertEquals((byte) 0xF0, cpu.getY());
+		Assertions.assertEquals((byte) 0x80, cpu.getP());
 		Assertions.assertEquals(2, cycles);
 	}
 	@Test
