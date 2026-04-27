@@ -229,6 +229,23 @@ public class Cpu6502Test {
 		Assertions.assertEquals(4, cycles);
 		Mockito.verify(device).poke(0xAA, (byte)0x55);
 	}
+	@Test
+	void testSTXAbsolute() {
+		loadProgram(0x0200, new int[] {
+				// LDX #$55
+				0xA2, 0x55,
+				// LDY #$A1
+				0xA0, 0xA1,
+				// STX $0301
+				0X8E, 0XA1, 0XA3
+				});
+		cpu.reset();
+		cpu.step();
+		cpu.step();
+		int cycles = cpu.step();
+		Assertions.assertEquals(4, cycles);
+		Mockito.verify(device).poke(0xA3A1, (byte)0x55);
+	}
 	
 	@Test
 	void tesTAX() {

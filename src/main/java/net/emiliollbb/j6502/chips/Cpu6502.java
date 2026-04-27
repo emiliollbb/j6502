@@ -258,7 +258,7 @@ public class Cpu6502 implements Runnable {
 			break;
 		case (byte) 0x84:
 			if (ver > 3) System.out.println("[STYz]");
-			poke(peek(pc++), y);
+			poke(peek(pc++) & 0X000000FF, y);
 			cycles = 3;
 			break;
 		case (byte) 0x94:
@@ -1483,7 +1483,7 @@ public class Cpu6502 implements Runnable {
 	/* *** addressing modes *** */
 	/* absolute */
 	private int am_a() {
-		int pt = peek(pc) | (peek(pc+1) <<8 & 0x0000FFFF);
+		int pt = peek(pc) & 0x000000FF | (peek(pc+1) <<8 & 0x0000FFFF);
 		pc += 2;
 
 		return pt;
