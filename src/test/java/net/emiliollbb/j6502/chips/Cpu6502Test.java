@@ -198,7 +198,6 @@ public class Cpu6502Test {
 		Assertions.assertEquals(0x55, cpu.getY());
 		Assertions.assertEquals(4, cycles);
 	}
-	
 	@Test
 	void testSTXZeroPage() {
 		loadProgram(0x0200, new int[] {
@@ -234,18 +233,63 @@ public class Cpu6502Test {
 		loadProgram(0x0200, new int[] {
 				// LDX #$55
 				0xA2, 0x55,
-				// LDY #$A1
-				0xA0, 0xA1,
 				// STX $0301
 				0X8E, 0XA1, 0XA3
+				});
+		cpu.reset();
+		cpu.step();
+		int cycles = cpu.step();
+		Assertions.assertEquals(4, cycles);
+		Mockito.verify(device).poke(0xA3A1, (byte)0x55);
+	}
+	
+
+	@Test
+	void testSTYZeroPage() {
+		loadProgram(0x0200, new int[] {
+				// LDY #$55
+				0xA0, 0x55,
+				0X84, 0XA0
+				});
+		cpu.reset();
+		cpu.step();
+		int cycles = cpu.step();
+		Assertions.assertEquals(3, cycles);
+		Mockito.verify(device).poke(0xA0, (byte)0x55);
+	}
+	@Test
+	void testSTYZeroPageX() {
+		loadProgram(0x0200, new int[] {
+				// LDY #$55
+				0xA0, 0x55,
+				// LDX #$A1
+				0xA2, 0xA1,
+				// STY $09,X
+				0X94, 0X09
 				});
 		cpu.reset();
 		cpu.step();
 		cpu.step();
 		int cycles = cpu.step();
 		Assertions.assertEquals(4, cycles);
+		Mockito.verify(device).poke(0xAA, (byte)0x55);
+	}
+	@Test
+	void testSTYAbsolute() {
+		loadProgram(0x0200, new int[] {
+				// LDY #$55
+				0xA0, 0x55,
+				// STY $0301
+				0X8C, 0XA1, 0XA3
+				});
+		cpu.reset();
+		cpu.step();
+		int cycles = cpu.step();
+		Assertions.assertEquals(4, cycles);
 		Mockito.verify(device).poke(0xA3A1, (byte)0x55);
 	}
+	
+	
 	
 	@Test
 	void tesTAX() {

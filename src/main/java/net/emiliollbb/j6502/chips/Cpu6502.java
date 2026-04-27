@@ -248,14 +248,7 @@ public class Cpu6502 implements Runnable {
 			poke(am_a(), x);
 			cycles = 4;
 			break;
-		
-		
 			/* *** STY: Store Index Y in Memory *** */
-		case (byte) 0x8C:
-			if (ver > 3) System.out.println("[STYa]");
-			poke(am_a(), y);
-			cycles = 4;
-			break;
 		case (byte) 0x84:
 			if (ver > 3) System.out.println("[STYz]");
 			poke(peek(pc++) & 0X000000FF, y);
@@ -265,7 +258,13 @@ public class Cpu6502 implements Runnable {
 			if (ver > 3) System.out.println("[STYzx]");
 			poke(am_zx(), y);
 			cycles = 4;
-			break;			
+			break;
+		case (byte) 0x8C:
+			if (ver > 3) System.out.println("[STYa]");
+			poke(am_a(), y);
+			cycles = 4;
+			break;
+		
 			
 //	/* *** ADC: Add Memory to Accumulator with Carry *** */
 //			case 0x69:
