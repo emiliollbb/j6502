@@ -18,6 +18,7 @@ public class Cpu6502 implements Runnable {
 	private int ver;
 	private int dec;
 	private int speed;
+	private int page;
 	
 	private List<IBusDevice> busDevices;
 	
@@ -113,7 +114,7 @@ public class Cpu6502 implements Runnable {
 	/* execute a single opcode, returning cycle count */
 	public int step() {
 		int cycles = 2;			// base cycle count
-		int page = 0;			// page boundary flag, for speed penalties
+		page = 0;			// page boundary flag, for speed penalties
 		byte opcode, temp;
 		short adr;
 
@@ -727,13 +728,13 @@ public class Cpu6502 implements Runnable {
 				bits_nz(x);
 				cycles = 4;
 				break;
-//			case 0xBE:
-//				x = peek(am_ay(&page));
-//				bits_nz(x);
-//				if (ver > 3) System.out.println("[LDXy]");
-//				per = 4 + page;
-//				break;
-//	/* *** LDY: Load Index Y with Memory *** */
+			case (byte) 0xBE:
+				if (ver > 3) System.out.println("[LDXy]");
+				x = peek(am_ay());
+				bits_nz(x);
+				cycles = 4 + page;
+				break;
+	/* *** LDY: Load Index Y with Memory *** */
 			case (byte) 0xA0:
 				if (ver > 3) System.out.println("[LDY#]");
 				y = peek(pc++);
@@ -1486,14 +1487,13 @@ public class Cpu6502 implements Runnable {
 //		return pt;
 //	}
 //
-//	/* absolute indexed Y */
-//	word am_ay(int *bound) {
-//		word ba = am_a();		// pick base address and skip operand
-//		word pt = ba + y;		// add offset
-//		*bound = ((pt & 0xFF00)==(ba & 0xFF00))?0:1;	// check page crossing
-//
-//		return pt;
-//	}
+	/* absolute indexed Y */
+	int am_ay() {
+		int ba = am_a();		// pick base address and skip operand
+		int pt = ba + y;		// add offset
+		page = ((pt & 0x0000FF00)==(ba & 0x0000FF00))?0:1;	// check page crossing
+		return pt;
+	}
 //
 //	/* indirect */
 //	word am_iz(void) {

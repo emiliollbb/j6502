@@ -70,7 +70,6 @@ public class Cpu6502Test {
 		Assertions.assertEquals(0x55, cpu.getX());
 		Assertions.assertEquals(4, cycles);
 	}
-	
 	@Test
 	void testLDXZeroPage() {
 		Mockito.when(device.peek(0x0005)).thenReturn((byte)0x55);
@@ -80,23 +79,28 @@ public class Cpu6502Test {
 		Assertions.assertEquals(0x55, cpu.getX());
 		Assertions.assertEquals(3, cycles);
 	}
-	
-	/*
-	 * Zero Page,X
-
-	The address to be accessed by an instruction using indexed zero page addressing is calculated by taking the 8 bit zero page address 
-	from the instruction and adding the current value of the X register to it. 
-	For example if the X register contains $0F and the instruction LDA $80,X is executed 
-	then the accumulator will be loaded from $008F (e.g. $80 + $0F => $8F).
-	 */
 	@Test
 	void testLDXZeroPageY() {
 		Mockito.when(device.peek(0x008F)).thenReturn((byte)0x55);
 		loadProgram(0x0200, new int[] {
 				// LDY #0F
 				0xA0, 0x0F,
-				// LDA $80,y
+				// LDX $80,y
 				0xB6, 0x80});
+		cpu.reset();
+		cpu.step();
+		int cycles = cpu.step();
+		Assertions.assertEquals(0x55, cpu.getX());
+		Assertions.assertEquals(4, cycles);
+	}
+	@Test
+	void testLDXAbsoluteY() {
+		Mockito.when(device.peek(0x0305)).thenReturn((byte)0x55);
+		loadProgram(0x0200, new int[] {
+				// LDY #04
+				0xA0, 0x04,
+				// LDX $0301,Y
+				0xBE, 0x01, 0x03});
 		cpu.reset();
 		cpu.step();
 		int cycles = cpu.step();
