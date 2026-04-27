@@ -238,7 +238,46 @@ public class Cpu6502Test {
 		Assertions.assertEquals(2, cycles);
 	}
 	@Test
-	void tesDEy() {
+	void tesINX() {
+		loadProgram(0x0200, new int[] {
+				// LDX #54
+				0xA2, 0x54,
+				// INX
+				0xE8});
+		cpu.reset();
+		cpu.step();
+		int cycles = cpu.step();
+		Assertions.assertEquals(0x55, cpu.getX());
+		Assertions.assertEquals(2, cycles);
+	}
+	@Test
+	void tesTAY() {
+		loadProgram(0x0200, new int[] {
+				// LDA #54
+				0xA9, 0x54,
+				// TAY
+				0xA8});
+		cpu.reset();
+		cpu.step();
+		int cycles = cpu.step();
+		Assertions.assertEquals(0x54, cpu.getY());
+		Assertions.assertEquals(2, cycles);
+	}
+	@Test
+	void tesTYA() {
+		loadProgram(0x0200, new int[] {
+				// LDY #54
+				0xA0, 0x54,
+				// TYA
+				0x98});
+		cpu.reset();
+		cpu.step();
+		int cycles = cpu.step();
+		Assertions.assertEquals(0x54, cpu.getA());
+		Assertions.assertEquals(2, cycles);
+	}
+	@Test
+	void tesDEY() {
 		loadProgram(0x0200, new int[] {
 				// LDY #54
 				0xA0, 0x54,
@@ -250,7 +289,19 @@ public class Cpu6502Test {
 		Assertions.assertEquals(0x53, cpu.getY());
 		Assertions.assertEquals(2, cycles);
 	}
-	
+	@Test
+	void tesINY() {
+		loadProgram(0x0200, new int[] {
+				// LDY #54
+				0xA0, 0x54,
+				// INY
+				0xC8});
+		cpu.reset();
+		cpu.step();
+		int cycles = cpu.step();
+		Assertions.assertEquals(0x55, cpu.getY());
+		Assertions.assertEquals(2, cycles);
+	}
 	
 	
 	

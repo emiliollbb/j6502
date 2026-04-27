@@ -202,12 +202,36 @@ public class Cpu6502 implements Runnable {
 			x--;
 			bits_nz(x);
 			break;
+		/* *** INX: Increment Index X by One *** */
+		case (byte) 0xE8:
+			if (ver > 3) System.out.println("[INX]");
+			x++;
+			bits_nz(x);
+			break;
+		/* *** TAY: Transfer Accumulator to Index Y *** */
+		case (byte) 0xA8:
+			if (ver > 3) System.out.println("[TAY]");
+			y = a;
+			bits_nz(y);
+			break;
+		/* *** TYA: Transfer Index Y to Accumulator *** */
+		case (byte) 0x98:
+			if (ver > 3) System.out.println("[TYA]");
+			a = y;
+			bits_nz(a);
+			break;
 		/* *** DEY: Decrement Index Y by One *** */
 		case (byte) 0x88:
 			if (ver > 3) System.out.println("[DEY]");
 			y--;
 			bits_nz(y);
-			break;			
+			break;
+		/* *** INY: Increment Index Y by One *** */
+		case (byte) 0xC8:
+			if (ver > 3) System.out.println("[INY]");
+			y++;
+			bits_nz(y);
+			break;
 			
 //	/* *** ADC: Add Memory to Accumulator with Carry *** */
 //			case 0x69:
@@ -691,18 +715,7 @@ public class Cpu6502 implements Runnable {
 //				bits_nz(a);
 //				if (ver > 3) System.out.println("[INC]");
 //				break;
-//	/* *** INX: Increment Index X by One *** */
-//			case 0xE8:
-//				x++;
-//				bits_nz(x);
-//				if (ver > 3) System.out.println("[INX]");
-//				break;
-//	/* *** INY: Increment Index Y by One *** */
-//			case 0xC8:
-//				y++;
-//				bits_nz(y);
-//				if (ver > 3) System.out.println("[INY]");
-//				break;
+
 //	/* *** JMP: Jump to New Location *** */
 //			case 0x4C:
 //				pc = am_a();
@@ -1174,12 +1187,7 @@ public class Cpu6502 implements Runnable {
 //				per = 5;		// ...and not 4, as expected
 //				break;
 
-//	/* *** TAY: Transfer Accumulator to Index Y *** */
-//			case 0xA8:
-//				y = a;
-//				bits_nz(y);
-//				if (ver > 3) System.out.println("[TAY]");
-//				break;
+
 //	/* *** TRB: Test and Reset Bits, CMOS only *** */
 //			case 0x1C:
 //				adr = am_a();
@@ -1231,12 +1239,7 @@ public class Cpu6502 implements Runnable {
 //				bits_nz(s);
 //				if (ver > 3) System.out.println("[TXS]");
 //				break;
-//	/* *** TYA: Transfer Index Y to Accumulator *** */
-//			case 0x98:
-//				a = y;
-//				bits_nz(a);
-//				if (ver > 3) System.out.println("[TYA]");
-//				break;
+
 //	/* *** *** special control 'opcodes' *** *** */
 //	/* *** Emulator Breakpoint  (WAI on WDC) *** */
 //			case 0xCB:
