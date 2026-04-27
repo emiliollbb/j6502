@@ -84,6 +84,9 @@ public class Cpu6502 implements Runnable {
 	public int getPc() {
 		return pc;
 	}
+	public byte getP() {
+		return p;
+	}
 	public int getSpeed() {
 		return speed;
 	}
@@ -121,6 +124,38 @@ public class Cpu6502 implements Runnable {
 		opcode = peek(pc++);	// get opcode and point to next one (or operand)
 		if(ver>5) System.out.println("OPCODE: "+printByte(opcode));
 		switch(opcode) {
+		/* *** LDX: Load Index X with Memory *** */
+		case (byte) 0xA2:
+			if (ver > 3) System.out.println("[LDX#] "+printByte(x));
+			x = peek(pc++);
+			bits_nz(x);
+			break;
+		case (byte) 0xA6:
+			if (ver > 3) System.out.println("[LDXz]");
+			x = peek(peek(pc++));
+			bits_nz(x);
+			cycles = 3;
+			break;
+		case (byte) 0xB6:
+			if (ver > 3) System.out.println("[LDXzy]");
+			x = peek(am_zy());
+			bits_nz(x);
+			cycles = 4;
+			break;	
+		case (byte) 0xAE:
+			if (ver > 3) System.out.println("[LDXa]");
+			x = peek(am_a());
+			bits_nz(x);
+			cycles = 4;
+			break;
+		case (byte) 0xBE:
+			if (ver > 3) System.out.println("[LDXy]");
+			x = peek(am_ay());
+			bits_nz(x);
+			cycles = 4 + page;
+			break;
+			
+			
 //	/* *** ADC: Add Memory to Accumulator with Carry *** */
 //			case 0x69:
 //				adc(peek(pc++));
@@ -704,36 +739,7 @@ public class Cpu6502 implements Runnable {
 //				if (ver > 3) System.out.println("[LDA(z)]");
 //				per = 5;
 //				break;
-	/* *** LDX: Load Index X with Memory *** */
-			case (byte) 0xA2:
-				if (ver > 3) System.out.println("[LDX#] "+printByte(x));
-				x = peek(pc++);
-				bits_nz(x);
-				break;
-			case (byte) 0xAE:
-				if (ver > 3) System.out.println("[LDXa]");
-				x = peek(am_a());
-				bits_nz(x);
-				cycles = 4;
-				break;
-			case (byte) 0xA6:
-				if (ver > 3) System.out.println("[LDXz]");
-				x = peek(peek(pc++));
-				bits_nz(x);
-				cycles = 3;
-				break;
-			case (byte) 0xB6:
-				if (ver > 3) System.out.println("[LDXzy]");
-				x = peek(am_zy());
-				bits_nz(x);
-				cycles = 4;
-				break;
-			case (byte) 0xBE:
-				if (ver > 3) System.out.println("[LDXy]");
-				x = peek(am_ay());
-				bits_nz(x);
-				cycles = 4 + page;
-				break;
+	
 	/* *** LDY: Load Index Y with Memory *** */
 			case (byte) 0xA0:
 				if (ver > 3) System.out.println("[LDY#]");

@@ -58,6 +58,25 @@ public class Cpu6502Test {
 		cpu.reset();
 		int cycles = cpu.step();
 		Assertions.assertEquals(0x55, cpu.getX());
+		Assertions.assertEquals(0x00, cpu.getP());
+		Assertions.assertEquals(2, cycles);
+	}
+	@Test
+	void testLDXInmediateZero() {
+		loadProgram(0x0200, new int[] {0xA2, 0x00});
+		cpu.reset();
+		int cycles = cpu.step();
+		Assertions.assertEquals(0x00, cpu.getX());
+		Assertions.assertEquals(0x02, cpu.getP());
+		Assertions.assertEquals(2, cycles);
+	}
+	@Test
+	void testLDXInmediateNegative() {
+		loadProgram(0x0200, new int[] {0xA2, 0xA0});
+		cpu.reset();
+		int cycles = cpu.step();
+		Assertions.assertEquals(0xA0, cpu.getX()&0x000000FF);
+		Assertions.assertEquals(0x80, cpu.getP()&0x000000FF);
 		Assertions.assertEquals(2, cycles);
 	}
 	
