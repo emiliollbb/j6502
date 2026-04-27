@@ -201,14 +201,53 @@ public class Cpu6502Test {
 	@Test
 	void tesTAX() {
 		loadProgram(0x0200, new int[] {
-				// LDX #04
+				// LDA #04
 				0xA9, 0x54,
 				// TAX
 				0xAA});
 		cpu.reset();
 		cpu.step();
 		int cycles = cpu.step();
+		Assertions.assertEquals(0x54, cpu.getX());
+		Assertions.assertEquals(2, cycles);
+	}
+	@Test
+	void tesTXA() {
+		loadProgram(0x0200, new int[] {
+				// LDX #54
+				0xA2, 0x54,
+				// TXA
+				0x8A});
+		cpu.reset();
+		cpu.step();
+		int cycles = cpu.step();
 		Assertions.assertEquals(0x54, cpu.getA());
+		Assertions.assertEquals(2, cycles);
+	}
+	@Test
+	void tesDEX() {
+		loadProgram(0x0200, new int[] {
+				// LDX #54
+				0xA2, 0x54,
+				// DEX
+				0xCA});
+		cpu.reset();
+		cpu.step();
+		int cycles = cpu.step();
+		Assertions.assertEquals(0x53, cpu.getX());
+		Assertions.assertEquals(2, cycles);
+	}
+	@Test
+	void tesDEy() {
+		loadProgram(0x0200, new int[] {
+				// LDY #54
+				0xA0, 0x54,
+				// DEY
+				0x88});
+		cpu.reset();
+		cpu.step();
+		int cycles = cpu.step();
+		Assertions.assertEquals(0x53, cpu.getY());
 		Assertions.assertEquals(2, cycles);
 	}
 	

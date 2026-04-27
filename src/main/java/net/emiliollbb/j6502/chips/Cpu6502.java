@@ -190,7 +190,24 @@ public class Cpu6502 implements Runnable {
 			x = a;
 			bits_nz(x);
 			break;
-			
+		/* *** TXA: Transfer Index X to Accumulator *** */
+		case (byte) 0x8A:
+			if (ver > 3) System.out.println("[TXA]");
+			a = x;
+			bits_nz(a);
+			break;
+		/* *** DEX: Decrement Index X by One *** */
+		case (byte) 0xCA:
+			if (ver > 3) System.out.println("[DEX]");
+			x--;
+			bits_nz(x);
+			break;
+		/* *** DEY: Decrement Index Y by One *** */
+		case (byte) 0x88:
+			if (ver > 3) System.out.println("[DEY]");
+			y--;
+			bits_nz(y);
+			break;			
 			
 //	/* *** ADC: Add Memory to Accumulator with Carry *** */
 //			case 0x69:
@@ -578,18 +595,7 @@ public class Cpu6502 implements Runnable {
 //				bits_nz(a);
 //				if (ver > 3) System.out.println("[DEC]");
 //				break;
-//	/* *** DEX: Decrement Index X by One *** */
-//			case 0xCA:
-//				x--;
-//				bits_nz(x);
-//				if (ver > 3) System.out.println("[DEX]");
-//				break;
-//	/* *** DEY: Decrement Index Y by One *** */
-//			case 0x88:
-//				y--;
-//				bits_nz(y);
-//				if (ver > 3) System.out.println("[DEY]");
-//				break;
+
 //	/* *** EOR: "Exclusive Or" Memory with Accumulator *** */
 //			case 0x49:
 //				a ^= peek(pc++);
@@ -1218,12 +1224,7 @@ public class Cpu6502 implements Runnable {
 //				bits_nz(x);
 //				if (ver > 3) System.out.println("[TSX]");
 //				break;
-//	/* *** TXA: Transfer Index X to Accumulator *** */
-//			case 0x8A:
-//				a = x;
-//				bits_nz(a);
-//				if (ver > 3) System.out.println("[TXA]");
-//				break;
+
 //	/* *** TXS: Transfer Index X to Stack Pointer *** */
 //			case 0x9A:
 //				s = x;
