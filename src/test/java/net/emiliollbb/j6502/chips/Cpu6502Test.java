@@ -79,16 +79,6 @@ public class Cpu6502Test {
 		Assertions.assertEquals(0x80, cpu.getP()&0x000000FF);
 		Assertions.assertEquals(2, cycles);
 	}
-	
-	@Test
-	void testLDXAbsolute() {
-		Mockito.when(device.peek(0x0305)).thenReturn((byte)0x55);
-		loadProgram(0x0200, new int[] {0xAE, 0x05, 0x03});
-		cpu.reset();
-		int cycles = cpu.step();
-		Assertions.assertEquals(0x55, cpu.getX());
-		Assertions.assertEquals(4, cycles);
-	}
 	@Test
 	void testLDXZeroPage() {
 		Mockito.when(device.peek(0x0005)).thenReturn((byte)0x55);
@@ -113,6 +103,15 @@ public class Cpu6502Test {
 		Assertions.assertEquals(4, cycles);
 	}
 	@Test
+	void testLDXAbsolute() {
+		Mockito.when(device.peek(0x0305)).thenReturn((byte)0x55);
+		loadProgram(0x0200, new int[] {0xAE, 0x05, 0x03});
+		cpu.reset();
+		int cycles = cpu.step();
+		Assertions.assertEquals(0x55, cpu.getX());
+		Assertions.assertEquals(4, cycles);
+	}
+	@Test
 	void testLDXAbsoluteY() {
 		Mockito.when(device.peek(0x0305)).thenReturn((byte)0x55);
 		loadProgram(0x0200, new int[] {
@@ -126,6 +125,89 @@ public class Cpu6502Test {
 		Assertions.assertEquals(0x55, cpu.getX());
 		Assertions.assertEquals(4, cycles);
 	}
+	
+	@Test
+	void testLDYInmediate() {
+		loadProgram(0x0200, new int[] {
+				// LDY #$55
+				0xA0, 0x55,
+				// LDY #$00
+				0xA0, 0x00,
+				// LDY #$F0
+				0xA0, 0xF0,
+				});
+		cpu.reset();
+		int cycles = cpu.step();
+		Assertions.assertEquals(0x55, cpu.getY());
+		Assertions.assertEquals(0x00, cpu.getP());
+		Assertions.assertEquals(2, cycles);
+		// Zero
+		cycles = cpu.step();
+		Assertions.assertEquals(0x00, cpu.getY());
+		Assertions.assertEquals(0x02, cpu.getP());
+		Assertions.assertEquals(2, cycles);
+		// Negative
+		cycles = cpu.step();
+		Assertions.assertEquals(0xF0, cpu.getY()&0x000000FF);
+		Assertions.assertEquals(0x80, cpu.getP()&0x000000FF);
+		Assertions.assertEquals(2, cycles);
+	}
+	@Test
+	void testLDYZeroPage() {
+		Mockito.when(device.peek(0x0005)).thenReturn((byte)0x55);
+		loadProgram(0x0200, new int[] {0xA4, 0x05});
+		cpu.reset();
+		int cycles = cpu.step();
+		Assertions.assertEquals(0x55, cpu.getY());
+		Assertions.assertEquals(3, cycles);
+	}
+	@Test
+	void testLDXZeroPageX() {
+		Mockito.when(device.peek(0x008F)).thenReturn((byte)0x55);
+		loadProgram(0x0200, new int[] {
+				// LDX #0F
+				0xA2, 0x0F,
+				// LDY $80,X
+				0xB4, 0x80});
+		cpu.reset();
+		cpu.step();
+		int cycles = cpu.step();
+		Assertions.assertEquals(0x55, cpu.getY());
+		Assertions.assertEquals(4, cycles);
+	}
+	@Test
+	void testLDYAbsolute() {
+		Mockito.when(device.peek(0x0305)).thenReturn((byte)0x55);
+		loadProgram(0x0200, new int[] {0xAC, 0x05, 0x03});
+		cpu.reset();
+		int cycles = cpu.step();
+		Assertions.assertEquals(0x55, cpu.getY());
+		Assertions.assertEquals(4, cycles);
+	}
+	@Test
+	void testLDYAbsoluteY() {
+		Mockito.when(device.peek(0x0305)).thenReturn((byte)0x55);
+		loadProgram(0x0200, new int[] {
+				// LDX #04
+				0xA2, 0x04,
+				// LDY $0301,X
+				0xBC, 0x01, 0x03});
+		cpu.reset();
+		cpu.step();
+		int cycles = cpu.step();
+		Assertions.assertEquals(0x55, cpu.getY());
+		Assertions.assertEquals(4, cycles);
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	@Test
 	void testBRA() {

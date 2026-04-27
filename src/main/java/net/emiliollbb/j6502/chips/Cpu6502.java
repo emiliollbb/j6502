@@ -154,6 +154,36 @@ public class Cpu6502 implements Runnable {
 			bits_nz(x);
 			cycles = 4 + page;
 			break;
+		/* *** LDY: Load Index Y with Memory *** */
+		case (byte) 0xA0:
+			if (ver > 3) System.out.println("[LDY#]");
+			y = peek(pc++);
+			bits_nz(y);
+			break;
+		case (byte) 0xA4:
+			if (ver > 3) System.out.println("[LDYz]");
+			y = peek(peek(pc++));
+			bits_nz(y);
+			cycles = 3;
+			break;
+		case (byte) 0xB4:
+			if (ver > 3) System.out.println("[LDYzx]");
+			y = peek(am_zx());
+			bits_nz(y);
+			cycles = 4;
+			break;
+		case (byte) 0xAC:
+			y = peek(am_a());
+			bits_nz(y);
+			if (ver > 3) System.out.println("[LDYa]");
+			cycles = 4;
+			break;
+		case (byte) 0xBC:
+			y = peek(am_ax());
+			bits_nz(y);
+			if (ver > 3) System.out.println("[LDYx]");
+			cycles = 4 + page;
+			break;
 			
 			
 //	/* *** ADC: Add Memory to Accumulator with Carry *** */
@@ -740,36 +770,7 @@ public class Cpu6502 implements Runnable {
 //				per = 5;
 //				break;
 	
-	/* *** LDY: Load Index Y with Memory *** */
-			case (byte) 0xA0:
-				if (ver > 3) System.out.println("[LDY#]");
-				y = peek(pc++);
-				bits_nz(y);
-				break;
-//			case 0xAC:
-//				y = peek(am_a());
-//				bits_nz(y);
-//				if (ver > 3) System.out.println("[LDYa]");
-//				per = 4;
-//				break;
-//			case 0xA4:
-//				y = peek(peek(pc++));
-//				bits_nz(y);
-//				if (ver > 3) System.out.println("[LDYz]");
-//				per = 3;
-//				break;
-//			case 0xB4:
-//				y = peek(am_zx());
-//				bits_nz(y);
-//				if (ver > 3) System.out.println("[LDYzx]");
-//				per = 4;
-//				break;
-//			case 0xBC:
-//				y = peek(am_ax(&page));
-//				bits_nz(y);
-//				if (ver > 3) System.out.println("[LDYx]");
-//				per = 4 + page;
-//				break;
+
 //	/* *** LSR: Shift One Bit Right (Memory or Accumulator) *** */
 //			case 0x4E:
 //				adr=am_a();
@@ -1483,16 +1484,12 @@ public class Cpu6502 implements Runnable {
 	private int am_zy() { 
 		return ((int)peek(pc++) & 0x000000FF) + ((int)y & 0x000000FF);
 	}
+	// Zero Page,X
+	private int am_zx() { 
+		return ((int)peek(pc++) & 0x000000FF) + ((int)x & 0x000000FF);
+	}
 
-//	/* absolute indexed X */
-//	word am_ax(int *bound) {
-//		word ba = am_a();		// pick base address and skip operand
-//		word pt = ba + x;		// add offset
-//		*bound = ((pt & 0xFF00)==(ba & 0xFF00))?0:1;	// check page crossing
-//
-//		return pt;
-//	}
-//
+
 	/* absolute indexed Y */
 	int am_ay() {
 		int ba = am_a();		// pick base address and skip operand
@@ -1500,6 +1497,14 @@ public class Cpu6502 implements Runnable {
 		page = ((pt & 0x0000FF00)==(ba & 0x0000FF00))?0:1;	// check page crossing
 		return pt;
 	}
+	/* absolute indexed X */
+	int am_ax() {
+		int ba = am_a();		// pick base address and skip operand
+		int pt = ba + x;		// add offset
+		page = ((pt & 0x0000FF00)==(ba & 0x0000FF00))?0:1;	// check page crossing
+		return pt;
+	}
+	
 //
 //	/* indirect */
 //	word am_iz(void) {
