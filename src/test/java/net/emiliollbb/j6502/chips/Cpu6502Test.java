@@ -198,6 +198,19 @@ public class Cpu6502Test {
 		Assertions.assertEquals(0x55, cpu.getY());
 		Assertions.assertEquals(4, cycles);
 	}
+	@Test
+	void tesTAX() {
+		loadProgram(0x0200, new int[] {
+				// LDX #04
+				0xA9, 0x54,
+				// TAX
+				0xAA});
+		cpu.reset();
+		cpu.step();
+		int cycles = cpu.step();
+		Assertions.assertEquals(0x54, cpu.getA());
+		Assertions.assertEquals(2, cycles);
+	}
 	
 	
 	

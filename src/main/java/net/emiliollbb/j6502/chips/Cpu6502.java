@@ -184,6 +184,12 @@ public class Cpu6502 implements Runnable {
 			if (ver > 3) System.out.println("[LDYx]");
 			cycles = 4 + page;
 			break;
+		/* *** TAX: Transfer Accumulator to Index X *** */
+		case (byte) 0xAA:
+			if (ver > 3) System.out.println("[TAX]");
+			x = a;
+			bits_nz(x);
+			break;
 			
 			
 //	/* *** ADC: Add Memory to Accumulator with Carry *** */
@@ -1161,12 +1167,7 @@ public class Cpu6502 implements Runnable {
 //				if (ver > 3) System.out.println("[STZx]");
 //				per = 5;		// ...and not 4, as expected
 //				break;
-//	/* *** TAX: Transfer Accumulator to Index X *** */
-//			case 0xAA:
-//				x = a;
-//				bits_nz(x);
-//				if (ver > 3) System.out.println("[TAX]");
-//				break;
+
 //	/* *** TAY: Transfer Accumulator to Index Y *** */
 //			case 0xA8:
 //				y = a;
