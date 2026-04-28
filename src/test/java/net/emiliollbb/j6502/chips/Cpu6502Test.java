@@ -454,7 +454,22 @@ public class Cpu6502Test {
 		Assertions.assertEquals(0x00, cpu.getP());
 		Assertions.assertEquals(4, cycles);
 	}
-	
+	@Test
+	void testANDAbsolute() {
+		Mockito.when(device.peek(0xF003)).thenReturn((byte)0x34);
+		loadProgram(0x0200, new int[] {
+				// LDA #$55
+				0xA9, 0x55,
+				// AND #$03
+				0X2D, 0x03, 0XF0
+				});
+		cpu.reset();
+		cpu.step();
+		int cycles = cpu.step();
+		Assertions.assertEquals(0x14, cpu.getA());
+		Assertions.assertEquals(0x00, cpu.getP());
+		Assertions.assertEquals(4, cycles);
+	}
 	
 	
 	
