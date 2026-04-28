@@ -460,7 +460,7 @@ public class Cpu6502Test {
 		loadProgram(0x0200, new int[] {
 				// LDA #$55
 				0xA9, 0x55,
-				// AND #$03
+				// AND $F003
 				0X2D, 0x03, 0XF0
 				});
 		cpu.reset();
@@ -470,9 +470,86 @@ public class Cpu6502Test {
 		Assertions.assertEquals(0x00, cpu.getP());
 		Assertions.assertEquals(4, cycles);
 	}
-	
-	
-	
+	@Test
+	void testANDAbsoluteX() {
+		Mockito.when(device.peek(0xF003)).thenReturn((byte)0x34);
+		loadProgram(0x0200, new int[] {
+				// LDX #02
+				0xA2, 0x02,
+				// LDA #$55
+				0xA9, 0x55,
+				// AND $01,X
+				0x3D, 0x01, 0XF0
+				});
+		cpu.reset();
+		cpu.step();
+		cpu.step();
+		int cycles = cpu.step();
+		Assertions.assertEquals(0x14, cpu.getA());
+		Assertions.assertEquals(0x00, cpu.getP());
+		Assertions.assertEquals(4, cycles);
+	}
+	@Test
+	void testANDAbsoluteY() {
+		Mockito.when(device.peek(0xF003)).thenReturn((byte)0x34);
+		loadProgram(0x0200, new int[] {
+				// LDY #02
+				0xA0, 0x02,
+				// LDA #$55
+				0xA9, 0x55,
+				// AND $01,Y
+				0x39, 0x01, 0XF0
+				});
+		cpu.reset();
+		cpu.step();
+		cpu.step();
+		int cycles = cpu.step();
+		Assertions.assertEquals(0x14, cpu.getA());
+		Assertions.assertEquals(0x00, cpu.getP());
+		Assertions.assertEquals(4, cycles);
+	}
+	@Test
+	void testANDIndirectX() {
+		Mockito.when(device.peek(0x0005)).thenReturn((byte)0x03);
+		Mockito.when(device.peek(0x0006)).thenReturn((byte)0xF0);
+		Mockito.when(device.peek(0xF003)).thenReturn((byte)0x34);
+		loadProgram(0x0200, new int[] {
+				// LDX #02
+				0xA2, 0x02,
+				// LDA #$55
+				0xA9, 0x55,
+				// AND ($03,X)
+				0x21, 0x03
+				});
+		cpu.reset();
+		cpu.step();
+		cpu.step();
+		int cycles = cpu.step();
+		Assertions.assertEquals(0x14, cpu.getA());
+		Assertions.assertEquals(0x00, cpu.getP());
+		Assertions.assertEquals(6, cycles);
+	}
+	@Test
+	void testANDIndirectY() {
+		Mockito.when(device.peek(0x0005)).thenReturn((byte)0x01);
+		Mockito.when(device.peek(0x0006)).thenReturn((byte)0xF0);
+		Mockito.when(device.peek(0xF003)).thenReturn((byte)0x34);
+		loadProgram(0x0200, new int[] {
+				// LDY #02
+				0xA0, 0x02,
+				// LDA #$55
+				0xA9, 0x55,
+				// AND ($05),Y
+				0x31, 0x05
+				});
+		cpu.reset();
+		cpu.step();
+		cpu.step();
+		int cycles = cpu.step();
+		Assertions.assertEquals(0x14, cpu.getA());
+		Assertions.assertEquals(0x00, cpu.getP());
+		Assertions.assertEquals(5, cycles);
+	}
 	
 	
 	

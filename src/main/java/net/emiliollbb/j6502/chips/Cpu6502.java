@@ -345,33 +345,33 @@ public class Cpu6502 implements Runnable {
 			bits_nz(a);
 			cycles = 4;
 			break;
-//			case 0x3D:
-//			a &= peek(am_ax(&page));
-//			bits_nz(a);
-//			if (ver > 3) System.out.println("[ANDx]");
-//			cycles = 4 + page;
-//			break;		
-			
+		case (byte) 0x3D:
+			if (ver > 3) System.out.println("[ANDx]");
+			a &= peek(am_ax());
+			bits_nz(a);
+			cycles = 4 + page;
+			break;		
+		case 0x39:
+			if (ver > 3) System.out.println("[ANDy]");
+			a &= peek(am_ay());
+			bits_nz(a);
+			cycles = 4 + page;
+			break;	
 		case (byte) 0x21:
 			if (ver > 3) System.out.println("[AND(x)]");
 			a &= peek(am_ix());
 			bits_nz(a);
 			cycles = 6;
 			break;
-//		case 0x31:
-//			a &= peek(am_iy(&page));
-//			bits_nz(a);
-//			if (ver > 3) System.out.println("[AND(y)]");
-//			cycles = 5 + page;
-//			break;
+		case (byte) 0x31:
+			if (ver > 3) System.out.println("[AND(y)]");
+			a &= peek(am_iy());
+			bits_nz(a);
+			cycles = 5 + page;
+			break;
 
 
-//		case 0x39:
-//			a &= peek(am_ay(&page));
-//			bits_nz(a);
-//			if (ver > 3) System.out.println("[ANDy]");
-//			cycles = 4 + page;
-//			break;
+
 //		case 0x32:			// CMOS only
 //			a &= peek(am_iz());
 //			bits_nz(a);
@@ -1518,25 +1518,25 @@ public class Cpu6502 implements Runnable {
 		page = ((pt & 0x0000FF00)==(ba & 0x0000FF00))?0:1;	// check page crossing
 		return pt;
 	}
+
+	/* indirect post-indexed */
+	private int am_iy() {
+		int ba = am_iz();		// pick base address and skip operand
+		int pt = ba + y;		// add offset
+		page = ((pt & 0x0000FF00)==(ba & 0x0000FF00))?0:1;	// check page crossing
+
+		return pt;
+	}
 	
-//
-//	/* indirect */
-//	word am_iz(void) {
-//		word pt = peek(peek(pc)) | (peek((peek(pc)+1)&255)<<8 & 0x0000FFFF;);	// EEEEEEEK
-//		pc++;
-//
-//		return pt;
-//	}
-//
-//	/* indirect post-indexed */
-//	word am_iy(int *bound) {
-//		word ba = am_iz();		// pick base address and skip operand
-//		word pt = ba + y;		// add offset
-//		*bound = ((pt & 0xFF00)==(ba & 0xFF00))?0:1;	// check page crossing
-//
-//		return pt;
-//	}
-//
+	/* indirect */
+	private int am_iz() {
+		int pt = peek(peek(pc)) & 0x000000FF | (peek((peek(pc)+1)&255)<<8 & 0x0000FFFF);	// EEEEEEEK
+		pc++;
+
+		return pt;
+	}
+
+
 	/* pre-indexed indirect */
 	private int am_ix() {
 		int pt = (peek((peek(pc)+x)&255)|(peek((peek(pc)+x+1)&255)<<8) & 0x0000FFFF);	// EEEEEEK
