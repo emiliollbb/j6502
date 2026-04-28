@@ -272,18 +272,25 @@ public class Cpu6502 implements Runnable {
 			a = peek(pc++);
 			bits_nz(a);
 			break;
+		case (byte) 0xA5:
+			if (ver > 3) System.out.println("[LDAz]");
+			a = peek(peek(pc++));
+			bits_nz(a);
+			cycles = 3;
+			break;		
+		case (byte) 0xB5:
+			if (ver > 3) System.out.println("[LDAzx]");
+			a = peek(am_zx());
+			bits_nz(a);
+			cycles = 4;
+			break;			
 		case (byte) 0xAD:
 			if (ver > 3) System.out.println("[LDAa]");
 			a = peek(am_a());
 			bits_nz(a);
 			cycles = 4;
 			break;
-//		case (byte) 0xA5:
-//			a = peek(peek(pc++));
-//			bits_nz(a);
-//			if (ver > 3) System.out.println("[LDAz]");
-//			cycles = 3;
-//			break;
+
 //		case (byte) 0xA1:
 //			a = peek(am_ix());
 //			bits_nz(a);
@@ -296,12 +303,7 @@ public class Cpu6502 implements Runnable {
 //			if (ver > 3) System.out.println("[LDA(y)]");
 //			cycles = 5 + page;
 //			break;
-//		case (byte) 0xB5:
-//			a = peek(am_zx());
-//			bits_nz(a);
-//			if (ver > 3) System.out.println("[LDAzx]");
-//			cycles = 4;
-//			break;
+
 //		case (byte) 0xBD:
 //			a = peek(am_ax(&page));
 //			bits_nz(a);

@@ -416,6 +416,30 @@ public class Cpu6502Test {
 		Assertions.assertEquals(2, cycles);
 	}
 	@Test
+	void testLDAZeroPage() {
+		Mockito.when(device.peek(0x0005)).thenReturn((byte)0x55);
+		loadProgram(0x0200, new int[] {0xA5, 0x05});
+		cpu.reset();
+		int cycles = cpu.step();
+		Assertions.assertEquals((byte)0x55, cpu.getA());
+		Assertions.assertEquals((byte)0, cpu.getP());
+		Assertions.assertEquals(3, cycles);
+	}
+	@Test
+	void testLDAZeroPageX() {
+		Mockito.when(device.peek(0x00AA)).thenReturn((byte)0x55);
+		loadProgram(0x0200, new int[] {
+				// LDX #$A1
+				0xA2, 0xA1,
+				// LDA $09,X
+				0XB5, 0X09
+				});
+		cpu.reset();
+		cpu.step();
+		int cycles = cpu.step();
+		Assertions.assertEquals(4, cycles);
+	}
+	@Test
 	void testLDAAbsolute() {
 		Mockito.when(device.peek(0x0305)).thenReturn((byte)0x55);
 		loadProgram(0x0200, new int[] {0xAD, 0x05, 0x03});
