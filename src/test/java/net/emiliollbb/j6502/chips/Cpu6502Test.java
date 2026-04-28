@@ -1,13 +1,13 @@
 package net.emiliollbb.j6502.chips;
 
 import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -52,15 +52,21 @@ public class Cpu6502Test {
 		Assertions.assertEquals(0xC001, cpu.getPc());
 	}
 	
-	@Test
-	void testLDXInmediate() {
-		loadProgram(0x0200, new int[] {0xA2, 0x55});
+	@ParameterizedTest
+	@CsvSource({
+		"0x55,0x00",
+		"0x00,0x02",
+		"0xA5,0x80",
+		})
+	void testLDXInmediate(int value, int p) {
+		loadProgram(0x0200, new int[] {0xA2, value});
 		cpu.reset();
 		int cycles = cpu.step();
-		Assertions.assertEquals(0x55, cpu.getX());
-		Assertions.assertEquals(0x00, cpu.getP());
+		Assertions.assertEquals((byte)value, cpu.getX());
+		Assertions.assertEquals((byte)p, cpu.getP());
 		Assertions.assertEquals(2, cycles);
 	}
+	
 	@Test
 	void testLDXInmediateZero() {
 		loadProgram(0x0200, new int[] {0xA2, 0x00});
