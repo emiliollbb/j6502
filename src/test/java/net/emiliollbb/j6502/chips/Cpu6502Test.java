@@ -401,15 +401,32 @@ public class Cpu6502Test {
 		Assertions.assertEquals(0x55, cpu.getY());
 		Assertions.assertEquals(2, cycles);
 	}
-	@Test
-	void testLDAInmediate() {
-		loadProgram(0x0200, new int[] {0xA9, 0x55});
+	@ParameterizedTest
+	@CsvSource({
+		"0x55,0x00",
+		"0x00,0x02",
+		"0xA5,0x80",
+		})
+	void testLDAInmediate(int value, int p) {
+		loadProgram(0x0200, new int[] {0xA9, value});
 		cpu.reset();
 		int cycles = cpu.step();
-		Assertions.assertEquals(0x55, cpu.getA());
-		Assertions.assertEquals(0x00, cpu.getP());
+		Assertions.assertEquals((byte)value, cpu.getA());
+		Assertions.assertEquals((byte)p, cpu.getP());
 		Assertions.assertEquals(2, cycles);
 	}
+	@Test
+	void testLDAAbsolute() {
+		Mockito.when(device.peek(0x0305)).thenReturn((byte)0x55);
+		loadProgram(0x0200, new int[] {0xAD, 0x05, 0x03});
+		cpu.reset();
+		int cycles = cpu.step();
+		Assertions.assertEquals((byte)0x55, cpu.getA());
+		Assertions.assertEquals((byte)0, cpu.getP());
+		Assertions.assertEquals(4, cycles);
+	}
+	
+	
 	@Test
 	void testANDInmediate() {
 		loadProgram(0x0200, new int[] {

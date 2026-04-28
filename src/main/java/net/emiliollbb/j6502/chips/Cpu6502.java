@@ -272,12 +272,12 @@ public class Cpu6502 implements Runnable {
 			a = peek(pc++);
 			bits_nz(a);
 			break;
-//		case (byte) 0xAD:
-//			a = peek(am_a());
-//			bits_nz(a);
-//			if (ver > 3) System.out.println("[LDAa]");
-//			cycles = 4;
-//			break;
+		case (byte) 0xAD:
+			if (ver > 3) System.out.println("[LDAa]");
+			a = peek(am_a());
+			bits_nz(a);
+			cycles = 4;
+			break;
 //		case (byte) 0xA5:
 //			a = peek(peek(pc++));
 //			bits_nz(a);
@@ -320,6 +320,71 @@ public class Cpu6502 implements Runnable {
 //			if (ver > 3) System.out.println("[LDA(z)]");
 //			cycles = 5;
 //			break;		
+
+//			/* *** STA: Store Accumulator in Memory *** */
+//			case 0x8D:
+//				poke(am_a(), a);
+//				if (ver > 3) System.out.println("[STAa]");
+//				cycles = 4;
+//				break;
+//			case 0x85:
+//				poke(peek(pc++), a);
+//				if (ver > 3) System.out.println("[STAz]");
+//				cycles = 3;
+//				break;
+//			case 0x81:
+//				poke(am_ix(), a);
+//				if (ver > 3) System.out.println("[STA(x)]");
+//				cycles = 6;
+//				break;
+//			case 0x91:
+//				poke(am_iy(&page), a);
+//				if (ver > 3) System.out.println("[STA(y)]");
+//				cycles = 6;		// ...and not 5, as expected
+//				break;
+//			case 0x95:
+//				poke(am_zx(), a);
+//				if (ver > 3) System.out.println("[STAzx]");
+//				cycles = 4;
+//				break;
+//			case 0x9D:
+//				poke(am_ax(&page), a);
+//				if (ver > 3) System.out.println("[STAx]");
+//				cycles = 5;		// ...and not 4, as expected
+//				break;
+//			case 0x99:
+//				poke(am_ay(&page), a);
+//				if (ver > 3) System.out.println("[STAy]");
+//				cycles = 5;		// ...and not 4, as expected
+//				break;
+//			case 0x92:			// CMOS only
+//				poke(am_iz(), a);
+//				if (ver > 3) System.out.println("[STA(z)]");
+//				cycles = 5;
+//				break;
+
+//	// *** STZ: Store Zero in Memory, CMOS only ***
+//			case 0x9C:
+//				poke(am_a(), 0);
+//				if (ver > 3) System.out.println("[STZa]");
+//				cycles = 4;
+//				break;
+//			case 0x64:
+//				poke(peek(pc++), 0);
+//				if (ver > 3) System.out.println("[STZz]");
+//				cycles = 3;
+//				break;
+//			case 0x74:
+//				poke(am_zx(), 0);
+//				if (ver > 3) System.out.println("[STZzx]");
+//				cycles = 4;
+//				break;
+//			case 0x9E:
+//				poke(am_ax(&page), 0);
+//				if (ver > 3) System.out.println("[STZx]");
+//				cycles = 5;		// ...and not 4, as expected
+//				break;			
+			
 			
 		/* *** AND: "And" Memory with Accumulator *** */
 		case (byte) 0x29:
@@ -1132,69 +1197,7 @@ public class Cpu6502 implements Runnable {
 //				p |= 0b00000100;
 //				if (ver > 3) System.out.println("[SEI]");
 //				break;
-//	/* *** STA: Store Accumulator in Memory *** */
-//			case 0x8D:
-//				poke(am_a(), a);
-//				if (ver > 3) System.out.println("[STAa]");
-//				cycles = 4;
-//				break;
-//			case 0x85:
-//				poke(peek(pc++), a);
-//				if (ver > 3) System.out.println("[STAz]");
-//				cycles = 3;
-//				break;
-//			case 0x81:
-//				poke(am_ix(), a);
-//				if (ver > 3) System.out.println("[STA(x)]");
-//				cycles = 6;
-//				break;
-//			case 0x91:
-//				poke(am_iy(&page), a);
-//				if (ver > 3) System.out.println("[STA(y)]");
-//				cycles = 6;		// ...and not 5, as expected
-//				break;
-//			case 0x95:
-//				poke(am_zx(), a);
-//				if (ver > 3) System.out.println("[STAzx]");
-//				cycles = 4;
-//				break;
-//			case 0x9D:
-//				poke(am_ax(&page), a);
-//				if (ver > 3) System.out.println("[STAx]");
-//				cycles = 5;		// ...and not 4, as expected
-//				break;
-//			case 0x99:
-//				poke(am_ay(&page), a);
-//				if (ver > 3) System.out.println("[STAy]");
-//				cycles = 5;		// ...and not 4, as expected
-//				break;
-//			case 0x92:			// CMOS only
-//				poke(am_iz(), a);
-//				if (ver > 3) System.out.println("[STA(z)]");
-//				cycles = 5;
-//				break;
 
-//	// *** STZ: Store Zero in Memory, CMOS only ***
-//			case 0x9C:
-//				poke(am_a(), 0);
-//				if (ver > 3) System.out.println("[STZa]");
-//				cycles = 4;
-//				break;
-//			case 0x64:
-//				poke(peek(pc++), 0);
-//				if (ver > 3) System.out.println("[STZz]");
-//				cycles = 3;
-//				break;
-//			case 0x74:
-//				poke(am_zx(), 0);
-//				if (ver > 3) System.out.println("[STZzx]");
-//				cycles = 4;
-//				break;
-//			case 0x9E:
-//				poke(am_ax(&page), 0);
-//				if (ver > 3) System.out.println("[STZx]");
-//				cycles = 5;		// ...and not 4, as expected
-//				break;
 
 
 //	/* *** TRB: Test and Reset Bits, CMOS only *** */
