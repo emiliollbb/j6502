@@ -625,8 +625,42 @@ public class Cpu6502Test {
 		Assertions.assertEquals(0x00, cpu.getP());
 		Assertions.assertEquals(5, cycles);
 	}
-	
-	
+	@Test
+	void testLDAIndirectX() {
+		Mockito.when(device.peek(0x0005)).thenReturn((byte)0x03);
+		Mockito.when(device.peek(0x0006)).thenReturn((byte)0xF0);
+		Mockito.when(device.peek(0xF003)).thenReturn((byte)0x55);
+		loadProgram(0x0200, new int[] {
+				// LDX #02
+				0xA2, 0x02,
+				// LDA ($03,X)
+				0xA1, 0x03
+				});
+		cpu.reset();
+		cpu.step();
+		int cycles = cpu.step();
+		Assertions.assertEquals(0x55, cpu.getA());
+		Assertions.assertEquals(0x00, cpu.getP());
+		Assertions.assertEquals(6, cycles);
+	}
+	@Test
+	void testLDAIndirectY() {
+		Mockito.when(device.peek(0x0005)).thenReturn((byte)0x01);
+		Mockito.when(device.peek(0x0006)).thenReturn((byte)0xF0);
+		Mockito.when(device.peek(0xF003)).thenReturn((byte)0x55);
+		loadProgram(0x0200, new int[] {
+				// LDY #02
+				0xA0, 0x02,
+				// LDA ($05),Y
+				0xB1, 0x05
+				});
+		cpu.reset();
+		cpu.step();
+		int cycles = cpu.step();
+		Assertions.assertEquals(0x55, cpu.getA());
+		Assertions.assertEquals(0x00, cpu.getP());
+		Assertions.assertEquals(5, cycles);
+	}
 	
 	
 	
