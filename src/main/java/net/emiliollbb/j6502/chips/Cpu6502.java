@@ -290,19 +290,18 @@ public class Cpu6502 implements Runnable {
 			bits_nz(a);
 			cycles = 4;
 			break;
-
-//			case (byte) 0xBD:
-//			a = peek(am_ax(&page));
-//			bits_nz(a);
-//			if (ver > 3) System.out.println("[LDAx]");
-//			cycles = 4 + page;
-//			break;
-//		case (byte) 0xB9:
-//			a = peek(am_ay(&page));
-//			bits_nz(a);
-//			if (ver > 3) System.out.println("[LDAy]");
-//			cycles = 4 + page;
-//			break;			
+		case (byte) 0xBD:
+			a = peek(am_ax());
+			bits_nz(a);
+			if (ver > 3) System.out.println("[LDAx]");
+			cycles = 4 + page;
+			break;
+		case (byte) 0xB9:
+			a = peek(am_ay());
+			bits_nz(a);
+			if (ver > 3) System.out.println("[LDAy]");
+			cycles = 4 + page;
+			break;			
 //			case (byte) 0xA1:
 //			a = peek(am_ix());
 //			bits_nz(a);
