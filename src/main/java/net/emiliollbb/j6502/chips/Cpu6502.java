@@ -9,18 +9,18 @@ import java.util.List;
 import net.emiliollbb.j6502.interfaces.IBusDevice;
 
 public class Cpu6502 implements Runnable {
-	private byte a; 
-	private byte x;
-	private byte y;
-	private byte s;
-	private byte p;			// 8-bit registers
-	private int pc;					// program counter
-	private int ver;
-	private int dec;
-	private int speed;
-	private int page;
+	protected byte a; 
+	protected byte x;
+	protected byte y;
+	protected byte s;
+	protected byte p;			// 8-bit registers
+	protected int pc;					// program counter
+	protected int ver;
+	protected int dec;
+	protected int speed;
+	protected int page;
 	
-	private List<IBusDevice> busDevices;
+	protected List<IBusDevice> busDevices;
 	
 	public Cpu6502(int speed) {
 		pc=0;
@@ -41,18 +41,18 @@ public class Cpu6502 implements Runnable {
 		this.ver = verbose;
 	}
 	
-	private String printByte(byte b) {
+	protected String printByte(byte b) {
 		return String.format("0x%02X", b)+ "("+b+")";
 	}
-	private String printByte(int b) {
+	protected String printByte(int b) {
 		return String.format("0x%02X", b)+ "("+b+")";
 	}
 	
-	private byte peek(int addr) {
+	protected byte peek(int addr) {
 		if(ver>5) System.out.println("peek "+printByte(addr));
 		return busDevices.stream().filter(d -> d.isInRange(addr)).findFirst().get().peek(addr);
 	}
-	private void poke(int addr, byte data) {
+	protected void poke(int addr, byte data) {
 		if(ver>5) System.out.println("poke "+printByte(addr));
 		busDevices.stream().filter(d -> d.isInRange(addr)).findFirst().get().poke(addr, data);
 	}
@@ -291,7 +291,19 @@ public class Cpu6502 implements Runnable {
 			cycles = 4;
 			break;
 
-//		case (byte) 0xA1:
+//			case (byte) 0xBD:
+//			a = peek(am_ax(&page));
+//			bits_nz(a);
+//			if (ver > 3) System.out.println("[LDAx]");
+//			cycles = 4 + page;
+//			break;
+//		case (byte) 0xB9:
+//			a = peek(am_ay(&page));
+//			bits_nz(a);
+//			if (ver > 3) System.out.println("[LDAy]");
+//			cycles = 4 + page;
+//			break;			
+//			case (byte) 0xA1:
 //			a = peek(am_ix());
 //			bits_nz(a);
 //			if (ver > 3) System.out.println("[LDA(x)]");
@@ -304,24 +316,8 @@ public class Cpu6502 implements Runnable {
 //			cycles = 5 + page;
 //			break;
 
-//		case (byte) 0xBD:
-//			a = peek(am_ax(&page));
-//			bits_nz(a);
-//			if (ver > 3) System.out.println("[LDAx]");
-//			cycles = 4 + page;
-//			break;
-//		case (byte) 0xB9:
-//			a = peek(am_ay(&page));
-//			bits_nz(a);
-//			if (ver > 3) System.out.println("[LDAy]");
-//			cycles = 4 + page;
-//			break;
-//		case (byte) 0xB2:			// CMOS only
-//			a = peek(am_iz());
-//			bits_nz(a);
-//			if (ver > 3) System.out.println("[LDA(z)]");
-//			cycles = 5;
-//			break;		
+
+
 
 //			/* *** STA: Store Accumulator in Memory *** */
 //			case 0x8D:
@@ -1493,31 +1489,31 @@ public class Cpu6502 implements Runnable {
 	
 	/* *** addressing modes *** */
 	/* absolute */
-	private int am_a() {
+	protected int am_a() {
 		int pt = peek(pc) & 0x000000FF | (peek(pc+1) <<8 & 0x0000FFFF);
 		pc += 2;
 
 		return pt;
 	}
 	// Zero Page,Y
-	private int am_zy() { 
+	protected int am_zy() { 
 		return ((int)peek(pc++) & 0x000000FF) + ((int)y & 0x000000FF);
 	}
 	// Zero Page,X
-	private int am_zx() { 
+	protected int am_zx() { 
 		return ((int)peek(pc++) & 0x000000FF) + ((int)x & 0x000000FF);
 	}
 
 
 	/* absolute indexed Y */
-	int am_ay() {
+	protected int am_ay() {
 		int ba = am_a();		// pick base address and skip operand
 		int pt = ba + y;		// add offset
 		page = ((pt & 0x0000FF00)==(ba & 0x0000FF00))?0:1;	// check page crossing
 		return pt;
 	}
 	/* absolute indexed X */
-	int am_ax() {
+	protected int am_ax() {
 		int ba = am_a();		// pick base address and skip operand
 		int pt = ba + x;		// add offset
 		page = ((pt & 0x0000FF00)==(ba & 0x0000FF00))?0:1;	// check page crossing
@@ -1525,7 +1521,7 @@ public class Cpu6502 implements Runnable {
 	}
 
 	/* indirect post-indexed */
-	private int am_iy() {
+	protected int am_iy() {
 		int ba = am_iz();		// pick base address and skip operand
 		int pt = ba + y;		// add offset
 		page = ((pt & 0x0000FF00)==(ba & 0x0000FF00))?0:1;	// check page crossing
@@ -1534,7 +1530,7 @@ public class Cpu6502 implements Runnable {
 	}
 	
 	/* indirect */
-	private int am_iz() {
+	protected int am_iz() {
 		int pt = peek(peek(pc)) & 0x000000FF | (peek((peek(pc)+1)&255)<<8 & 0x0000FFFF);	// EEEEEEEK
 		pc++;
 
@@ -1543,7 +1539,7 @@ public class Cpu6502 implements Runnable {
 
 
 	/* pre-indexed indirect */
-	private int am_ix() {
+	protected int am_ix() {
 		int pt = (peek((peek(pc)+x)&255)|(peek((peek(pc)+x+1)&255)<<8) & 0x0000FFFF);	// EEEEEEK
 		pc++;
 
@@ -1551,7 +1547,7 @@ public class Cpu6502 implements Runnable {
 	}
 
 	/* relative branch */
-	private int rel(int bound) {
+	protected int rel(int bound) {
 		int off = peek(pc++);	// read offset and skip operand
 		int old = pc;
 		pc += off;
