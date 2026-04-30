@@ -314,7 +314,11 @@ public class Cpu6502 implements Runnable {
 			bits_nz(a);
 			cycles = 5 + page;
 			break;
-
+		case (byte) 0x85:
+			if (ver > 3) System.out.println("[STAz]");
+			poke(peek(pc++) & 0X000000FF, a);
+			cycles = 3;
+			break;
 
 
 
@@ -324,11 +328,7 @@ public class Cpu6502 implements Runnable {
 //				if (ver > 3) System.out.println("[STAa]");
 //				cycles = 4;
 //				break;
-//			case 0x85:
-//				poke(peek(pc++), a);
-//				if (ver > 3) System.out.println("[STAz]");
-//				cycles = 3;
-//				break;
+
 //			case 0x81:
 //				poke(am_ix(), a);
 //				if (ver > 3) System.out.println("[STA(x)]");
@@ -612,19 +612,7 @@ public class Cpu6502 implements Runnable {
 				page=rel(page);
 				cycles = 3 + page;
 				break;
-//	/* *** BRK: force break *** */
-//			case 0x00:
-//				pc++;
-//				if (ver > 1) System.out.println("[BRK]");
-//				if (safe)	run = 0;
-//				else {
-//					p |= 0b00010000;		// set B, just in case
-//					intack();
-//					p &= 0b11101111;		// clear B, just in case
-//					pc = peek(0xFFFE) | peek(0xFFFF)<<8 & 0x0000FFFF;	// IRQ/BRK vector
-//					if (ver > 1) System.out.println("\b PC=>%04X]", pc);
-//				}
-//				break;
+
 //	/* *** Bxx: Branch on flag condition *** */
 //			case 0x50:
 //				if(!(p & 0b01000000)) {
@@ -1368,6 +1356,20 @@ public class Cpu6502 implements Runnable {
 //				if (ver)	System.out.println("[NOP?]");
 //				if (safe)	illegal(3, opcode);
 //				break;			// not needed as it's the last one, but just in case
+		
+				/* *** BRK: force break *** */
+				case 0x00:
+					if (ver > 1) System.out.println("[BRK]");
+					pc++;
+					System.out.println("******************************************");
+					System.out.println("ACUMULATOR: "+printByte(a));
+					System.out.println("REGISTER X: "+printByte(x));
+					System.out.println("REGISTER Y: "+printByte(y));
+					System.out.println("******************************************");
+					throw new RuntimeException("[BREAK]");
+			
+			default:
+				throw new RuntimeException("Opcode "+printByte(opcode)+" invalid!");
 		}
 		
 		return cycles;

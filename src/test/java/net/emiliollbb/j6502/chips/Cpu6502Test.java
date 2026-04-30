@@ -661,6 +661,19 @@ public class Cpu6502Test {
 		Assertions.assertEquals(0x00, cpu.getP());
 		Assertions.assertEquals(5, cycles);
 	}
+	@Test
+	void testSTAZeroPage() {
+		loadProgram(0x0200, new int[] {
+				// LDA #$55
+				0xA9, 0x55,
+				0X85, 0XA0
+				});
+		cpu.reset();
+		cpu.step();
+		int cycles = cpu.step();
+		Assertions.assertEquals(3, cycles);
+		Mockito.verify(device).poke(0xA0, (byte)0x55);
+	}
 	
 	
 	
