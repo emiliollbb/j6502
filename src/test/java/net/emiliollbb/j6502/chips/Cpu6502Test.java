@@ -726,6 +726,23 @@ public class Cpu6502Test {
 		Assertions.assertEquals(5, cycles);
 		Mockito.verify(device).poke(0xA312, (byte)0x55);
 	}
+	@Test
+	void testSTAAbsoluteY() {
+		loadProgram(0x0200, new int[] {
+				// LDY #0F
+				0xA0, 0x0F,
+				// LDA #$55
+				0xA9, 0x55,
+				// STA $A301,Y
+				0x99, 0x03, 0xA3
+				});
+		cpu.reset();
+		cpu.step();
+		cpu.step();
+		int cycles = cpu.step();
+		Assertions.assertEquals(5, cycles);
+		Mockito.verify(device).poke(0xA312, (byte)0x55);
+	}
 	
 	
 	@Test

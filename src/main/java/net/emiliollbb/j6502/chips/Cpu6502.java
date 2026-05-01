@@ -335,49 +335,48 @@ public class Cpu6502 implements Runnable {
 			poke(am_ax(), a);
 			cycles = 5;		// ...and not 4, as expected
 			break;
+		case (byte) 0x99:
+			if (ver > 3) System.out.println("[STAy]");
+			poke(am_ay(), a);
+			cycles = 5;		// ...and not 4, as expected
+			break;
+//		case (byte) 0x91:
+//			if (ver > 3) System.out.println("[STA(y)]");
+//			poke(am_iy(), a);
+//			cycles = 6;		// ...and not 5, as expected
+//			break;
 
-
-
-//			case 0x81:
-//				poke(am_ix(), a);
+//			case (byte) 0x81:
 //				if (ver > 3) System.out.println("[STA(x)]");
+//				poke(am_ix(), a);
 //				cycles = 6;
 //				break;
-//			case 0x91:
-//				poke(am_iy(&page), a);
-//				if (ver > 3) System.out.println("[STA(y)]");
-//				cycles = 6;		// ...and not 5, as expected
-//				break;
 
 
-//			case 0x99:
-//				poke(am_ay(&page), a);
-//				if (ver > 3) System.out.println("[STAy]");
-//				cycles = 5;		// ...and not 4, as expected
-//				break;
-//			case 0x92:			// CMOS only
+//			
+//			case (byte) 0x92:			// CMOS only
 //				poke(am_iz(), a);
 //				if (ver > 3) System.out.println("[STA(z)]");
 //				cycles = 5;
 //				break;
 
 //	// *** STZ: Store Zero in Memory, CMOS only ***
-//			case 0x9C:
+//			case (byte) 0x9C:
 //				poke(am_a(), 0);
 //				if (ver > 3) System.out.println("[STZa]");
 //				cycles = 4;
 //				break;
-//			case 0x64:
+//			case (byte) 0x64:
 //				poke(peek(pc++), 0);
 //				if (ver > 3) System.out.println("[STZz]");
 //				cycles = 3;
 //				break;
-//			case 0x74:
+//			case (byte) 0x74:
 //				poke(am_zx(), 0);
 //				if (ver > 3) System.out.println("[STZzx]");
 //				cycles = 4;
 //				break;
-//			case 0x9E:
+//			case (byte) 0x9E:
 //				poke(am_ax(&page), 0);
 //				if (ver > 3) System.out.println("[STZx]");
 //				cycles = 5;		// ...and not 4, as expected
