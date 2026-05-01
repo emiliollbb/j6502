@@ -340,17 +340,18 @@ public class Cpu6502 implements Runnable {
 			poke(am_ay(), a);
 			cycles = 5;		// ...and not 4, as expected
 			break;
-//		case (byte) 0x91:
-//			if (ver > 3) System.out.println("[STA(y)]");
-//			poke(am_iy(), a);
-//			cycles = 6;		// ...and not 5, as expected
-//			break;
+		case (byte) 0x81:
+			if (ver > 3) System.out.println("[STA(x)]");
+			poke(am_ix(), a);
+			cycles = 6;
+			break;			
+		case (byte) 0x91:
+			if (ver > 3) System.out.println("[STA(y)]");
+			poke(am_iy(), a);
+			cycles = 6;		// ...and not 5, as expected
+			break;
 
-//			case (byte) 0x81:
-//				if (ver > 3) System.out.println("[STA(x)]");
-//				poke(am_ix(), a);
-//				cycles = 6;
-//				break;
+
 
 
 //			
