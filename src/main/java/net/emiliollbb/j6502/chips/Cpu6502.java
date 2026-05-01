@@ -314,20 +314,25 @@ public class Cpu6502 implements Runnable {
 			bits_nz(a);
 			cycles = 5 + page;
 			break;
+			/* *** STA: Store Accumulator in Memory *** */
 		case (byte) 0x85:
 			if (ver > 3) System.out.println("[STAz]");
 			poke(peek(pc++) & 0X000000FF, a);
 			cycles = 3;
 			break;
+		case (byte) 0x95:
+			if (ver > 3) System.out.println("[STAzx]");
+			poke(am_zx(), a);
+			cycles = 4;
+			break;
+		case (byte) 0x8D:
+			if (ver > 3) System.out.println("[STAa]");
+			poke(am_a(), a);
+			cycles = 4;
+			break;
 
 
 
-//			/* *** STA: Store Accumulator in Memory *** */
-//			case 0x8D:
-//				poke(am_a(), a);
-//				if (ver > 3) System.out.println("[STAa]");
-//				cycles = 4;
-//				break;
 
 //			case 0x81:
 //				poke(am_ix(), a);
@@ -339,11 +344,7 @@ public class Cpu6502 implements Runnable {
 //				if (ver > 3) System.out.println("[STA(y)]");
 //				cycles = 6;		// ...and not 5, as expected
 //				break;
-//			case 0x95:
-//				poke(am_zx(), a);
-//				if (ver > 3) System.out.println("[STAzx]");
-//				cycles = 4;
-//				break;
+
 //			case 0x9D:
 //				poke(am_ax(&page), a);
 //				if (ver > 3) System.out.println("[STAx]");
