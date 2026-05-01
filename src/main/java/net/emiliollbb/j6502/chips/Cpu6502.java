@@ -330,7 +330,11 @@ public class Cpu6502 implements Runnable {
 			poke(am_a(), a);
 			cycles = 4;
 			break;
-
+		case (byte) 0x9D:
+			if (ver > 3) System.out.println("[STAx]");
+			poke(am_ax(), a);
+			cycles = 5;		// ...and not 4, as expected
+			break;
 
 
 
@@ -345,11 +349,7 @@ public class Cpu6502 implements Runnable {
 //				cycles = 6;		// ...and not 5, as expected
 //				break;
 
-//			case 0x9D:
-//				poke(am_ax(&page), a);
-//				if (ver > 3) System.out.println("[STAx]");
-//				cycles = 5;		// ...and not 4, as expected
-//				break;
+
 //			case 0x99:
 //				poke(am_ay(&page), a);
 //				if (ver > 3) System.out.println("[STAy]");

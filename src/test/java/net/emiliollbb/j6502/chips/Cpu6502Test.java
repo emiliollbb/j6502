@@ -700,7 +700,7 @@ public class Cpu6502Test {
 		loadProgram(0x0200, new int[] {
 				// LDa #$55
 				0xA9, 0x55,
-				// STA $0301
+				// STA $A301
 				0x8D, 0xA1, 0xA3
 				});
 		cpu.reset();
@@ -708,6 +708,23 @@ public class Cpu6502Test {
 		int cycles = cpu.step();
 		Assertions.assertEquals(4, cycles);
 		Mockito.verify(device).poke(0xA3A1, (byte)0x55);
+	}
+	@Test
+	void testSTAAbsoluteX() {
+		loadProgram(0x0200, new int[] {
+				// LDX #0F
+				0xA2, 0x0F,
+				// LDA #$55
+				0xA9, 0x55,
+				// STA $A301,X
+				0x9D, 0x03, 0xA3
+				});
+		cpu.reset();
+		cpu.step();
+		cpu.step();
+		int cycles = cpu.step();
+		Assertions.assertEquals(5, cycles);
+		Mockito.verify(device).poke(0xA312, (byte)0x55);
 	}
 	
 	
