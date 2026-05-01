@@ -98,7 +98,7 @@ public class Cpu6502 implements Runnable {
 	public void run() {
 		int cycles;
 		reset();
-		while(true) {
+		do {
 			Instant start = Instant.now();
 			Instant end = Instant.now();
 			cycles = step();
@@ -111,7 +111,7 @@ public class Cpu6502 implements Runnable {
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
-		}
+		}while(cycles>0);
 	}
 
 	/* execute a single opcode, returning cycle count */
@@ -608,11 +608,6 @@ public class Cpu6502 implements Runnable {
 //				} else pc++;	// must skip offset if not done EEEEEK
 //				if (ver > 2) System.out.println("[BPL]");
 //				break;
-			case (byte)0x80:			// CMOS only
-				if (ver > 2) System.out.println("[BRA]");
-				page=rel(page);
-				cycles = 3 + page;
-				break;
 
 //	/* *** Bxx: Branch on flag condition *** */
 //			case 0x50:
@@ -1367,7 +1362,7 @@ public class Cpu6502 implements Runnable {
 					System.out.println("REGISTER X: "+printByte(x));
 					System.out.println("REGISTER Y: "+printByte(y));
 					System.out.println("******************************************");
-					throw new RuntimeException("[BREAK]");
+					cycles=0;
 			
 			default:
 				throw new RuntimeException("Opcode "+printByte(opcode)+" invalid!");

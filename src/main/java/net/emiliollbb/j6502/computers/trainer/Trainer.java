@@ -3,7 +3,7 @@ package net.emiliollbb.j6502.computers.trainer;
 import java.io.File;
 import java.util.Arrays;
 
-import net.emiliollbb.j6502.chips.Cpu6502;
+import net.emiliollbb.j6502.chips.Cpu65C02;
 import net.emiliollbb.j6502.chips.RamChip;
 import net.emiliollbb.j6502.chips.RomChip;
 import net.emiliollbb.j6502.chips.ScreenDriver;
@@ -20,7 +20,7 @@ public class Trainer {
 	private ConsoleOutput console;
 	/* 16k ROM $C000 - $FFFFF */
 	private RomChip rom;
-	private Cpu6502 cpu;
+	private Cpu65C02 cpu;
 
 	public Trainer() throws Exception{
 		// 16K RAM
@@ -35,7 +35,7 @@ public class Trainer {
 		System.out.println("Size: "+0x4000);
 		rom = new RomChip(0xc000, 0x4000, new File("/home/emilio/proyectos/j6502/workspace/j6502/src/main/asm/trainer_test.bin"));
 		
-		cpu = new Cpu6502(10, Arrays.asList(ram, screenDriver, console, rom));
+		cpu = new Cpu65C02(10, Arrays.asList(ram, screenDriver, console, rom));
 		cpu.setVerbose(10);
 		cpu.listDevices();
 		
