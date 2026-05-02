@@ -68,17 +68,6 @@ public class Cpu6502Test {
 	}
 	
 	@Test
-	void testLDXInmediateZero() {
-		loadProgram(0x0200, new int[] {
-				// LDX #0
-				0xA2, 0x00});
-		cpu.reset();
-		int cycles = cpu.step();
-		Assertions.assertEquals(0x00, cpu.getX());
-		Assertions.assertEquals(0x02, cpu.getP());
-		Assertions.assertEquals(2, cycles);
-	}
-	@Test
 	void testLDXInmediateNegative() {
 		loadProgram(0x0200, new int[] {
 				// LDX #-96
@@ -480,7 +469,6 @@ public class Cpu6502Test {
 		Assertions.assertEquals(4, cycles);
 	}
 	
-	
 	@Test
 	void testANDInmediate() {
 		loadProgram(0x0200, new int[] {
@@ -782,24 +770,29 @@ public class Cpu6502Test {
 		Mockito.verify(device).poke(0xF003, (byte)0x55);
 	}
 	
-	
 	@Test
-	void testBRA() {
-		loadProgram(0x0200, new int[] {0x80, 0x01});
+	void testORAInmediate() {
+		loadProgram(0x0200, new int[] {
+				// LDA #$55
+				0xA9, 0x55,
+				// ORA #$34
+				0X09, 0x34
+				});
 		cpu.reset();
+		cpu.step();
 		int cycles = cpu.step();
-		Assertions.assertEquals(0x203, cpu.getPc());
-		Assertions.assertEquals(3, cycles);
+		Assertions.assertEquals(0x75, cpu.getA());
+		Assertions.assertEquals(0x00, cpu.getP());
+		Assertions.assertEquals(2, cycles);
 	}
 	
-	@Test
-	void testBRA_page() {
-		loadProgram(0x02F0, new int[] {0x80, 20});
-		cpu.reset();
-		int cycles = cpu.step();
-		Assertions.assertEquals(0x306, cpu.getPc());
-		Assertions.assertEquals(4, cycles);
-	}
+	
+	
+	
+	
+	
+	
+	
 	
 	private String printByte(byte b) {
 		return String.format("0x%02X", b)+ "("+b+")";

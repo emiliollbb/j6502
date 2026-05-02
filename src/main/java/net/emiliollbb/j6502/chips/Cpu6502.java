@@ -350,39 +350,6 @@ public class Cpu6502 implements Runnable {
 			poke(am_iy(), a);
 			cycles = 6;		// ...and not 5, as expected
 			break;
-
-
-
-
-//			
-//			case (byte) 0x92:			// CMOS only
-//				poke(am_iz(), a);
-//				if (ver > 3) System.out.println("[STA(z)]");
-//				cycles = 5;
-//				break;
-
-//	// *** STZ: Store Zero in Memory, CMOS only ***
-//			case (byte) 0x9C:
-//				poke(am_a(), 0);
-//				if (ver > 3) System.out.println("[STZa]");
-//				cycles = 4;
-//				break;
-//			case (byte) 0x64:
-//				poke(peek(pc++), 0);
-//				if (ver > 3) System.out.println("[STZz]");
-//				cycles = 3;
-//				break;
-//			case (byte) 0x74:
-//				poke(am_zx(), 0);
-//				if (ver > 3) System.out.println("[STZzx]");
-//				cycles = 4;
-//				break;
-//			case (byte) 0x9E:
-//				poke(am_ax(&page), 0);
-//				if (ver > 3) System.out.println("[STZx]");
-//				cycles = 5;		// ...and not 4, as expected
-//				break;			
-			
 			
 		/* *** AND: "And" Memory with Accumulator *** */
 		case (byte) 0x29:
@@ -432,15 +399,63 @@ public class Cpu6502 implements Runnable {
 			bits_nz(a);
 			cycles = 5 + page;
 			break;
+		/* *** ORA: "Or" Memory with Accumulator *** */
+		case (byte) 0x09:
+			a |= peek(pc++);
+			bits_nz(a);
+			if (ver > 3) System.out.println("[ORA#]");
+			break;
+//			case (byte) 0x0D:
+//				a |= peek(am_a());
+//				bits_nz(a);
+//				if (ver > 3) System.out.println("[ORAa]");
+//				cycles = 4;
+//				break;
+//			case (byte) 0x05:
+//				a |= peek(peek(pc++));
+//				bits_nz(a);
+//				if (ver > 3) System.out.println("[ORAz]");
+//				cycles = 3;
+//				break;
+//			case (byte) 0x01:
+//				a |= peek(am_ix());
+//				bits_nz(a);
+//				if (ver > 3) System.out.println("[ORA(x)]");
+//				cycles = 6;
+//				break;
+//			case (byte) 0x11:
+//				a |= peek(am_iy(&page));
+//				bits_nz(a);
+//				if (ver > 3) System.out.println("[ORA(y)]");
+//				cycles = 5 + page;
+//				break;
+//			case (byte) 0x15:
+//				a |= peek(am_zx());
+//				bits_nz(a);
+//				if (ver > 3) System.out.println("[ORAzx]");
+//				cycles = 4;
+//				break;
+//			case (byte) 0x1D:
+//				a |= peek(am_ax(&page));
+//				bits_nz(a);
+//				if (ver > 3) System.out.println("[ORAx]");
+//				cycles = 4 + page;
+//				break;
+//			case (byte) 0x19:
+//				a |= peek(am_ay(&page));
+//				bits_nz(a);
+//				if (ver > 3) System.out.println("[ORAy]");
+//				cycles = 4 + page;
+//				break;
+//			case (byte) 0x12:			// CMOS only
+//				a |= peek(am_iz());
+//				bits_nz(a);
+//				if (ver > 3) System.out.println("[ORA(z)]");
+//				cycles = 5;
+//				break;
 
 
 
-//		case 0x32:			// CMOS only
-//			a &= peek(am_iz());
-//			bits_nz(a);
-//			if (ver > 3) System.out.println("[AND(z)]");
-//			cycles = 5;
-//			break;
 			
 //	/* *** ADC: Add Memory to Accumulator with Carry *** */
 //			case 0x69:
@@ -918,64 +933,8 @@ public class Cpu6502 implements Runnable {
 //				if (ver > 3) System.out.println("[LSRx]");
 //				cycles = 6 + page;	// 7 for NMOS
 //				break;
-//	/* *** NOP: No Ocyclesation *** */
-//			case 0xEA:
-//				if (ver > 3) System.out.println("[NOP]");
-//				break;
-//	/* *** ORA: "Or" Memory with Accumulator *** */
-//			case 0x09:
-//				a |= peek(pc++);
-//				bits_nz(a);
-//				if (ver > 3) System.out.println("[ORA#]");
-//				break;
-//			case 0x0D:
-//				a |= peek(am_a());
-//				bits_nz(a);
-//				if (ver > 3) System.out.println("[ORAa]");
-//				cycles = 4;
-//				break;
-//			case 0x05:
-//				a |= peek(peek(pc++));
-//				bits_nz(a);
-//				if (ver > 3) System.out.println("[ORAz]");
-//				cycles = 3;
-//				break;
-//			case 0x01:
-//				a |= peek(am_ix());
-//				bits_nz(a);
-//				if (ver > 3) System.out.println("[ORA(x)]");
-//				cycles = 6;
-//				break;
-//			case 0x11:
-//				a |= peek(am_iy(&page));
-//				bits_nz(a);
-//				if (ver > 3) System.out.println("[ORA(y)]");
-//				cycles = 5 + page;
-//				break;
-//			case 0x15:
-//				a |= peek(am_zx());
-//				bits_nz(a);
-//				if (ver > 3) System.out.println("[ORAzx]");
-//				cycles = 4;
-//				break;
-//			case 0x1D:
-//				a |= peek(am_ax(&page));
-//				bits_nz(a);
-//				if (ver > 3) System.out.println("[ORAx]");
-//				cycles = 4 + page;
-//				break;
-//			case 0x19:
-//				a |= peek(am_ay(&page));
-//				bits_nz(a);
-//				if (ver > 3) System.out.println("[ORAy]");
-//				cycles = 4 + page;
-//				break;
-//			case 0x12:			// CMOS only
-//				a |= peek(am_iz());
-//				bits_nz(a);
-//				if (ver > 3) System.out.println("[ORA(z)]");
-//				cycles = 5;
-//				break;
+
+
 //	/* *** PHA: Push Accumulator on Stack *** */
 //			case 0x48:
 //				push(a);
@@ -1352,7 +1311,11 @@ public class Cpu6502 implements Runnable {
 //				if (ver)	System.out.println("[NOP?]");
 //				if (safe)	illegal(3, opcode);
 //				break;			// not needed as it's the last one, but just in case
-		
+
+//				/* *** NOP: No Ocyclesation *** */
+//				case 0xEA:
+//					if (ver > 3) System.out.println("[NOP]");
+//					break;		
 				/* *** BRK: force break *** */
 				case 0x00:
 					if (ver > 1) System.out.println("[BRK]");
