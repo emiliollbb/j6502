@@ -917,6 +917,152 @@ public class Cpu6502Test {
 		Assertions.assertEquals(5, cycles);
 	}
 	
+	@Test
+	void testEORInmediate() {
+		loadProgram(0x0200, new int[] {
+				// LDA #$55
+				0xA9, 0x55,
+				// EOR #$34
+				0X49, 0x34
+				});
+		cpu.reset();
+		cpu.step();
+		int cycles = cpu.step();
+		Assertions.assertEquals(0x61, cpu.getA());
+		Assertions.assertEquals(0x00, cpu.getP());
+		Assertions.assertEquals(2, cycles);
+	}
+	@Test
+	void testEORZeroPage() {
+		Mockito.when(device.peek(0x0003)).thenReturn((byte)0x34);
+		loadProgram(0x0200, new int[] {
+				// LDA #$55
+				0xA9, 0x55,
+				// EOR #$03
+				0X45, 0x03
+				});
+		cpu.reset();
+		cpu.step();
+		int cycles = cpu.step();
+		Assertions.assertEquals(0x61, cpu.getA());
+		Assertions.assertEquals(0x00, cpu.getP());
+		Assertions.assertEquals(3, cycles);
+	}
+	@Test
+	void testEORZeroPageX() {
+		Mockito.when(device.peek(0x0012)).thenReturn((byte)0x34);
+		loadProgram(0x0200, new int[] {
+				// LDX #0F
+				0xA2, 0x0F,
+				// LDA #$55
+				0xA9, 0x55,
+				// EOR #$03
+				0x55, 0x03
+				});
+		cpu.reset();
+		cpu.step();
+		cpu.step();
+		int cycles = cpu.step();
+		Assertions.assertEquals(0x61, cpu.getA());
+		Assertions.assertEquals(0x00, cpu.getP());
+		Assertions.assertEquals(4, cycles);
+	}
+	@Test
+	void testEORAbsolute() {
+		Mockito.when(device.peek(0xF003)).thenReturn((byte)0x34);
+		loadProgram(0x0200, new int[] {
+				// LDA #$55
+				0xA9, 0x55,
+				// EOR $F003
+				0X4D, 0x03, 0XF0
+				});
+		cpu.reset();
+		cpu.step();
+		int cycles = cpu.step();
+		Assertions.assertEquals(0x61, cpu.getA());
+		Assertions.assertEquals(0x00, cpu.getP());
+		Assertions.assertEquals(4, cycles);
+	}
+	@Test
+	void testEORAbsoluteX() {
+		Mockito.when(device.peek(0xF003)).thenReturn((byte)0x34);
+		loadProgram(0x0200, new int[] {
+				// LDX #02
+				0xA2, 0x02,
+				// LDA #$55
+				0xA9, 0x55,
+				// EOR $01,X
+				0x5D, 0x01, 0XF0
+				});
+		cpu.reset();
+		cpu.step();
+		cpu.step();
+		int cycles = cpu.step();
+		Assertions.assertEquals(0x61, cpu.getA());
+		Assertions.assertEquals(0x00, cpu.getP());
+		Assertions.assertEquals(4, cycles);
+	}
+	@Test
+	void testEORAbsoluteY() {
+		Mockito.when(device.peek(0xF003)).thenReturn((byte)0x34);
+		loadProgram(0x0200, new int[] {
+				// LDY #02
+				0xA0, 0x02,
+				// LDA #$55
+				0xA9, 0x55,
+				// EOR $01,Y
+				0x59, 0x01, 0XF0
+				});
+		cpu.reset();
+		cpu.step();
+		cpu.step();
+		int cycles = cpu.step();
+		Assertions.assertEquals(0x61, cpu.getA());
+		Assertions.assertEquals(0x00, cpu.getP());
+		Assertions.assertEquals(4, cycles);
+	}
+	@Test
+	void testEORIndirectX() {
+		Mockito.when(device.peek(0x0005)).thenReturn((byte)0x03);
+		Mockito.when(device.peek(0x0006)).thenReturn((byte)0xF0);
+		Mockito.when(device.peek(0xF003)).thenReturn((byte)0x34);
+		loadProgram(0x0200, new int[] {
+				// LDX #02
+				0xA2, 0x02,
+				// LDA #$55
+				0xA9, 0x55,
+				// EOR ($03,X)
+				0x41, 0x03
+				});
+		cpu.reset();
+		cpu.step();
+		cpu.step();
+		int cycles = cpu.step();
+		Assertions.assertEquals(0x61, cpu.getA());
+		Assertions.assertEquals(0x00, cpu.getP());
+		Assertions.assertEquals(6, cycles);
+	}
+	@Test
+	void testEORIndirectY() {
+		Mockito.when(device.peek(0x0005)).thenReturn((byte)0x01);
+		Mockito.when(device.peek(0x0006)).thenReturn((byte)0xF0);
+		Mockito.when(device.peek(0xF003)).thenReturn((byte)0x34);
+		loadProgram(0x0200, new int[] {
+				// LDY #02
+				0xA0, 0x02,
+				// LDA #$55
+				0xA9, 0x55,
+				// EOR ($05),Y
+				0x51, 0x05
+				});
+		cpu.reset();
+		cpu.step();
+		cpu.step();
+		int cycles = cpu.step();
+		Assertions.assertEquals(0x61, cpu.getA());
+		Assertions.assertEquals(0x00, cpu.getP());
+		Assertions.assertEquals(5, cycles);
+	}
 	
 	
 	

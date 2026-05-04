@@ -447,7 +447,63 @@ public class Cpu6502 implements Runnable {
 			bits_nz(a);
 			cycles = 5 + page;
 			break;
+			/* *** EOR: "Exclusive Or" Memory with Accumulator *** */
+		case (byte) 0x49:
+			if (ver > 3) System.out.println("[EOR#]");
+			a ^= peek(pc++);
+			bits_nz(a);
+			break;
+		case (byte) 0x45:
+			if (ver > 3) System.out.println("[EORz]");
+			a ^= peek(peek(pc++));
+			bits_nz(a);
+			cycles = 3;
+			break;
+		case (byte) 0x55:
+			if (ver > 3) System.out.println("[EORzx]");
+			a ^= peek(am_zx());
+			bits_nz(a);
+			cycles = 4;
+			break;			
+		case (byte) 0x4D:
+			if (ver > 3) System.out.println("[EORa]");
+			a ^= peek(am_a());
+			bits_nz(a);
+			cycles = 4;
+			break;
+		case (byte) 0x5D:
+			if (ver > 3) System.out.println("[EORx]");
+			a ^= peek(am_ax());
+			bits_nz(a);
+			cycles = 4 + page;
+			break;
+		case (byte) 0x59:
+			if (ver > 3) System.out.println("[EORy]");
+			a ^= peek(am_ay());
+			bits_nz(a);
+			cycles = 4 + page;
+			break;			
+		case (byte) 0x41:
+			if (ver > 3) System.out.println("[EOR(x)]");
+			a ^= peek(am_ix());
+			bits_nz(a);
+			cycles = 6;
+			break;
+		case (byte) 0x51:
+			if (ver > 3) System.out.println("[EOR(y)]");
+			a ^= peek(am_iy());
+			bits_nz(a);
+			cycles = 5 + page;
+			break;
 
+			
+			
+//			case (byte) 0x52:			// CMOS only
+//				if (ver > 3) System.out.println("[EOR(z)]");
+//				a ^= peek(am_iz());
+//				bits_nz(a);
+//				cycles = 5;
+//				break;
 
 
 
@@ -772,60 +828,7 @@ public class Cpu6502 implements Runnable {
 //				if (ver > 3) System.out.println("[DEC]");
 //				break;
 
-//	/* *** EOR: "Exclusive Or" Memory with Accumulator *** */
-//			case 0x49:
-//				a ^= peek(pc++);
-//				bits_nz(a);
-//				if (ver > 3) System.out.println("[EOR#]");
-//				break;
-//			case 0x4D:
-//				a ^= peek(am_a());
-//				bits_nz(a);
-//				if (ver > 3) System.out.println("[EORa]");
-//				cycles = 4;
-//				break;
-//			case 0x45:
-//				a ^= peek(peek(pc++));
-//				bits_nz(a);
-//				if (ver > 3) System.out.println("[EORz]");
-//				cycles = 3;
-//				break;
-//			case 0x41:
-//				a ^= peek(am_ix());
-//				bits_nz(a);
-//				if (ver > 3) System.out.println("[EOR(x)]");
-//				cycles = 6;
-//				break;
-//			case 0x51:
-//				a ^= peek(am_iy(&page));
-//				bits_nz(a);
-//				if (ver > 3) System.out.println("[EOR(y)]");
-//				cycles = 5 + page;
-//				break;
-//			case 0x55:
-//				a ^= peek(am_zx());
-//				bits_nz(a);
-//				if (ver > 3) System.out.println("[EORzx]");
-//				cycles = 4;
-//				break;
-//			case 0x5D:
-//				a ^= peek(am_ax(&page));
-//				bits_nz(a);
-//				if (ver > 3) System.out.println("[EORx]");
-//				cycles = 4 + page;
-//				break;
-//			case 0x59:
-//				a ^= peek(am_ay(&page));
-//				bits_nz(a);
-//				if (ver > 3) System.out.println("[EORy]");
-//				cycles = 4 + page;
-//				break;
-//			case 0x52:			// CMOS only
-//				a ^= peek(am_iz());
-//				bits_nz(a);
-//				if (ver > 3) System.out.println("[EOR(z)]");
-//				cycles = 5;
-//				break;
+
 //	/* *** INC: Increment Memory (or Accumulator) by One *** */
 //			case 0xEE:
 //				adr = am_a();	// EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEK
