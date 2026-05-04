@@ -29,6 +29,12 @@ public class Cpu65C02 extends Cpu6502 {
 			page=rel(page);
 			cycles = 3 + page;
 			break;
+//			case (byte) 0x12:			// CMOS only
+//			if (ver > 3) System.out.println("[ORA(z)]");
+//			a |= peek(am_iz());
+//			bits_nz(a);
+//			cycles = 5;
+//			break;
 //		case (byte) 0xB2:			// CMOS only
 //		a = peek(am_iz());
 //		bits_nz(a);

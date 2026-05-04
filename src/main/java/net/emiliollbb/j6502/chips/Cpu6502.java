@@ -405,54 +405,52 @@ public class Cpu6502 implements Runnable {
 			bits_nz(a);
 			if (ver > 3) System.out.println("[ORA#]");
 			break;
-//			case (byte) 0x0D:
-//				a |= peek(am_a());
-//				bits_nz(a);
-//				if (ver > 3) System.out.println("[ORAa]");
-//				cycles = 4;
-//				break;
-//			case (byte) 0x05:
-//				a |= peek(peek(pc++));
-//				bits_nz(a);
-//				if (ver > 3) System.out.println("[ORAz]");
-//				cycles = 3;
-//				break;
-//			case (byte) 0x01:
-//				a |= peek(am_ix());
-//				bits_nz(a);
-//				if (ver > 3) System.out.println("[ORA(x)]");
-//				cycles = 6;
-//				break;
-//			case (byte) 0x11:
-//				a |= peek(am_iy(&page));
-//				bits_nz(a);
-//				if (ver > 3) System.out.println("[ORA(y)]");
-//				cycles = 5 + page;
-//				break;
-//			case (byte) 0x15:
-//				a |= peek(am_zx());
-//				bits_nz(a);
-//				if (ver > 3) System.out.println("[ORAzx]");
-//				cycles = 4;
-//				break;
-//			case (byte) 0x1D:
-//				a |= peek(am_ax(&page));
-//				bits_nz(a);
-//				if (ver > 3) System.out.println("[ORAx]");
-//				cycles = 4 + page;
-//				break;
-//			case (byte) 0x19:
-//				a |= peek(am_ay(&page));
-//				bits_nz(a);
-//				if (ver > 3) System.out.println("[ORAy]");
-//				cycles = 4 + page;
-//				break;
-//			case (byte) 0x12:			// CMOS only
-//				a |= peek(am_iz());
-//				bits_nz(a);
-//				if (ver > 3) System.out.println("[ORA(z)]");
-//				cycles = 5;
-//				break;
+		case (byte) 0x05:
+			if (ver > 3) System.out.println("[ORAz]");
+			a |= peek(peek(pc++));
+			bits_nz(a);
+			cycles = 3;
+			break;
+		case (byte) 0x15:
+			if (ver > 3) System.out.println("[ORAzx]");
+			a |= peek(am_zx());
+			bits_nz(a);
+			cycles = 4;
+			break;			
+		case (byte) 0x0D:
+			if (ver > 3) System.out.println("[ORAa]");
+			a |= peek(am_a());
+			bits_nz(a);
+			cycles = 4;
+			break;
+		case (byte) 0x1D:
+			if (ver > 3) System.out.println("[ORAx]");
+			a |= peek(am_ax());
+			bits_nz(a);
+			cycles = 4 + page;
+			break;
+		case (byte) 0x19:
+			if (ver > 3) System.out.println("[ORAy]");
+			a |= peek(am_ay());
+			bits_nz(a);
+			cycles = 4 + page;
+			break;			
+		case (byte) 0x01:
+			if (ver > 3) System.out.println("[ORA(x)]");
+			a |= peek(am_ix());
+			bits_nz(a);
+			cycles = 6;
+			break;
+		case (byte) 0x11:
+			if (ver > 3) System.out.println("[ORA(y)]");
+			a |= peek(am_iy());
+			bits_nz(a);
+			cycles = 5 + page;
+			break;
+
+
+
+
 
 
 

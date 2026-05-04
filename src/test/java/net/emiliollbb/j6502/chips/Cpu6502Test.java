@@ -785,7 +785,137 @@ public class Cpu6502Test {
 		Assertions.assertEquals(0x00, cpu.getP());
 		Assertions.assertEquals(2, cycles);
 	}
-	
+	@Test
+	void testORAZeroPage() {
+		Mockito.when(device.peek(0x0003)).thenReturn((byte)0x34);
+		loadProgram(0x0200, new int[] {
+				// LDA #$55
+				0xA9, 0x55,
+				// OR #$03
+				0X05, 0x03
+				});
+		cpu.reset();
+		cpu.step();
+		int cycles = cpu.step();
+		Assertions.assertEquals(0x75, cpu.getA());
+		Assertions.assertEquals(0x00, cpu.getP());
+		Assertions.assertEquals(3, cycles);
+	}
+	@Test
+	void testORAZeroPageX() {
+		Mockito.when(device.peek(0x0012)).thenReturn((byte)0x34);
+		loadProgram(0x0200, new int[] {
+				// LDX #0F
+				0xA2, 0x0F,
+				// LDA #$55
+				0xA9, 0x55,
+				// OR #$03
+				0x15, 0x03
+				});
+		cpu.reset();
+		cpu.step();
+		cpu.step();
+		int cycles = cpu.step();
+		Assertions.assertEquals(0x75, cpu.getA());
+		Assertions.assertEquals(0x00, cpu.getP());
+		Assertions.assertEquals(4, cycles);
+	}
+	@Test
+	void testORAAbsolute() {
+		Mockito.when(device.peek(0xF003)).thenReturn((byte)0x34);
+		loadProgram(0x0200, new int[] {
+				// LDA #$55
+				0xA9, 0x55,
+				// OR $F003
+				0X0D, 0x03, 0XF0
+				});
+		cpu.reset();
+		cpu.step();
+		int cycles = cpu.step();
+		Assertions.assertEquals(0x75, cpu.getA());
+		Assertions.assertEquals(0x00, cpu.getP());
+		Assertions.assertEquals(4, cycles);
+	}
+	@Test
+	void testORAAbsoluteX() {
+		Mockito.when(device.peek(0xF003)).thenReturn((byte)0x34);
+		loadProgram(0x0200, new int[] {
+				// LDX #02
+				0xA2, 0x02,
+				// LDA #$55
+				0xA9, 0x55,
+				// OR $01,X
+				0x1D, 0x01, 0XF0
+				});
+		cpu.reset();
+		cpu.step();
+		cpu.step();
+		int cycles = cpu.step();
+		Assertions.assertEquals(0x75, cpu.getA());
+		Assertions.assertEquals(0x00, cpu.getP());
+		Assertions.assertEquals(4, cycles);
+	}
+	@Test
+	void testORAAbsoluteY() {
+		Mockito.when(device.peek(0xF003)).thenReturn((byte)0x34);
+		loadProgram(0x0200, new int[] {
+				// LDY #02
+				0xA0, 0x02,
+				// LDA #$55
+				0xA9, 0x55,
+				// OR $01,Y
+				0x19, 0x01, 0XF0
+				});
+		cpu.reset();
+		cpu.step();
+		cpu.step();
+		int cycles = cpu.step();
+		Assertions.assertEquals(0x75, cpu.getA());
+		Assertions.assertEquals(0x00, cpu.getP());
+		Assertions.assertEquals(4, cycles);
+	}
+	@Test
+	void testORAIndirectX() {
+		Mockito.when(device.peek(0x0005)).thenReturn((byte)0x03);
+		Mockito.when(device.peek(0x0006)).thenReturn((byte)0xF0);
+		Mockito.when(device.peek(0xF003)).thenReturn((byte)0x34);
+		loadProgram(0x0200, new int[] {
+				// LDX #02
+				0xA2, 0x02,
+				// LDA #$55
+				0xA9, 0x55,
+				// OR ($03,X)
+				0x01, 0x03
+				});
+		cpu.reset();
+		cpu.step();
+		cpu.step();
+		int cycles = cpu.step();
+		Assertions.assertEquals(0x75, cpu.getA());
+		Assertions.assertEquals(0x00, cpu.getP());
+		Assertions.assertEquals(6, cycles);
+	}
+	@Test
+	void testORAIndirectY() {
+		Mockito.when(device.peek(0x0005)).thenReturn((byte)0x01);
+		Mockito.when(device.peek(0x0006)).thenReturn((byte)0xF0);
+		Mockito.when(device.peek(0xF003)).thenReturn((byte)0x34);
+		loadProgram(0x0200, new int[] {
+				// LDY #02
+				0xA0, 0x02,
+				// LDA #$55
+				0xA9, 0x55,
+				// OR ($05),Y
+				0x11, 0x05
+				});
+		cpu.reset();
+		cpu.step();
+		cpu.step();
+		int cycles = cpu.step();
+		Assertions.assertEquals(0x75, cpu.getA());
+		Assertions.assertEquals(0x00, cpu.getP());
+		Assertions.assertEquals(5, cycles);
+	}
 	
 	
 	
