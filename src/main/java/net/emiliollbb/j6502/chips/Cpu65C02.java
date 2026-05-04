@@ -77,6 +77,13 @@ public class Cpu65C02 extends Cpu6502 {
 //			cycles = 5;
 //			break;			
 			
+//			case (byte) 0x52:			// CMOS only
+//			if (ver > 3) System.out.println("[EOR(z)]");
+//			a ^= peek(am_iz());
+//			bits_nz(a);
+//			cycles = 5;
+//			break;
+
 			
 			
 		default:

@@ -1063,8 +1063,42 @@ public class Cpu6502Test {
 		Assertions.assertEquals(0x00, cpu.getP());
 		Assertions.assertEquals(5, cycles);
 	}
-	
-	
+	@Test
+	void testSECandCLC() {
+		loadProgram(0x0200, new int[] {
+				// SEC CLC
+				0x38, 0x18,
+				});
+		cpu.reset();
+		cpu.step();
+		Assertions.assertEquals(0x01, cpu.getP());
+		cpu.step();
+		Assertions.assertEquals(0x00, cpu.getP());
+	}
+	@Test
+	void testSEIandCLI() {
+		loadProgram(0x0200, new int[] {
+				// SEI CLI
+				0x78, 0x58,
+				});
+		cpu.reset();
+		cpu.step();
+		Assertions.assertEquals(0x04, cpu.getP());
+		cpu.step();
+		Assertions.assertEquals(0x00, cpu.getP());
+	}
+	@Test
+	void testSEDandCLD() {
+		loadProgram(0x0200, new int[] {
+				// SEI CLI
+				0xF8, 0xD8,
+				});
+		cpu.reset();
+		cpu.step();
+		Assertions.assertEquals(0x08, cpu.getP());
+		cpu.step();
+		Assertions.assertEquals(0x00, cpu.getP());
+	}
 	
 	
 	

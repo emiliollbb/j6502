@@ -495,15 +495,37 @@ public class Cpu6502 implements Runnable {
 			bits_nz(a);
 			cycles = 5 + page;
 			break;
-
-			
-			
-//			case (byte) 0x52:			// CMOS only
-//				if (ver > 3) System.out.println("[EOR(z)]");
-//				a ^= peek(am_iz());
-//				bits_nz(a);
-//				cycles = 5;
-//				break;
+		/* *** Flags *** */
+		case (byte) 0x18:
+			if (ver > 3) System.out.println("[CLC]");
+			p &= 0b11111110;
+			break;
+		case (byte) 0x38:
+			if (ver > 3) System.out.println("[SEC]");
+			p |= 0b00000001;
+			break;
+		case (byte) 0x58:
+			if (ver > 3) System.out.println("[CLI]");
+			p &= 0b11111011;
+			break;
+		case (byte) 0x78:
+			if (ver > 3) System.out.println("[SEI]");
+			p |= 0b00000100;
+			break;
+		case (byte) 0xB8:
+			if (ver > 3) System.out.println("[CLV]");
+			p &= 0b10111111;
+			break;			
+		case (byte) 0xD8:
+			if (ver > 3) System.out.println("[CLD]");
+			p &= 0b11110111;
+			dec = 0;
+			break;
+		case (byte) 0xF8:
+			if (ver > 3) System.out.println("[SED]");
+			p |= 0b00001000;
+			dec = 1;
+			break;
 
 
 
@@ -693,24 +715,7 @@ public class Cpu6502 implements Runnable {
 //				} else pc++;	// must skip offset if not done EEEEEK
 //				if (ver > 2) System.out.println("[BVS]");
 //				break;
-//	/* *** CLx: Clear flags *** */
-//			case 0x18:
-//				p &= 0b11111110;
-//				if (ver > 3) System.out.println("[CLC]");
-//				break;
-//			case 0xD8:
-//				p &= 0b11110111;
-//				dec = 0;
-//				if (ver > 3) System.out.println("[CLD]");
-//				break;
-//			case 0x58:
-//				p &= 0b11111011;
-//				if (ver > 3) System.out.println("[CLI]");
-//				break;
-//			case 0xB8:
-//				p &= 0b10111111;
-//				if (ver > 3) System.out.println("[CLV]");
-//				break;
+
 //	/* *** CMP: Compare Memory And Accumulator *** */
 //			case 0xC9:
 //				cmp(a, peek(pc++));
@@ -1123,20 +1128,6 @@ public class Cpu6502 implements Runnable {
 //				sbc(peek(am_iz()));
 //				if (ver > 3) System.out.println("[SBC(z)]");
 //				cycles = 5 + dec;
-//				break;
-//	// *** SEx: Set Flags *** */
-//			case 0x38:
-//				p |= 0b00000001;
-//				if (ver > 3) System.out.println("[SEC]");
-//				break;
-//			case 0xF8:
-//				p |= 0b00001000;
-//				dec = 1;
-//				if (ver > 3) System.out.println("[SED]");
-//				break;
-//			case 0x78:
-//				p |= 0b00000100;
-//				if (ver > 3) System.out.println("[SEI]");
 //				break;
 
 
