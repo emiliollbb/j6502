@@ -1110,7 +1110,7 @@ public class Cpu6502Test {
 	void testADCInmediate(byte acumulator, byte operand, boolean carry, 
 			byte expectedResult, byte expectedFlags, int expectedCycles) {
 		loadProgram(0x0200, new int[] {
-				// CLC/SEC, LDA acumulator
+				// CLC/SEC,       LDA acumulator
 				carry?0x38:0x18, 0xA9, acumulator, 
 				// ADC operand
 				0x69, operand
@@ -1120,7 +1120,7 @@ public class Cpu6502Test {
 		cpu.step();
 		int cycles = cpu.step();
 		Assertions.assertEquals(expectedResult, cpu.getA());
-		Assertions.assertEquals((byte)expectedFlags, cpu.getP());
+		Assertions.assertEquals(expectedFlags, cpu.getP());
 		Assertions.assertEquals(expectedCycles, cycles);
 	}
 	@Test
