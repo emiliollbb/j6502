@@ -1090,7 +1090,7 @@ public class Cpu6502Test {
 	@Test
 	void testSEDandCLD() {
 		loadProgram(0x0200, new int[] {
-				// SEI CLI
+				// SED CLD
 				0xF8, 0xD8,
 				});
 		cpu.reset();
@@ -1100,8 +1100,28 @@ public class Cpu6502Test {
 		Assertions.assertEquals(0x00, cpu.getP());
 	}
 	
-	
-	
+	@ParameterizedTest
+	@CsvSource({
+		"85,17,102,0,2",
+		"-100,10,-90,-128,2",
+		"120,8,-128,64,2",
+		})
+	void testADCInmediate(byte acumulator, byte operand, byte expectedResult, 
+			byte expectedFlags, int expectedCycles) {
+		loadProgram(0x0200, new int[] {
+				// CLD, LDA acumulator
+				0xD8, 0xA9, acumulator, 
+				// ADC operand
+				0x69, operand
+				});
+		cpu.reset();
+		cpu.step();
+		cpu.step();
+		int cycles = cpu.step();
+		Assertions.assertEquals(expectedResult, cpu.getA());
+		Assertions.assertEquals((byte)expectedFlags, cpu.getP());
+		Assertions.assertEquals(expectedCycles, cycles);
+	}
 	
 	
 	private String printByte(byte b) {

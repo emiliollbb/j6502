@@ -526,19 +526,12 @@ public class Cpu6502 implements Runnable {
 			p |= 0b00001000;
 			dec = 1;
 			break;
-
-
-
-
-
-
-			
-//	/* *** ADC: Add Memory to Accumulator with Carry *** */
-//			case 0x69:
-//				adc(peek(pc++));
-//				if (ver > 3) System.out.println("[ADC#]");
-//				cycles += dec;
-//				break;
+		/* *** ADC: Add Memory to Accumulator with Carry *** */
+		case 0x69:
+			if (ver > 3) System.out.println("[ADC#]");
+			adc(peek(pc++));
+			cycles += dec;
+			break;
 //			case 0x6D:
 //				adc(peek(am_a()));
 //				if (ver > 3) System.out.println("[ADCa]");
@@ -579,6 +572,14 @@ public class Cpu6502 implements Runnable {
 //				if (ver > 3) System.out.println("[ADC(z)]");
 //				cycles = 5 + dec;
 //				break;
+
+
+
+
+
+
+
+			
 
 //	/* *** ASL: Shift Left one Bit (Memory or Accumulator) *** */
 //			case 0x0E:
@@ -1372,32 +1373,38 @@ public class Cpu6502 implements Runnable {
 //		bits_nz(*d);
 //	}
 //
-//	/* ADC, add with carry */
-//	void adc(byte d) {
-//		byte old = a;
-//		word big = a, high;
-//
-//		big += d;				// basic add... but check for Decimal mode!
-//		big += (p & 1);			// add with Carry (A was computer just after this)
-//
-//		if (p & 0b00001000) {						// Decimal mode!
-//			high = (old & 0x0F)+(d & 0x0F)+(p & 1);			// compute carry-less LSN eeeeeek
-//			if (((big & 0x0F) > 9)||(high & 0x10)) {		// LSN overflow? was 'a' instead of 'big'
-//				big += 6;											// get into next decade
-//			}
-//			if (((big & 0xF0) > 0x90)||(big & 256)) {				// MSN overflow?
-//				big += 0x60;						// correct it
-//			}
-//		}
-//		a = big & 255;			// placed here trying to correct Carry in BCD mode
-//
-//		if (big & 256)			p |= 0b00000001;	// set Carry if needed
-//		else					p &= 0b11111110;
-//		if ((a&128)^(old&128))	p |= 0b01000000;	// set oVerflow if needed
-//		else					p &= 0b10111111;
-//		bits_nz(a);									// set N & Z as usual
-//	}
-//
+	/* ADC, add with carry */
+	void adc(byte d) {
+		int unsignedAcumulator = a & 0x000000FF;
+		int unsignedOperand = d & 0x000000FF;
+		int unsignedResult = unsignedAcumulator+unsignedOperand;
+		
+		int signedAcumulator = (int) a;
+		int signedOperand = (int) d;
+		int signedResult = signedAcumulator + signedOperand;
+
+		a = (byte)(unsignedResult & 0x000000FF);
+		
+		// Carry
+		p=unsignedResult>255? (byte)(p|0x01) : (byte)(p&0xFE);
+		// Negative
+		p=signedResult<0? (byte)(p|0x80):(byte)(p&0x7F);
+		// Zero
+		p=unsignedResult==0? (byte)(p|0x02):(byte)(p&0xFD);
+		// Overflow
+		p=signedResult>127 || signedResult<-128? (byte)(p|0x40):(byte)(p&0xBF);
+		
+		// Decimal mode
+		if ((p&0x08)==1) {
+			int bcdAcumulator = a & 0x000000F0*10 + a & 0x0000000F;
+			int bcdOperand = d & 0x000000F0*10 + d & 0x0000000F;
+			unsignedResult = bcdAcumulator+bcdOperand;
+			String strResult = String.format("%02d", unsignedResult);
+			a = (byte)((Integer.parseInt(String.valueOf(strResult.charAt(0)))&0x0000000F)<<8);
+			a |= (byte)(Integer.parseInt(String.valueOf(strResult.charAt(0)))&0x0000000F);
+		}
+	}
+
 //	/* SBC, subtract with borrow */ //EEEEEEEEEEEEEEEEK
 //	void sbc(byte d) {
 //		byte old = a;
