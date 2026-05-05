@@ -1507,7 +1507,7 @@ public class Cpu6502 implements Runnable {
 		int old = pc;
 		pc += off;
 		// Old page == new page ?
-		bound = ((old & 0x0000FF00)==(pc & 0x0000FF00))?0:1;	// check page crossing
+		bound = off==-2?-3: ((old & 0x0000FF00)==(pc & 0x0000FF00))?0:1;	// check page crossing
 		return bound;
 	}
 

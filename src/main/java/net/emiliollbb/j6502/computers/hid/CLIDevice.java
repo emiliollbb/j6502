@@ -4,34 +4,31 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.PrintWriter;
+import java.io.PrintStream;
 
 import net.emiliollbb.j6502.chips.AbstractBusDevice;
 
 public class CLIDevice  extends AbstractBusDevice {
-	protected int controlAddr;
-	protected int dataAddr;
+	protected static final int CONTROL_ADDR=0;
+	protected static final int DATA_ADDR=1;
 	protected BufferedReader in;
-	protected PrintWriter out;
+	protected PrintStream out;
 	protected char[] buffer;
 	protected int index;
-	public CLIDevice(int startAddr, OutputStream out, InputStream in) {
+	public CLIDevice(int startAddr, PrintStream out, InputStream in) {
 		super("CLI Device", startAddr, 2);
-		controlAddr=startAddr;
-		dataAddr=startAddr+1;
 		this.in=new BufferedReader(new InputStreamReader(in));
-		this.out=new PrintWriter(out);
+		this.out=out;
 		buffer=new char[0];
 		index=0;
 	}
 
 	@Override
 	protected byte ioRead(int addr) {
-		if(addr==controlAddr) {
+		if(addr==CONTROL_ADDR) {
 			return index==0?(byte)1:0;
 		}
-		else if(addr==dataAddr) {
+		else if(addr==DATA_ADDR) {
 			if(index<buffer.length) {
 				return (byte)buffer[index++];
 			} else {
@@ -43,7 +40,7 @@ public class CLIDevice  extends AbstractBusDevice {
 
 	@Override
 	protected void ioWrite(int addr, byte data) {
-		if(addr==controlAddr) {
+		if(addr==CONTROL_ADDR) {
 			try {
 				buffer = in.readLine().toCharArray();
 				index = 0;
@@ -51,7 +48,7 @@ public class CLIDevice  extends AbstractBusDevice {
 				throw new RuntimeException(e);
 			}
 		}
-		else if(addr==dataAddr) {
+		else if(addr==DATA_ADDR) {
 			out.print((char)data);
 		} 
 	}
