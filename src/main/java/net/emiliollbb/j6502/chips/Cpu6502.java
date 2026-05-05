@@ -527,51 +527,47 @@ public class Cpu6502 implements Runnable {
 			dec = 1;
 			break;
 		/* *** ADC: Add Memory to Accumulator with Carry *** */
-		case 0x69:
+		case (byte) 0x69:
 			if (ver > 3) System.out.println("[ADC#]");
 			adc(peek(pc++));
 			cycles += dec;
 			break;
-//			case 0x6D:
-//				adc(peek(am_a()));
-//				if (ver > 3) System.out.println("[ADCa]");
-//				cycles = 4 + dec;
-//				break;
-//			case 0x65:
-//				adc(peek(peek(pc++)));
-//				if (ver > 3) System.out.println("[ADCz]");
-//				cycles = 3 + dec;
-//				break;
-//			case 0x61:
-//				adc(peek(am_ix()));
-//				if (ver > 3) System.out.println("[ADC(x)]");
-//				cycles = 6 + dec;
-//				break;
-//			case 0x71:
-//				adc(peek(am_iy(&page)));
-//				if (ver > 3) System.out.println("[ADC(y)]");
-//				cycles = 5 + dec + page;
-//				break;
-//			case 0x75:
-//				adc(peek(am_zx()));
-//				if (ver > 3) System.out.println("[ADCzx]");
-//				cycles = 4 + dec;
-//				break;
-//			case 0x7D:
-//				adc(peek(am_ax(&page)));
-//				if (ver > 3) System.out.println("[ADCx]");
-//				cycles = 4 + dec + page;
-//				break;
-//			case 0x79:
-//				adc(peek(am_ay(&page)));
-//				if (ver > 3) System.out.println("[ADCy]");
-//				cycles = 4 + dec + page;
-//				break;
-//			case 0x72:			// CMOS only
-//				adc(peek(am_iz()));
-//				if (ver > 3) System.out.println("[ADC(z)]");
-//				cycles = 5 + dec;
-//				break;
+		case (byte) 0x6D:
+			if (ver > 3) System.out.println("[ADCa]");
+			adc(peek(am_a()));
+			cycles = 4 + dec;
+			break;
+		case (byte) 0x65:
+			if (ver > 3) System.out.println("[ADCz]");
+			adc(peek(peek(pc++)));
+			cycles = 3 + dec;
+			break;
+		case (byte) 0x61:
+			if (ver > 3) System.out.println("[ADC(x)]");
+			adc(peek(am_ix()));
+			cycles = 6 + dec;
+			break;
+		case (byte) 0x71:
+			if (ver > 3) System.out.println("[ADC(y)]");
+			adc(peek(am_iy()));
+			cycles = 5 + dec + page;
+			break;
+		case (byte) 0x75:
+			if (ver > 3) System.out.println("[ADCzx]");
+			adc(peek(am_zx()));
+			cycles = 4 + dec;
+			break;
+		case (byte) 0x7D:
+			if (ver > 3) System.out.println("[ADCx]");
+			adc(peek(am_ax()));
+			cycles = 4 + dec + page;
+			break;
+		case (byte) 0x79:
+			if (ver > 3) System.out.println("[ADCy]");
+			adc(peek(am_ay()));
+			cycles = 4 + dec + page;
+			break;
+
 
 
 

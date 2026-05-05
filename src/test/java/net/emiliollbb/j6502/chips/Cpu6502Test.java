@@ -1122,6 +1122,137 @@ public class Cpu6502Test {
 		Assertions.assertEquals((byte)expectedFlags, cpu.getP());
 		Assertions.assertEquals(expectedCycles, cycles);
 	}
+	@Test
+	void testADCZeroPage() {
+		Mockito.when(device.peek(0x0003)).thenReturn((byte)0x34);
+		loadProgram(0x0200, new int[] {
+				// LDA #$55
+				0xA9, 0x55,
+				// ADC #$03
+				0X65, 0x03
+				});
+		cpu.reset();
+		cpu.step();
+		int cycles = cpu.step();
+		Assertions.assertEquals((byte)0x89, cpu.getA());
+		Assertions.assertEquals((byte)0x40, cpu.getP());
+		Assertions.assertEquals(3, cycles);
+	}
+	@Test
+	void testADCZeroPageX() {
+		Mockito.when(device.peek(0x0012)).thenReturn((byte)0x34);
+		loadProgram(0x0200, new int[] {
+				// LDX #0F
+				0xA2, 0x0F,
+				// LDA #$55
+				0xA9, 0x55,
+				// ADC #$03
+				0x75, 0x03
+				});
+		cpu.reset();
+		cpu.step();
+		cpu.step();
+		int cycles = cpu.step();
+		Assertions.assertEquals((byte)0x89, cpu.getA());
+		Assertions.assertEquals((byte)0x40, cpu.getP());
+		Assertions.assertEquals(4, cycles);
+	}
+	@Test
+	void testADCAbsolute() {
+		Mockito.when(device.peek(0xF003)).thenReturn((byte)0x34);
+		loadProgram(0x0200, new int[] {
+				// LDA #$55
+				0xA9, 0x55,
+				// ADC $F003
+				0X6D, 0x03, 0XF0
+				});
+		cpu.reset();
+		cpu.step();
+		int cycles = cpu.step();
+		Assertions.assertEquals((byte)0x89, cpu.getA());
+		Assertions.assertEquals((byte)0x40, cpu.getP());
+		Assertions.assertEquals(4, cycles);
+	}
+	@Test
+	void testADCAbsoluteX() {
+		Mockito.when(device.peek(0xF003)).thenReturn((byte)0x34);
+		loadProgram(0x0200, new int[] {
+				// LDX #02
+				0xA2, 0x02,
+				// LDA #$55
+				0xA9, 0x55,
+				// ADC $01,X
+				0x7D, 0x01, 0XF0
+				});
+		cpu.reset();
+		cpu.step();
+		cpu.step();
+		int cycles = cpu.step();
+		Assertions.assertEquals((byte)0x89, cpu.getA());
+		Assertions.assertEquals((byte)0x40, cpu.getP());
+		Assertions.assertEquals(4, cycles);
+	}
+	@Test
+	void testADCAbsoluteY() {
+		Mockito.when(device.peek(0xF003)).thenReturn((byte)0x34);
+		loadProgram(0x0200, new int[] {
+				// LDY #02
+				0xA0, 0x02,
+				// LDA #$55
+				0xA9, 0x55,
+				// ADC $01,Y
+				0x79, 0x01, 0XF0
+				});
+		cpu.reset();
+		cpu.step();
+		cpu.step();
+		int cycles = cpu.step();
+		Assertions.assertEquals((byte)0x89, cpu.getA());
+		Assertions.assertEquals((byte)0x40, cpu.getP());
+		Assertions.assertEquals(4, cycles);
+	}
+	@Test
+	void testADCIndirectX() {
+		Mockito.when(device.peek(0x0005)).thenReturn((byte)0x03);
+		Mockito.when(device.peek(0x0006)).thenReturn((byte)0xF0);
+		Mockito.when(device.peek(0xF003)).thenReturn((byte)0x34);
+		loadProgram(0x0200, new int[] {
+				// LDX #02
+				0xA2, 0x02,
+				// LDA #$55
+				0xA9, 0x55,
+				// ADC ($03,X)
+				0x61, 0x03
+				});
+		cpu.reset();
+		cpu.step();
+		cpu.step();
+		int cycles = cpu.step();
+		Assertions.assertEquals((byte)0x89, cpu.getA());
+		Assertions.assertEquals((byte)0x40, cpu.getP());
+		Assertions.assertEquals(6, cycles);
+	}
+	@Test
+	void testADCIndirectY() {
+		Mockito.when(device.peek(0x0005)).thenReturn((byte)0x01);
+		Mockito.when(device.peek(0x0006)).thenReturn((byte)0xF0);
+		Mockito.when(device.peek(0xF003)).thenReturn((byte)0x34);
+		loadProgram(0x0200, new int[] {
+				// LDY #02
+				0xA0, 0x02,
+				// LDA #$55
+				0xA9, 0x55,
+				// ADC ($05),Y
+				0x71, 0x05
+				});
+		cpu.reset();
+		cpu.step();
+		cpu.step();
+		int cycles = cpu.step();
+		Assertions.assertEquals((byte)0x89, cpu.getA());
+		Assertions.assertEquals((byte)0x40, cpu.getP());
+		Assertions.assertEquals(5, cycles);
+	}
 	
 	
 	private String printByte(byte b) {

@@ -83,7 +83,12 @@ public class Cpu65C02 extends Cpu6502 {
 //			bits_nz(a);
 //			cycles = 5;
 //			break;
-
+			
+//			case 0x72:			// CMOS only
+//			adc(peek(am_iz()));
+//			if (ver > 3) System.out.println("[ADC(z)]");
+//			cycles = 5 + dec;
+//			break;
 			
 			
 		default:
