@@ -1102,15 +1102,16 @@ public class Cpu6502Test {
 	
 	@ParameterizedTest
 	@CsvSource({
-		"85,17,102,0,2",
-		"-100,10,-90,-128,2",
-		"120,8,-128,64,2",
+		"85,17,false,102,0,2",
+		"85,17,true,103,0,2",
+		"-100,10,false,-90,-128,2",
+		"120,8,false,-128,64,2",
 		})
-	void testADCInmediate(byte acumulator, byte operand, byte expectedResult, 
-			byte expectedFlags, int expectedCycles) {
+	void testADCInmediate(byte acumulator, byte operand, boolean carry, 
+			byte expectedResult, byte expectedFlags, int expectedCycles) {
 		loadProgram(0x0200, new int[] {
-				// CLD, LDA acumulator
-				0xD8, 0xA9, acumulator, 
+				// CLC/SEC, LDA acumulator
+				carry?0x38:0x18, 0xA9, acumulator, 
 				// ADC operand
 				0x69, operand
 				});

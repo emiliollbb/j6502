@@ -1373,11 +1373,11 @@ public class Cpu6502 implements Runnable {
 	void adc(byte d) {
 		int unsignedAcumulator = a & 0x000000FF;
 		int unsignedOperand = d & 0x000000FF;
-		int unsignedResult = unsignedAcumulator+unsignedOperand;
+		int unsignedResult = unsignedAcumulator+unsignedOperand + (p&0x01);
 		
 		int signedAcumulator = (int) a;
 		int signedOperand = (int) d;
-		int signedResult = signedAcumulator + signedOperand;
+		int signedResult = signedAcumulator + signedOperand + (p&0x01);
 
 		a = (byte)(unsignedResult & 0x000000FF);
 		
