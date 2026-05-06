@@ -1404,30 +1404,6 @@ public class Cpu6502 implements Runnable {
 		adc((byte)~d);
 	}
 
-//	/* SBC, subtract with borrow */ //EEEEEEEEEEEEEEEEK
-//	void sbc(byte d) {
-//		byte old = a;
-//		word big = a;
-//
-//		big += ~d;				// basic subtract, 6502-style... but check for Decimal mode!
-//		big += (p & 1);			// add with Carry
-//		
-//		if (p & 0b00001000) {						// Decimal mode!
-//			if ((big & 0x0F) > 9) {					// LSN overflow?
-//				big -= 6;								// get into next decade *** check
-//			}
-//			if ((big & 0xF0) > 0x90) {				// MSN overflow?
-//				big -= 0x60;							// correct it
-//			}
-//		}
-//		a = big & 255;			// same as ADC
-//
-//		if (big & 256)			p &= 0b11111110;	// set Carry if needed EEEEEEEEEEEEK, is this OK?
-//		else					p |= 0b00000001;
-//		if ((a&128)^(old&128))	p |= 0b01000000;	// set oVerflow if needed
-//		else					p &= 0b10111111;
-//		bits_nz(a);									// set N & Z as usual
-//	}
 //
 //	/* CMP/CPX/CPY compare register to memory */
 //	void cmp(byte reg, byte d) {

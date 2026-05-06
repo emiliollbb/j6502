@@ -1254,6 +1254,33 @@ public class Cpu6502Test {
 		Assertions.assertEquals((byte)0x40, cpu.getP());
 		Assertions.assertEquals(5, cycles);
 	}
+	@ParameterizedTest
+	@CsvSource({
+		// 23+12=35
+		"35,18,false,53,0,3",
+		})
+	void testADCInmediateDEC(byte acumulator, byte operand, boolean carry, 
+			byte expectedResult, byte expectedFlags, int expectedCycles) {
+		loadProgram(0x0200, new int[] {
+				//SED
+				0xF8,
+				// CLC/SEC,       LDA acumulator
+				carry?0x38:0x18, 0xA9, acumulator, 
+				// ADC operand
+				0x69, operand,
+				//CLD
+				0xD8
+				});
+		cpu.reset();
+		cpu.step();
+		cpu.step();
+		cpu.step();
+		int cycles = cpu.step();
+		cpu.step();
+		Assertions.assertEquals(expectedResult, cpu.getA());
+		Assertions.assertEquals(expectedFlags, cpu.getP());
+		Assertions.assertEquals(expectedCycles, cycles);
+	}
 	
 	@ParameterizedTest
 	@CsvSource({
