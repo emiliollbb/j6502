@@ -1255,6 +1255,27 @@ public class Cpu6502Test {
 		Assertions.assertEquals(5, cycles);
 	}
 	
+	@ParameterizedTest
+	@CsvSource({
+		"85,17,true,68,1,2",
+		})
+	void testSBCInmediate(byte acumulator, byte operand, boolean carry, 
+			byte expectedResult, byte expectedFlags, int expectedCycles) {
+		loadProgram(0x0200, new int[] {
+				// CLC/SEC,       LDA acumulator
+				carry?0x38:0x18, 0xA9, acumulator, 
+				// ADC operand
+				0xE9, operand
+				});
+		cpu.reset();
+		cpu.step();
+		cpu.step();
+		int cycles = cpu.step();
+		Assertions.assertEquals(expectedResult, cpu.getA());
+		Assertions.assertEquals(expectedFlags, cpu.getP());
+		Assertions.assertEquals(expectedCycles, cycles);
+	}
+	
 	
 	private String printByte(byte b) {
 		return String.format("0x%02X", b)+ "("+b+")";

@@ -568,7 +568,52 @@ public class Cpu6502 implements Runnable {
 			cycles = 4 + dec + page;
 			break;
 
-
+		/* *** SBC: Subtract Memory from Accumulator with Borrow *** */
+		case (byte) 0xE9:
+			if (ver > 3) System.out.println("[SBC#]");
+			sbc(peek(pc++));
+			cycles += dec;
+			break;
+//			case 0xED:
+//				sbc(peek(am_a()));
+//				if (ver > 3) System.out.println("[SBCa]");
+//				cycles = 4 + dec;
+//				break;
+//			case 0xE5:
+//				sbc(peek(peek(pc++)));
+//				if (ver > 3) System.out.println("[SBCz]");
+//				cycles = 3 + dec;
+//				break;
+//			case 0xE1:
+//				sbc(peek(am_ix()));
+//				if (ver > 3) System.out.println("[SBC(x)]");
+//				cycles = 6 + dec;
+//				break;
+//			case 0xF1:
+//				sbc(peek(am_iy(&page)));
+//				if (ver > 3) System.out.println("[SBC(y)]");
+//				cycles = 5 + dec + page;
+//				break;
+//			case 0xF5:
+//				sbc(peek(am_zx()));
+//				if (ver > 3) System.out.println("[SBCzx]");
+//				cycles = 4 + dec;
+//				break;
+//			case 0xFD:
+//				sbc(peek(am_ax(&page)));
+//				if (ver > 3) System.out.println("[SBCx]");
+//				cycles = 4 + dec + page;
+//				break;
+//			case 0xF9:
+//				sbc(peek(am_ay(&page)));
+//				if (ver > 3) System.out.println("[SBCy]");
+//				cycles = 4 + dec + page;
+//				break;
+//			case 0xF2:			// CMOS only
+//				sbc(peek(am_iz()));
+//				if (ver > 3) System.out.println("[SBC(z)]");
+//				cycles = 5 + dec;
+//				break;
 
 
 
@@ -1080,52 +1125,7 @@ public class Cpu6502 implements Runnable {
 //				if (ver > 2)	System.out.println("[RTS]");
 //				cycles = 6;
 //				break;
-//	/* *** SBC: Subtract Memory from Accumulator with Borrow *** */
-//			case 0xE9:
-//				sbc(peek(pc++));
-//				if (ver > 3) System.out.println("[SBC#]");
-//				cycles += dec;
-//				break;
-//			case 0xED:
-//				sbc(peek(am_a()));
-//				if (ver > 3) System.out.println("[SBCa]");
-//				cycles = 4 + dec;
-//				break;
-//			case 0xE5:
-//				sbc(peek(peek(pc++)));
-//				if (ver > 3) System.out.println("[SBCz]");
-//				cycles = 3 + dec;
-//				break;
-//			case 0xE1:
-//				sbc(peek(am_ix()));
-//				if (ver > 3) System.out.println("[SBC(x)]");
-//				cycles = 6 + dec;
-//				break;
-//			case 0xF1:
-//				sbc(peek(am_iy(&page)));
-//				if (ver > 3) System.out.println("[SBC(y)]");
-//				cycles = 5 + dec + page;
-//				break;
-//			case 0xF5:
-//				sbc(peek(am_zx()));
-//				if (ver > 3) System.out.println("[SBCzx]");
-//				cycles = 4 + dec;
-//				break;
-//			case 0xFD:
-//				sbc(peek(am_ax(&page)));
-//				if (ver > 3) System.out.println("[SBCx]");
-//				cycles = 4 + dec + page;
-//				break;
-//			case 0xF9:
-//				sbc(peek(am_ay(&page)));
-//				if (ver > 3) System.out.println("[SBCy]");
-//				cycles = 4 + dec + page;
-//				break;
-//			case 0xF2:			// CMOS only
-//				sbc(peek(am_iz()));
-//				if (ver > 3) System.out.println("[SBC(z)]");
-//				cycles = 5 + dec;
-//				break;
+
 
 
 
@@ -1399,6 +1399,9 @@ public class Cpu6502 implements Runnable {
 			a = (byte)((Integer.parseInt(String.valueOf(strResult.charAt(0)))&0x0000000F)<<8);
 			a |= (byte)(Integer.parseInt(String.valueOf(strResult.charAt(0)))&0x0000000F);
 		}
+	}
+	void sbc(byte d) {
+		adc((byte)~d);
 	}
 
 //	/* SBC, subtract with borrow */ //EEEEEEEEEEEEEEEEK
