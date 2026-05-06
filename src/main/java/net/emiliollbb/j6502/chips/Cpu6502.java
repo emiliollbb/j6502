@@ -1401,7 +1401,18 @@ public class Cpu6502 implements Runnable {
 		}
 	}
 	void sbc(byte d) {
-		adc((byte)~d);
+		// Decimal mode
+		if ((p&0x08)==1) {
+			int bcdAcumulator = a & 0x000000F0*10 + a & 0x0000000F;
+			int bcdOperand = d & 0x000000F0*10 + d & 0x0000000F;
+			int unsignedResult = bcdAcumulator-bcdOperand;
+			String strResult = String.format("%02d", unsignedResult);
+			a = (byte)((Integer.parseInt(String.valueOf(strResult.charAt(0)))&0x0000000F)<<8);
+			a |= (byte)(Integer.parseInt(String.valueOf(strResult.charAt(0)))&0x0000000F);
+		}
+		else {
+			adc((byte)~d);
+		}
 	}
 
 //
