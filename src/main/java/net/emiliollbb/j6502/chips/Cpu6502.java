@@ -1398,6 +1398,8 @@ public class Cpu6502 implements Runnable {
 			String strResult = String.format("%02d", unsignedResult);
 			a = (byte)((Integer.parseInt(String.valueOf(strResult.charAt(0)))&0x0000000F)<<8);
 			a |= (byte)(Integer.parseInt(String.valueOf(strResult.charAt(0)))&0x0000000F);
+			// Carry
+			p=unsignedResult>99? (byte)(p|0x01) : (byte)(p&0xFE);
 		}
 	}
 	void sbc(byte d) {
@@ -1409,6 +1411,8 @@ public class Cpu6502 implements Runnable {
 			String strResult = String.format("%02d", unsignedResult);
 			a = (byte)((Integer.parseInt(String.valueOf(strResult.charAt(0)))&0x0000000F)<<8);
 			a |= (byte)(Integer.parseInt(String.valueOf(strResult.charAt(0)))&0x0000000F);
+			// Carry
+			p=unsignedResult>99? (byte)(p|0xFE) : (byte)(p&0x01);
 		}
 		else {
 			adc((byte)~d);
