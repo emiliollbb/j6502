@@ -95,6 +95,11 @@ public class Cpu65C02 extends Cpu6502 {
 //			bits_nz(a);
 //			if (ver > 3) System.out.println("[INC]");
 //			break;	
+//		case (byte) 0x3A:			// CMOS only (OK)
+//			if (ver > 3) System.out.println("[DEC]");
+//			a--;
+//			bits_nz(a);
+//			break;			
 			
 		default:
 			pc--;

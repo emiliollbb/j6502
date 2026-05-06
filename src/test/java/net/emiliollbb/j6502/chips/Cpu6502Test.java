@@ -825,6 +825,61 @@ public class Cpu6502Test {
 	}
 	
 	@Test
+	void testDECZeroPage() {
+		Mockito.when(device.peek(0xA0)).thenReturn((byte)0x55);
+		loadProgram(0x0200, new int[] {
+				// INC $A0
+				0xC6, 0xA0
+				});
+		cpu.reset();
+		int cycles = cpu.step();
+		Assertions.assertEquals(5, cycles);
+		Mockito.verify(device).poke(0xA0, (byte)0x54);
+	}
+	@Test
+	void testDECZeroPageX() {
+		Mockito.when(device.peek(0xAA)).thenReturn((byte)0x55);
+		loadProgram(0x0200, new int[] {
+				// LDX #$A1
+				0xA2, 0xA1,
+				// INC $09,X
+				0xD6, 0x09
+				});
+		cpu.reset();
+		cpu.step();
+		int cycles = cpu.step();
+		Assertions.assertEquals(6, cycles);
+		Mockito.verify(device).poke(0xAA, (byte)0x54);
+	}
+	@Test
+	void testDECAbsolute() {
+		Mockito.when(device.peek(0xA3A1)).thenReturn((byte)0x55);
+		loadProgram(0x0200, new int[] {
+				// INC $A3A1
+				0xCE, 0xA1, 0xA3,
+				});
+		cpu.reset();
+		int cycles = cpu.step();
+		Assertions.assertEquals(6, cycles);
+		Mockito.verify(device).poke(0xA3A1, (byte)0x54);
+	}
+	@Test
+	void testDECAbsoluteX() {
+		Mockito.when(device.peek(0xA312)).thenReturn((byte)0x55);
+		loadProgram(0x0200, new int[] {
+				// LDX #0F
+				0xA2, 0x0F,
+				// INC $A301,X
+				0xDE, 0x03, 0xA3
+				});
+		cpu.reset();
+		cpu.step();
+		int cycles = cpu.step();
+		Assertions.assertEquals(7, cycles);
+		Mockito.verify(device).poke(0xA312, (byte)0x54);
+	}
+	
+	@Test
 	void testORAInmediate() {
 		loadProgram(0x0200, new int[] {
 				// LDA #$55

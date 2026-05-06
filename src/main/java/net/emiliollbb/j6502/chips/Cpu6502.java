@@ -390,6 +390,43 @@ public class Cpu6502 implements Runnable {
 			cycles = 7;
 			break;
 
+		/* *** DEC: Decrement Memory (or Accumulator) by One *** */
+		case (byte) 0xC6:
+			if (ver > 3) System.out.println("[DECz]");
+			temp = peek(peek(pc)&0x000000FF);
+			temp--;
+			poke(peek(pc++)&0x000000FF, temp);
+			bits_nz(temp);
+			cycles = 5;
+			break;
+		case (byte) 0xD6:
+			if (ver > 3) System.out.println("[DECzx]");
+			adr = am_zx();
+			temp = peek(adr);
+			temp--;
+			poke(adr, temp);
+			bits_nz(temp);
+			cycles = 6;
+			break;			
+		case (byte) 0xCE:
+			if (ver > 3) System.out.println("[DECa]");
+			adr = am_a();
+			temp = peek(adr);
+			temp--;
+			poke(adr, temp);
+			bits_nz(temp);
+			cycles = 6;
+			break;
+		case (byte) 0xDE:
+			if (ver > 3) System.out.println("[DECx]");
+			adr = am_ax();
+			temp = peek(adr);
+			temp--;
+			poke(adr, temp);
+			bits_nz(temp);
+			cycles = 7;
+			break;
+
 			
 		/* *** AND: "And" Memory with Accumulator *** */
 		case (byte) 0x29:
@@ -873,47 +910,7 @@ public class Cpu6502 implements Runnable {
 //				if (ver > 3) System.out.println("[CPYz]");
 //				cycles = 3;
 //				break;
-//	/* *** DEC: Decrement Memory (or Accumulator) by One *** */
-//			case 0xCE:
-//				adr = am_a();	// EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEK
-//				temp = peek(adr);
-//				temp--;
-//				poke(adr, temp);
-//				bits_nz(temp);
-//				if (ver > 3) System.out.println("[DECa]");
-//				cycles = 6;
-//				break;
-//			case 0xC6:
-//				temp = peek(peek(pc));
-//				temp--;
-//				poke(peek(pc++), temp);
-//				bits_nz(temp);
-//				if (ver > 3) System.out.println("[DECz]");
-//				cycles = 5;
-//				break;
-//			case 0xD6:
-//				adr = am_zx();	// EEEEEEEEEEK
-//				temp = peek(adr);
-//				temp--;
-//				poke(adr, temp);
-//				bits_nz(temp);
-//				if (ver > 3) System.out.println("[DECzx]");
-//				cycles = 6;
-//				break;
-//			case 0xDE:
-//				adr = am_ax(&page);	// EEEEEEEEK
-//				temp = peek(adr);
-//				temp--;
-//				poke(adr, temp);
-//				bits_nz(temp);
-//				if (ver > 3) System.out.println("[DECx]");
-//				cycles = 7;		// 6+page for WDC?
-//				break;
-//			case 0x3A:			// CMOS only (OK)
-//				a--;
-//				bits_nz(a);
-//				if (ver > 3) System.out.println("[DEC]");
-//				break;
+
 
 
 
