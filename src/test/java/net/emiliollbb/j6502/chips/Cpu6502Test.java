@@ -246,7 +246,8 @@ public class Cpu6502Test {
 		loadProgram(0x0200, new int[] {
 				// LDY #$55
 				0xA0, 0x55,
-				0X84, 0XA0
+				// STY $A0
+				0x84, 0xA0
 				});
 		cpu.reset();
 		cpu.step();
@@ -262,7 +263,7 @@ public class Cpu6502Test {
 				// LDX #$A1
 				0xA2, 0xA1,
 				// STY $09,X
-				0X94, 0X09
+				0X94, 0x09
 				});
 		cpu.reset();
 		cpu.step();
@@ -276,8 +277,8 @@ public class Cpu6502Test {
 		loadProgram(0x0200, new int[] {
 				// LDY #$55
 				0xA0, 0x55,
-				// STY $0301
-				0X8C, 0XA1, 0XA3
+				// STY $A3A1
+				0X8C, 0xA1, 0xA3
 				});
 		cpu.reset();
 		cpu.step();
@@ -285,8 +286,6 @@ public class Cpu6502Test {
 		Assertions.assertEquals(4, cycles);
 		Mockito.verify(device).poke(0xA3A1, (byte)0x55);
 	}
-	
-	
 	
 	@Test
 	void tesTAX() {
@@ -768,6 +767,61 @@ public class Cpu6502Test {
 		Assertions.assertEquals(0x00, cpu.getP());
 		Assertions.assertEquals(6, cycles);
 		Mockito.verify(device).poke(0xF003, (byte)0x55);
+	}
+	
+	@Test
+	void testINCZeroPage() {
+		Mockito.when(device.peek(0xA0)).thenReturn((byte)0x55);
+		loadProgram(0x0200, new int[] {
+				// INC $A0
+				0xE6, 0xA0
+				});
+		cpu.reset();
+		int cycles = cpu.step();
+		Assertions.assertEquals(5, cycles);
+		Mockito.verify(device).poke(0xA0, (byte)0x56);
+	}
+	@Test
+	void testINCZeroPageX() {
+		Mockito.when(device.peek(0xAA)).thenReturn((byte)0x55);
+		loadProgram(0x0200, new int[] {
+				// LDX #$A1
+				0xA2, 0xA1,
+				// INC $09,X
+				0xF6, 0x09
+				});
+		cpu.reset();
+		cpu.step();
+		int cycles = cpu.step();
+		Assertions.assertEquals(6, cycles);
+		Mockito.verify(device).poke(0xAA, (byte)0x56);
+	}
+	@Test
+	void testINCAbsolute() {
+		Mockito.when(device.peek(0xA3A1)).thenReturn((byte)0x55);
+		loadProgram(0x0200, new int[] {
+				// INC $A3A1
+				0xEE, 0xA1, 0xA3,
+				});
+		cpu.reset();
+		int cycles = cpu.step();
+		Assertions.assertEquals(6, cycles);
+		Mockito.verify(device).poke(0xA3A1, (byte)0x56);
+	}
+	@Test
+	void testINCAbsoluteX() {
+		Mockito.when(device.peek(0xA312)).thenReturn((byte)0x55);
+		loadProgram(0x0200, new int[] {
+				// LDX #0F
+				0xA2, 0x0F,
+				// INC $A301,X
+				0xFE, 0x03, 0xA3
+				});
+		cpu.reset();
+		cpu.step();
+		int cycles = cpu.step();
+		Assertions.assertEquals(7, cycles);
+		Mockito.verify(device).poke(0xA312, (byte)0x56);
 	}
 	
 	@Test

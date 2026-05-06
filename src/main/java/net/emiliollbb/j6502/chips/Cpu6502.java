@@ -49,11 +49,13 @@ public class Cpu6502 implements Runnable {
 	}
 	
 	protected byte peek(int addr) {
-		if(ver>5) System.out.println("peek "+printByte(addr));
-		return busDevices.stream().filter(d -> d.isInRange(addr)).findFirst().get().peek(addr);
+		if(ver>5) System.out.print("peek "+printByte(addr));
+		byte value= busDevices.stream().filter(d -> d.isInRange(addr)).findFirst().get().peek(addr);
+		if(ver>5) System.out.println(" -> "+printByte(value));
+		return value;
 	}
 	protected void poke(int addr, byte data) {
-		if(ver>5) System.out.println("poke "+printByte(addr));
+		if(ver>5) System.out.println("poke "+printByte(addr)+" -> "+printByte(data));
 		busDevices.stream().filter(d -> d.isInRange(addr)).findFirst().get().poke(addr, data);
 	}
 	
@@ -119,7 +121,7 @@ public class Cpu6502 implements Runnable {
 		int cycles = 2;			// base cycle count
 		page = 0;			// page boundary flag, for speed penalties
 		byte opcode, temp;
-		short adr;
+		int adr;
 
 		opcode = peek(pc++);	// get opcode and point to next one (or operand)
 		if(ver>5) System.out.println("OPCODE: "+printByte(opcode));
@@ -350,6 +352,44 @@ public class Cpu6502 implements Runnable {
 			poke(am_iy(), a);
 			cycles = 6;		// ...and not 5, as expected
 			break;
+
+		/* *** INC: Increment Memory (or Accumulator) by One *** */
+		case (byte) 0xE6:
+			if (ver > 3) System.out.println("[INCz]");
+			temp = peek(peek(pc)&0x000000FF);
+			temp++;
+			poke(peek(pc++)&0x000000FF, temp);
+			bits_nz(temp);
+			cycles = 5;
+			break;
+		case (byte) 0xF6:
+			if (ver > 3) System.out.println("[INCzx]");
+			adr = am_zx();
+			temp = peek(adr);
+			temp++;
+			poke(adr, temp);
+			bits_nz(temp);
+			cycles = 6;
+			break;
+		case (byte) 0xEE:
+			if (ver > 3) System.out.println("[INCa]");
+			adr = am_a();
+			temp = peek(adr);
+			temp++;
+			poke(adr, temp);
+			bits_nz(temp);
+			cycles = 6;
+			break;
+		case (byte) 0xFE:
+			if (ver > 3) System.out.println("[INCx]");
+			adr = am_ax();
+			temp = peek(adr);
+			temp++;
+			poke(adr, temp);
+			bits_nz(temp);
+			cycles = 7;
+			break;
+
 			
 		/* *** AND: "And" Memory with Accumulator *** */
 		case (byte) 0x29:
@@ -876,47 +916,7 @@ public class Cpu6502 implements Runnable {
 //				break;
 
 
-//	/* *** INC: Increment Memory (or Accumulator) by One *** */
-//			case 0xEE:
-//				adr = am_a();	// EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEK
-//				temp = peek(adr);
-//				temp++;
-//				poke(adr, temp);
-//				bits_nz(temp);
-//				if (ver > 3) System.out.println("[INCa]");
-//				cycles = 6;
-//				break;
-//			case 0xE6:
-//				temp = peek(peek(pc));
-//				temp++;
-//				poke(peek(pc++), temp);
-//				bits_nz(temp);
-//				if (ver > 3) System.out.println("[INCz]");
-//				cycles = 5;
-//				break;
-//			case 0xF6:
-//				adr = am_zx();	// EEEEEEEEEEK
-//				temp = peek(adr);
-//				temp++;
-//				poke(adr, temp);
-//				bits_nz(temp);
-//				if (ver > 3) System.out.println("[INCzx]");
-//				cycles = 6;
-//				break;
-//			case 0xFE:
-//				adr = am_ax(&page);	// EEEEEEEEEEK
-//				temp = peek(adr);
-//				temp++;
-//				poke(adr, temp);
-//				bits_nz(temp);
-//				if (ver > 3) System.out.println("[INCx]");
-//				cycles = 7;		// 6+page for WDC?
-//				break;
-//			case 0x1A:			// CMOS only
-//				a++;
-//				bits_nz(a);
-//				if (ver > 3) System.out.println("[INC]");
-//				break;
+
 
 //	/* *** JMP: Jump to New Location *** */
 //			case 0x4C:
