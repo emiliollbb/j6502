@@ -574,46 +574,46 @@ public class Cpu6502 implements Runnable {
 			sbc(peek(pc++));
 			cycles += dec;
 			break;
-//			case 0xED:
-//				sbc(peek(am_a()));
-//				if (ver > 3) System.out.println("[SBCa]");
-//				cycles = 4 + dec;
-//				break;
-//			case 0xE5:
-//				sbc(peek(peek(pc++)));
-//				if (ver > 3) System.out.println("[SBCz]");
-//				cycles = 3 + dec;
-//				break;
-//			case 0xE1:
-//				sbc(peek(am_ix()));
-//				if (ver > 3) System.out.println("[SBC(x)]");
-//				cycles = 6 + dec;
-//				break;
-//			case 0xF1:
-//				sbc(peek(am_iy(&page)));
-//				if (ver > 3) System.out.println("[SBC(y)]");
-//				cycles = 5 + dec + page;
-//				break;
-//			case 0xF5:
-//				sbc(peek(am_zx()));
-//				if (ver > 3) System.out.println("[SBCzx]");
-//				cycles = 4 + dec;
-//				break;
-//			case 0xFD:
-//				sbc(peek(am_ax(&page)));
-//				if (ver > 3) System.out.println("[SBCx]");
-//				cycles = 4 + dec + page;
-//				break;
-//			case 0xF9:
-//				sbc(peek(am_ay(&page)));
-//				if (ver > 3) System.out.println("[SBCy]");
-//				cycles = 4 + dec + page;
-//				break;
-//			case 0xF2:			// CMOS only
-//				sbc(peek(am_iz()));
-//				if (ver > 3) System.out.println("[SBC(z)]");
-//				cycles = 5 + dec;
-//				break;
+		case (byte) 0xED:
+			if (ver > 3) System.out.println("[SBCa]");
+			sbc(peek(am_a()));
+			cycles = 4 + dec;
+			break;
+		case (byte) 0xE5:
+			if (ver > 3) System.out.println("[SBCz]");
+			sbc(peek(peek(pc++)));
+			cycles = 3 + dec;
+			break;
+		case (byte) 0xE1:
+			if (ver > 3) System.out.println("[SBC(x)]");
+			sbc(peek(am_ix()));
+			cycles = 6 + dec;
+			break;
+		case (byte) 0xF1:
+			if (ver > 3) System.out.println("[SBC(y)]");
+			sbc(peek(am_iy()));
+			cycles = 5 + dec + page;
+			break;
+		case (byte) 0xF5:
+			if (ver > 3) System.out.println("[SBCzx]");
+			sbc(peek(am_zx()));
+			cycles = 4 + dec;
+			break;
+		case (byte) 0xFD:
+			if (ver > 3) System.out.println("[SBCx]");
+			sbc(peek(am_ax()));
+			cycles = 4 + dec + page;
+			break;
+		case (byte) 0xF9:
+			if (ver > 3) System.out.println("[SBCy]");
+			sbc(peek(am_ay()));
+			cycles = 4 + dec + page;
+			break;
+		case (byte) 0xF2:			// CMOS only
+			if (ver > 3) System.out.println("[SBC(z)]");
+			sbc(peek(am_iz()));
+			cycles = 5 + dec;
+			break;
 
 
 

@@ -1125,6 +1125,7 @@ public class Cpu6502Test {
 	}
 	@Test
 	void testADCZeroPage() {
+		//0x55 + 0x34
 		Mockito.when(device.peek(0x0003)).thenReturn((byte)0x34);
 		loadProgram(0x0200, new int[] {
 				// LDA #$55
@@ -1302,8 +1303,159 @@ public class Cpu6502Test {
 		Assertions.assertEquals(expectedFlags, cpu.getP());
 		Assertions.assertEquals(expectedCycles, cycles);
 	}
-	
-	
+	@Test
+	void testSBCZeroPage() {
+		//0x55 - 0x34
+		Mockito.when(device.peek(0x0003)).thenReturn((byte)0x34);
+		loadProgram(0x0200, new int[] {
+				// LDA #$55
+				0xA9, 0x55,
+				// SEC
+				0x38,
+				// SBC #$03
+				0XE5, 0x03
+				});
+		cpu.reset();
+		cpu.step();
+		cpu.step();
+		int cycles = cpu.step();
+		Assertions.assertEquals((byte)0x21, cpu.getA());
+		Assertions.assertEquals((byte)0x01, cpu.getP());
+		Assertions.assertEquals(3, cycles);
+	}
+	@Test
+	void testSBCZeroPageX() {
+		Mockito.when(device.peek(0x0012)).thenReturn((byte)0x34);
+		loadProgram(0x0200, new int[] {
+				// LDX #0F
+				0xA2, 0x0F,
+				// LDA #$55
+				0xA9, 0x55,
+				// SEC
+				0x38,
+				// SBC #$03
+				0xF5, 0x03
+				});
+		cpu.reset();
+		cpu.step();
+		cpu.step();
+		cpu.step();
+		int cycles = cpu.step();
+		Assertions.assertEquals((byte)0x21, cpu.getA());
+		Assertions.assertEquals((byte)0x01, cpu.getP());
+		Assertions.assertEquals(4, cycles);
+	}
+	@Test
+	void testSBCAbsolute() {
+		Mockito.when(device.peek(0xF003)).thenReturn((byte)0x34);
+		loadProgram(0x0200, new int[] {
+				// LDA #$55
+				0xA9, 0x55,
+				// SEC
+				0x38,
+				// SBC $F003
+				0XED, 0x03, 0XF0
+				});
+		cpu.reset();
+		cpu.step();
+		cpu.step();
+		int cycles = cpu.step();
+		Assertions.assertEquals((byte)0x21, cpu.getA());
+		Assertions.assertEquals((byte)0x01, cpu.getP());
+		Assertions.assertEquals(4, cycles);
+	}
+	@Test
+	void testSBCAbsoluteX() {
+		Mockito.when(device.peek(0xF003)).thenReturn((byte)0x34);
+		loadProgram(0x0200, new int[] {
+				// LDX #02
+				0xA2, 0x02,
+				// LDA #$55
+				0xA9, 0x55,
+				// SEC
+				0x38,
+				// SBC $01,X
+				0xFD, 0x01, 0XF0
+				});
+		cpu.reset();
+		cpu.step();
+		cpu.step();
+		cpu.step();
+		int cycles = cpu.step();
+		Assertions.assertEquals((byte)0x21, cpu.getA());
+		Assertions.assertEquals((byte)0x01, cpu.getP());
+		Assertions.assertEquals(4, cycles);
+	}
+	@Test
+	void testSBCAbsoluteY() {
+		Mockito.when(device.peek(0xF003)).thenReturn((byte)0x34);
+		loadProgram(0x0200, new int[] {
+				// LDY #02
+				0xA0, 0x02,
+				// LDA #$55
+				0xA9, 0x55,
+				// SEC
+				0x38,
+				// SBC $01,Y
+				0xF9, 0x01, 0XF0
+				});
+		cpu.reset();
+		cpu.step();
+		cpu.step();
+		cpu.step();
+		int cycles = cpu.step();
+		Assertions.assertEquals((byte)0x21, cpu.getA());
+		Assertions.assertEquals((byte)0x01, cpu.getP());
+		Assertions.assertEquals(4, cycles);
+	}
+	@Test
+	void testSBCIndirectX() {
+		Mockito.when(device.peek(0x0005)).thenReturn((byte)0x03);
+		Mockito.when(device.peek(0x0006)).thenReturn((byte)0xF0);
+		Mockito.when(device.peek(0xF003)).thenReturn((byte)0x34);
+		loadProgram(0x0200, new int[] {
+				// LDX #02
+				0xA2, 0x02,
+				// LDA #$55
+				0xA9, 0x55,
+				// SEC
+				0x38,
+				// SBC ($03,X)
+				0xE1, 0x03
+				});
+		cpu.reset();
+		cpu.step();
+		cpu.step();
+		cpu.step();
+		int cycles = cpu.step();
+		Assertions.assertEquals((byte)0x21, cpu.getA());
+		Assertions.assertEquals((byte)0x01, cpu.getP());
+		Assertions.assertEquals(6, cycles);
+	}
+	@Test
+	void testSBCIndirectY() {
+		Mockito.when(device.peek(0x0005)).thenReturn((byte)0x01);
+		Mockito.when(device.peek(0x0006)).thenReturn((byte)0xF0);
+		Mockito.when(device.peek(0xF003)).thenReturn((byte)0x34);
+		loadProgram(0x0200, new int[] {
+				// LDY #02
+				0xA0, 0x02,
+				// LDA #$55
+				0xA9, 0x55,
+				// SEC
+				0x38,
+				// SBC ($05),Y
+				0xF1, 0x05
+				});
+		cpu.reset();
+		cpu.step();
+		cpu.step();
+		cpu.step();
+		int cycles = cpu.step();
+		Assertions.assertEquals((byte)0x21, cpu.getA());
+		Assertions.assertEquals((byte)0x01, cpu.getP());
+		Assertions.assertEquals(5, cycles);
+	}	
 	@ParameterizedTest
 	@CsvSource({
 		// 23-13=10
