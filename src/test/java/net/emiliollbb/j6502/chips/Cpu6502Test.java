@@ -52,6 +52,14 @@ public class Cpu6502Test {
 		Assertions.assertEquals(0xC001, cpu.getPc());
 	}
 	
+	@Test
+	void testNOP() {
+		loadProgram(0xC000, new int[] {0xEA});
+		cpu.reset();
+		cpu.step();
+		Mockito.verifyNoMoreInteractions(device);
+	}
+	
 	@ParameterizedTest
 	@CsvSource({
 		"0x55,0x00",

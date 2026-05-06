@@ -427,6 +427,10 @@ public class Cpu6502 implements Runnable {
 			cycles = 7;
 			break;
 
+		/* *** NOP: No Ocyclesation *** */
+		case (byte) 0xEA:
+			if (ver > 3) System.out.println("[NOP]");
+			break;				
 			
 		/* *** AND: "And" Memory with Accumulator *** */
 		case (byte) 0x29:
@@ -1298,10 +1302,7 @@ public class Cpu6502 implements Runnable {
 //				if (safe)	illegal(3, opcode);
 //				break;			// not needed as it's the last one, but just in case
 
-//				/* *** NOP: No Ocyclesation *** */
-//				case 0xEA:
-//					if (ver > 3) System.out.println("[NOP]");
-//					break;		
+
 				/* *** BRK: force break *** */
 				case 0x00:
 					if (ver > 1) System.out.println("[BRK]");
