@@ -1610,11 +1610,22 @@ public class Cpu6502Test {
     If X < operand then C = 0  
     If X >= operand then C = 1  
 	 */
+	/*
+	 If X == OPERAND => Z=1; C=1;
+	 If X < OPERAND  => Z=0; C=0;
+	 If X > OPERAND  => Z=0; C=1;
+	 */
+	/*
+	 X == OPERAND => Z=1
+	 X != OPERAND => Z=0
+	 X <  OPERAND => C=0;
+	 X >= OPERAND => C=1;
+	 */
 	@ParameterizedTest
 	@CsvSource({
-		"0x55,0x55,0x03,2",
-		"0x55,0x54,0x01,2",
-		"0x55,0x56,0x00,2",
+		"0x55,0x55,0x03,2", // X=OP
+		"0x55,0x54,0x01,2", // X>OP
+		"0x55,0x56,0x00,2", // X<OP
 		})
 	void testCPXInmediate(byte xreg, byte operand,
 			byte expectedFlags, int expectedCycles) {

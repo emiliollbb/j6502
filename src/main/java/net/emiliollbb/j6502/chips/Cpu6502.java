@@ -726,7 +726,31 @@ public class Cpu6502 implements Runnable {
 //				cycles = 3;
 //				break;
 
-
+			/* *** Bxx: Branch on flag condition *** */
+		case (byte) 0x90:
+			if (ver > 2) System.out.println("[BCC]");
+			if((p & 0x01)==0) {
+				page=rel(page);
+				cycles = 3 + page;
+			} 
+			else {
+				pc++;	// must skip offset if not done EEEEEK
+			}
+			break;
+//			case 0xB0:
+//				if(p & 0b00000001) {
+//					rel(&page);
+//					cycles = 3 + page;
+//					if (ver > 2) System.out.println("[BCS]");
+//				} else pc++;	// must skip offset if not done EEEEEK
+//				break;
+//			case 0xF0:
+//				if(p & 0b00000010) {
+//					rel(&page);
+//					cycles = 3 + page;
+//					if (ver > 2) System.out.println("[BEQ]");
+//				} else pc++;	// must skip offset if not done EEEEEK
+//				break;
 
 
 
@@ -769,28 +793,7 @@ public class Cpu6502 implements Runnable {
 //				if (ver > 3) System.out.println("[ASLx]");
 //				cycles = 6 + page;	// 7 on NMOS
 //				break;
-//	/* *** Bxx: Branch on flag condition *** */
-//			case 0x90:
-//				if(!(p & 0b00000001)) {
-//					rel(&page);
-//					cycles = 3 + page;
-//					if (ver > 2) System.out.println("[BCC]");
-//				} else pc++;	// must skip offset if not done EEEEEK
-//				break;
-//			case 0xB0:
-//				if(p & 0b00000001) {
-//					rel(&page);
-//					cycles = 3 + page;
-//					if (ver > 2) System.out.println("[BCS]");
-//				} else pc++;	// must skip offset if not done EEEEEK
-//				break;
-//			case 0xF0:
-//				if(p & 0b00000010) {
-//					rel(&page);
-//					cycles = 3 + page;
-//					if (ver > 2) System.out.println("[BEQ]");
-//				} else pc++;	// must skip offset if not done EEEEEK
-//				break;
+//
 //	/* *** BIT: Test Bits in Memory with Accumulator *** */
 //			case 0x2C:
 //				temp = peek(am_a());

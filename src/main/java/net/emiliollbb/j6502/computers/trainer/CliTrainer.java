@@ -19,7 +19,8 @@ public class CliTrainer {
 				new CLIDevice(0x8000, System.out, System.in), 
 				/* 16k ROM $C000 - $FFFFF */
 				new RomChip(0xC000, 0x4000, 
-						new File("/home/emilio/proyectos/j6502/workspace/j6502/src/main/asm/clitrainer/test.bin"))));
+						new File("/home/emilio/proyectos/j6502/workspace/j6502/src/main/asm/clitrainer/testcpx.bin"))));
+		//cpu.setVerbose(10);
 	}
 	
 	public void run() {
