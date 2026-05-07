@@ -705,11 +705,11 @@ public class Cpu6502 implements Runnable {
 			cmp(x, peek(peek(pc++)));
 			cycles = 3;
 			break;
-			//			case 0xEC:
-//				cmp(x, peek(am_a()));
-//				if (ver > 3) System.out.println("[CPXa]");
-//				cycles = 4;
-//				break;
+		case (byte) 0xEC:
+			if (ver > 3) System.out.println("[CPXa]");
+			cmp(x, peek(am_a()));
+			cycles = 4;
+			break;
 
 //	/* *** CPY: Compare Memory And Index Y *** */
 //			case 0xC0:

@@ -1659,6 +1659,23 @@ public class Cpu6502Test {
 		Assertions.assertEquals(3, cycles);
 	}
 	
+	@Test
+	void testCPXAbsolute() {
+		Mockito.when(device.peek(0x0523)).thenReturn((byte)0x55);
+		loadProgram(0x0200, new int[] {
+				// LDX
+				0xA2, 0x56,
+				// CPX $0523
+				0xEC, 0x23, 0x05
+				});
+		cpu.reset();
+		cpu.step();
+		int cycles = cpu.step();
+		Assertions.assertEquals((byte) 0x56, cpu.getX());
+		Assertions.assertEquals((byte) 0x01, cpu.getP());
+		Assertions.assertEquals(4, cycles);
+	}
+	
 	private String printByte(byte b) {
 		return String.format("0x%02X", b)+ "("+b+")";
 	}
