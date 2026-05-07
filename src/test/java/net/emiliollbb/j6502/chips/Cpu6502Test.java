@@ -1600,7 +1600,27 @@ public class Cpu6502Test {
 		Assertions.assertEquals(expectedFlags, cpu.getP());
 		Assertions.assertEquals(expectedCycles, cycles);
 	}
-	
+	@ParameterizedTest
+	@CsvSource({
+		"0x55,0x55,true,0x00,2",
+		})
+	void testCPXInmediate(byte xreg, byte operand, boolean carry, 
+			byte expectedFlags, int expectedCycles) {
+		loadProgram(0x0200, new int[] {
+				// LDX value
+				0xA2, xreg,
+				// CLC/SEC
+				carry?0x38:0x18,
+				// CPX n});
+				0xE0, operand});
+		cpu.reset();
+		cpu.step();
+		cpu.step();
+		int cycles = cpu.step();
+		Assertions.assertEquals((byte)xreg, cpu.getX());
+		Assertions.assertEquals((byte)expectedFlags, cpu.getP());
+		Assertions.assertEquals(expectedCycles, cycles);
+	}
 	
 	private String printByte(byte b) {
 		return String.format("0x%02X", b)+ "("+b+")";

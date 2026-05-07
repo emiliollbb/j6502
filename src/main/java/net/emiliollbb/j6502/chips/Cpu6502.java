@@ -695,6 +695,36 @@ public class Cpu6502 implements Runnable {
 			sbc(peek(am_iz()));
 			cycles = 5 + dec;
 			break;
+		/* *** CPX: Compare Memory And Index X *** */
+		case (byte) 0xE0:
+			if (ver > 3) System.out.println("[CPX#]");
+			cmp(x, peek(pc++));
+			break;
+//			case 0xEC:
+//				cmp(x, peek(am_a()));
+//				if (ver > 3) System.out.println("[CPXa]");
+//				cycles = 4;
+//				break;
+//			case 0xE4:
+//				cmp(x, peek(peek(pc++)));
+//				if (ver > 3) System.out.println("[CPXz]");
+//				cycles = 3;
+//				break;
+//	/* *** CPY: Compare Memory And Index Y *** */
+//			case 0xC0:
+//				cmp(y, peek(pc++));
+//				if (ver > 3) System.out.println("[CPY#]");
+//				break;
+//			case 0xCC:
+//				cmp(y, peek(am_a()));
+//				if (ver > 3) System.out.println("[CPYa]");
+//				cycles = 4;
+//				break;
+//			case 0xC4:
+//				cmp(y, peek(peek(pc++)));
+//				if (ver > 3) System.out.println("[CPYz]");
+//				cycles = 3;
+//				break;
 
 
 
@@ -883,36 +913,6 @@ public class Cpu6502 implements Runnable {
 //				cmp(a, peek(am_iz()));
 //				if (ver > 3) System.out.println("[CMP(z)]");
 //				cycles = 5;
-//				break;
-//	/* *** CPX: Compare Memory And Index X *** */
-//			case 0xE0:
-//				cmp(x, peek(pc++));
-//				if (ver > 3) System.out.println("[CPX#]");
-//				break;
-//			case 0xEC:
-//				cmp(x, peek(am_a()));
-//				if (ver > 3) System.out.println("[CPXa]");
-//				cycles = 4;
-//				break;
-//			case 0xE4:
-//				cmp(x, peek(peek(pc++)));
-//				if (ver > 3) System.out.println("[CPXz]");
-//				cycles = 3;
-//				break;
-//	/* *** CPY: Compare Memory And Index Y *** */
-//			case 0xC0:
-//				cmp(y, peek(pc++));
-//				if (ver > 3) System.out.println("[CPY#]");
-//				break;
-//			case 0xCC:
-//				cmp(y, peek(am_a()));
-//				if (ver > 3) System.out.println("[CPYa]");
-//				cycles = 4;
-//				break;
-//			case 0xC4:
-//				cmp(y, peek(peek(pc++)));
-//				if (ver > 3) System.out.println("[CPYz]");
-//				cycles = 3;
 //				break;
 
 
@@ -1194,113 +1194,6 @@ public class Cpu6502 implements Runnable {
 				System.out.println(" ...HALT!");
 				cycles = 0;	// definitively stop execution
 				break;
-//	/* *** *** unused (illegal?) opcodes *** *** */
-//	/* *** remaining opcodes (illegal on NMOS) executed as pseudoNOPs, according to 65C02 byte and cycle usage *** */
-//			case (byte)0xDB:
-//			case (byte)0x03:
-//			case (byte)0x13:
-//			case (byte)0x23:
-//			case (byte)0x33:
-//			case (byte)0x43:
-//			case (byte)0x53:
-//			case (byte)0x63:
-//			case (byte)0x73:
-//			case (byte)0x83:
-//			case (byte)0x93:
-//			case (byte)0xA3:
-//			case (byte)0xB3:
-//			case (byte)0xC3:
-//			case (byte)0xD3:
-//			case (byte)0xE3:
-//			case (byte)0xF3:
-//			case (byte)0x0B:
-//			case (byte)0x1B:
-//			case (byte)0x2B:
-//			case (byte)0x3B:
-//			case (byte)0x4B:
-//			case (byte)0x5B:
-//			case (byte)0x6B:
-//			case (byte)0x7B:
-//			case (byte)0x8B:
-//			case (byte)0x9B:
-//			case (byte)0xAB:
-//			case (byte)0xBB:
-//			case (byte)0xEB:
-//			case (byte)0xFB:	// minus WDC opcodes, used for emulator control
-//			case (byte)0x07:
-//			case (byte)0x17:
-//			case (byte)0x27:
-//			case (byte)0x37:
-//			case (byte)0x47:
-//			case (byte)0x57:
-//			case (byte)0x67:
-//			case (byte)0x77:
-//			case (byte)0x87:
-//			case (byte)0x97:
-//			case (byte)0xA7:
-//			case (byte)0xB7:
-//			case (byte)0xC7:
-//			case (byte)0xD7:
-//			case (byte)0xE7:
-//			case (byte)0xF7:	// Rockwell RMB/SMB opcodes
-//			case (byte)0x0F:
-//			case (byte)0x1F:
-//			case (byte)0x2F:
-//			case (byte)0x3F:
-//			case (byte)0x4F:
-//			case (byte)0x5F:
-//			case (byte)0x6F:
-//			case (byte)0x7F:
-//			case (byte)0x8F:
-//			case (byte)0x9F:
-//			case (byte)0xAF:
-//			case (byte)0xBF:
-//			case (byte)0xCF:
-//			case (byte)0xDF:
-//			case (byte)0xEF:
-//			case (byte)0xFF:	// Rockwell BBR/BBS opcodes
-//				cycles = 1;		// ultra-fast 1 byte NOPs!
-//				if (ver)	System.out.println("[NOP!]");
-//				if (safe)	illegal(1, opcode);
-//				break;
-//			case 0x02:
-//			case 0x22:
-//			case 0x42:
-//			case 0x62:
-//			case 0x82:
-//			case 0xC2:
-//			case 0xE2:
-//				pc++;			// 2-byte, 2-cycle NOPs
-//				if (ver)	System.out.println("[NOP#]");
-//				if (safe)	illegal(2, opcode);
-//				break;
-//			case 0x44:
-//				pc++;
-//				cycles++;			// only case of 2-byte, 3-cycle NOP
-//				if (ver)	System.out.println("[NOPz]");
-//				if (safe)	illegal(2, opcode);
-//				break;
-//			case 0x54:
-//			case 0xD4:
-//			case 0xF4:
-//				pc++;
-//				cycles = 4;		// only cases of 2-byte, 4-cycle NOP
-//				if (ver)	System.out.println("[NOPzx]");
-//				if (safe)	illegal(2, opcode);
-//				break;
-//			case 0xDC:
-//			case 0xFC:
-//				pc += 2;
-//				cycles = 4;		// only cases of 3-byte, 4-cycle NOP
-//				if (ver)	System.out.println("[NOPa]");
-//				if (safe)	illegal(3, opcode);
-//				break;
-//			case 0x5C:
-//				pc += 2;
-//				cycles = 8;		// extremely slow 8-cycle NOP
-//				if (ver)	System.out.println("[NOP?]");
-//				if (safe)	illegal(3, opcode);
-//				break;			// not needed as it's the last one, but just in case
 
 
 				/* *** BRK: force break *** */
@@ -1417,22 +1310,20 @@ public class Cpu6502 implements Runnable {
 		}
 	}
 
-//
-//	/* CMP/CPX/CPY compare register to memory */
-//	void cmp(byte reg, byte d) {
-//		word big = reg;
-//
-//		big -= d;				// apparent subtract, always binary
-//
-//		if (big & 256)			p &= 0b11111110;	// set Carry if needed (note inversion)
-//		else					p |= 0b00000001;
-//		bits_nz(reg - d);							// set N & Z as usual
-//	}
-//	
-	
-	
-	
-	
+
+	/* CMP/CPX/CPY compare register to memory */
+	void cmp(byte reg, byte d) {
+		int unsignedAcumulator = a & 0x000000FF;
+		int unsignedOperand = ~(d & 0x000000FF);
+		int unsignedResult = unsignedAcumulator+unsignedOperand + (p&0x01);
+
+		// Carry
+		p=unsignedResult>255? (byte)(p|0x01) : (byte)(p&0xFE);
+		// Negative
+		p=unsignedResult>=0x80? (byte)(p|0x80):(byte)(p&0x7F);
+		// Zero
+		p=unsignedResult==0? (byte)(p|0x02):(byte)(p&0xFD);
+	}
 	
 	/* *** addressing modes *** */
 	/* absolute */
