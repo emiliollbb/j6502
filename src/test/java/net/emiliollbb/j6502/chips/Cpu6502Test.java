@@ -1641,7 +1641,6 @@ public class Cpu6502Test {
 		Assertions.assertEquals((byte)expectedFlags, cpu.getP());
 		Assertions.assertEquals(expectedCycles, cycles);
 	}
-	
 	@Test
 	void testCPXZeroPage() {
 		Mockito.when(device.peek(0x0023)).thenReturn((byte)0x55);
@@ -1658,7 +1657,6 @@ public class Cpu6502Test {
 		Assertions.assertEquals((byte) 0x01, cpu.getP());
 		Assertions.assertEquals(3, cycles);
 	}
-	
 	@Test
 	void testCPXAbsolute() {
 		Mockito.when(device.peek(0x0523)).thenReturn((byte)0x55);
@@ -1672,6 +1670,54 @@ public class Cpu6502Test {
 		cpu.step();
 		int cycles = cpu.step();
 		Assertions.assertEquals((byte) 0x56, cpu.getX());
+		Assertions.assertEquals((byte) 0x01, cpu.getP());
+		Assertions.assertEquals(4, cycles);
+	}
+	
+	@Test
+	void testCPYInmediate() {
+		loadProgram(0x0200, new int[] {
+				// LDX
+				0xA0, 0x56,
+				// CPY $23
+				0xC0, 0x55
+				});
+		cpu.reset();
+		cpu.step();
+		int cycles = cpu.step();
+		Assertions.assertEquals((byte) 0x56, cpu.getY());
+		Assertions.assertEquals((byte) 0x01, cpu.getP());
+		Assertions.assertEquals(3, cycles);
+	}
+	@Test
+	void testCPYZeroPage() {
+		Mockito.when(device.peek(0x0023)).thenReturn((byte)0x55);
+		loadProgram(0x0200, new int[] {
+				// LDX
+				0xA0, 0x56,
+				// CPY $23
+				0xC4, 0x23
+				});
+		cpu.reset();
+		cpu.step();
+		int cycles = cpu.step();
+		Assertions.assertEquals((byte) 0x56, cpu.getY());
+		Assertions.assertEquals((byte) 0x01, cpu.getP());
+		Assertions.assertEquals(3, cycles);
+	}
+	@Test
+	void testCPYAbsolute() {
+		Mockito.when(device.peek(0x0523)).thenReturn((byte)0x55);
+		loadProgram(0x0200, new int[] {
+				// LDX
+				0xA0, 0x56,
+				// CPY $0523
+				0xCC, 0x23, 0x05
+				});
+		cpu.reset();
+		cpu.step();
+		int cycles = cpu.step();
+		Assertions.assertEquals((byte) 0x56, cpu.getY());
 		Assertions.assertEquals((byte) 0x01, cpu.getP());
 		Assertions.assertEquals(4, cycles);
 	}

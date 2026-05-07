@@ -710,22 +710,22 @@ public class Cpu6502 implements Runnable {
 			cmp(x, peek(am_a()));
 			cycles = 4;
 			break;
+	/* *** CPY: Compare Memory And Index Y *** */
+		case (byte) 0xC0:
+			if (ver > 3) System.out.println("[CPY#]");
+			cmp(y, peek(pc++));
+			break;
+		case (byte) 0xC4:
+			if (ver > 3) System.out.println("[CPYz]");
+			cmp(y, peek(peek(pc++)));
+			cycles = 3;
+			break;			
+		case (byte) 0xCC:
+			if (ver > 3) System.out.println("[CPYa]");
+			cmp(y, peek(am_a()));
+			cycles = 4;
+			break;
 
-//	/* *** CPY: Compare Memory And Index Y *** */
-//			case 0xC0:
-//				cmp(y, peek(pc++));
-//				if (ver > 3) System.out.println("[CPY#]");
-//				break;
-//			case 0xCC:
-//				cmp(y, peek(am_a()));
-//				if (ver > 3) System.out.println("[CPYa]");
-//				cycles = 4;
-//				break;
-//			case 0xC4:
-//				cmp(y, peek(peek(pc++)));
-//				if (ver > 3) System.out.println("[CPYz]");
-//				cycles = 3;
-//				break;
 
 			/* *** Bxx: Branch on flag condition *** */
 		case (byte) 0x90:
