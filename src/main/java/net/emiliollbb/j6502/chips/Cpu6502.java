@@ -700,16 +700,17 @@ public class Cpu6502 implements Runnable {
 			if (ver > 3) System.out.println("[CPX#]");
 			cmp(x, peek(pc++));
 			break;
-//			case 0xEC:
+		case (byte) 0xE4:
+			if (ver > 3) System.out.println("[CPXz]");
+			cmp(x, peek(peek(pc++)));
+			cycles = 3;
+			break;
+			//			case 0xEC:
 //				cmp(x, peek(am_a()));
 //				if (ver > 3) System.out.println("[CPXa]");
 //				cycles = 4;
 //				break;
-//			case 0xE4:
-//				cmp(x, peek(peek(pc++)));
-//				if (ver > 3) System.out.println("[CPXz]");
-//				cycles = 3;
-//				break;
+
 //	/* *** CPY: Compare Memory And Index Y *** */
 //			case 0xC0:
 //				cmp(y, peek(pc++));
