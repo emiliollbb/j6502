@@ -1600,21 +1600,30 @@ public class Cpu6502Test {
 		Assertions.assertEquals(expectedFlags, cpu.getP());
 		Assertions.assertEquals(expectedCycles, cycles);
 	}
+	
+	/*
+	 * 
+    UNSIGNED COMPARISON
+    NVBDIZC
+    If X != operand then Z = 0 
+    If X == operand then Z = 1  
+    If X < operand then C = 0  
+    If X >= operand then C = 1  
+	 */
 	@ParameterizedTest
 	@CsvSource({
-		"0x55,0x55,true,0x00,2",
+		"0x55,0x55,0x03,2",
+		"0x55,0x54,0x01,2",
+		"0x55,0x56,0x00,2",
 		})
-	void testCPXInmediate(byte xreg, byte operand, boolean carry, 
+	void testCPXInmediate(byte xreg, byte operand,
 			byte expectedFlags, int expectedCycles) {
 		loadProgram(0x0200, new int[] {
 				// LDX value
 				0xA2, xreg,
-				// CLC/SEC
-				carry?0x38:0x18,
 				// CPX n});
 				0xE0, operand});
 		cpu.reset();
-		cpu.step();
 		cpu.step();
 		int cycles = cpu.step();
 		Assertions.assertEquals((byte)xreg, cpu.getX());

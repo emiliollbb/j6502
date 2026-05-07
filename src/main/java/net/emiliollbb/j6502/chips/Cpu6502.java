@@ -1313,16 +1313,16 @@ public class Cpu6502 implements Runnable {
 
 	/* CMP/CPX/CPY compare register to memory */
 	void cmp(byte reg, byte d) {
-		int unsignedAcumulator = a & 0x000000FF;
-		int unsignedOperand = ~(d & 0x000000FF);
-		int unsignedResult = unsignedAcumulator+unsignedOperand + (p&0x01);
+		int intRegister = reg & 0x000000FF;
+		int intOperand = ~(d & 0x000000FF)+1;
+		int intResult = intRegister+intOperand;
 
 		// Carry
-		p=unsignedResult>255? (byte)(p|0x01) : (byte)(p&0xFE);
+		p=intResult<0? (byte)(p&0xFE):(byte)(p|0x01);
 		// Negative
-		p=unsignedResult>=0x80? (byte)(p|0x80):(byte)(p&0x7F);
+		p=intResult>=0x80? (byte)(p|0x80):(byte)(p&0x7F);
 		// Zero
-		p=unsignedResult==0? (byte)(p|0x02):(byte)(p&0xFD);
+		p=intResult==0? (byte)(p|0x02):(byte)(p&0xFD);
 	}
 	
 	/* *** addressing modes *** */
