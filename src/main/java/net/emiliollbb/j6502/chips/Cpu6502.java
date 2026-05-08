@@ -1266,30 +1266,12 @@ public class Cpu6502 implements Runnable {
 //
 	/* ADC, add with carry */
 	void adc(byte d) {
-		int unsignedAcumulator = a & 0x000000FF;
-		int unsignedOperand = d & 0x000000FF;
-		int unsignedResult = unsignedAcumulator+unsignedOperand + (p&0x01);
-		
-		int signedAcumulator = (int) a;
-		int signedOperand = (int) d;
-		int signedResult = signedAcumulator + signedOperand + (p&0x01);
-
-		a = (byte)(unsignedResult & 0x000000FF);
-		
-		// Carry
-		p=unsignedResult>255? (byte)(p|0x01) : (byte)(p&0xFE);
-		// Negative
-		p=signedResult<0? (byte)(p|0x80):(byte)(p&0x7F);
-		// Zero
-		p=unsignedResult==0? (byte)(p|0x02):(byte)(p&0xFD);
-		// Overflow
-		p=signedResult>127 || signedResult<-128? (byte)(p|0x40):(byte)(p&0xBF);
-		
+		a=binaryAdd(a, d);		
 		// Decimal mode
 		if ((p&0x08)==1) {
 			int bcdAcumulator = a & 0x000000F0*10 + a & 0x0000000F;
 			int bcdOperand = d & 0x000000F0*10 + d & 0x0000000F;
-			unsignedResult = bcdAcumulator+bcdOperand;
+			int unsignedResult = bcdAcumulator+bcdOperand;
 			String strResult = String.format("%02d", unsignedResult);
 			a = (byte)((Integer.parseInt(String.valueOf(strResult.charAt(0)))&0x0000000F)<<8);
 			a |= (byte)(Integer.parseInt(String.valueOf(strResult.charAt(0)))&0x0000000F);
@@ -1313,20 +1295,27 @@ public class Cpu6502 implements Runnable {
 			adc((byte)~d);
 		}
 	}
+	
+	protected byte binaryAdd(byte reg, byte operand) {
+		int unsignedReg = reg & 0x000000FF;
+		int unsignedOperand = operand & 0x000000FF;
+		int unsignedResult = unsignedReg+unsignedOperand + (p&0x01);
+		// Carry
+		p=unsignedResult>255? (byte)(p|0x01) : (byte)(p&0xFE);
+		// Negative
+		p=unsignedResult>127? (byte)(p|0x80):(byte)(p&0x7F);
+		// Zero
+		p=unsignedResult==0? (byte)(p|0x02):(byte)(p&0xFD);
+		// Overflow
+		p=unsignedReg>127==unsignedOperand>127 && unsignedResult > 127? (byte)(p|0x40):(byte)(p&0xBF);
+		return (byte)(unsignedResult & 0x000000FF);
+	}
 
 
 	/* CMP/CPX/CPY compare register to memory */
 	void cmp(byte reg, byte d) {
-		int intRegister = reg & 0x000000FF;
-		int intOperand = ~(d & 0x000000FF)+1;
-		int intResult = intRegister+intOperand;
-
-		// Carry
-		p=intResult<0? (byte)(p&0xFE):(byte)(p|0x01);
-		// Negative
-		p=intResult>=0x80? (byte)(p|0x80):(byte)(p&0x7F);
-		// Zero
-		p=intResult==0? (byte)(p|0x02):(byte)(p&0xFD);
+		p|=0x01;
+		sbc(x);
 	}
 	
 	/* *** addressing modes *** */

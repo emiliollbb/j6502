@@ -1222,7 +1222,7 @@ public class Cpu6502Test {
 		"85,17,false,102,0,2",
 		"85,17,true,103,0,2",
 		"-100,10,false,-90,-128,2",
-		"120,8,false,-128,64,2",
+		"120,8,false,-128,-64,2",
 		})
 	void testADCInmediate(byte acumulator, byte operand, boolean carry, 
 			byte expectedResult, byte expectedFlags, int expectedCycles) {
@@ -1295,6 +1295,9 @@ public class Cpu6502Test {
 	@Test
 	void testADCAbsoluteX() {
 		Mockito.when(device.peek(0xF003)).thenReturn((byte)0x34);
+		// 85+52=137
+		// 0x55+0x34=0x89 // C=0
+		// 85+52=-119 // V=1 N=1
 		loadProgram(0x0200, new int[] {
 				// LDX #02
 				0xA2, 0x02,
@@ -1308,7 +1311,7 @@ public class Cpu6502Test {
 		cpu.step();
 		int cycles = cpu.step();
 		Assertions.assertEquals((byte)0x89, cpu.getA());
-		Assertions.assertEquals((byte)0x40, cpu.getP());
+		Assertions.assertEquals((byte)0xC0, cpu.getP());
 		Assertions.assertEquals(4, cycles);
 	}
 	@Test
@@ -1327,7 +1330,7 @@ public class Cpu6502Test {
 		cpu.step();
 		int cycles = cpu.step();
 		Assertions.assertEquals((byte)0x89, cpu.getA());
-		Assertions.assertEquals((byte)0x40, cpu.getP());
+		Assertions.assertEquals((byte)0xC0, cpu.getP());
 		Assertions.assertEquals(4, cycles);
 	}
 	@Test
