@@ -1266,7 +1266,7 @@ public class Cpu6502 implements Runnable {
 //
 	/* ADC, add with carry */
 	void adc(byte d) {
-		a=binaryAdd(a, d);		
+		a=binaryAdd(a, d, true);		
 		// Decimal mode
 		if ((p&0x08)==1) {
 			int bcdAcumulator = a & 0x000000F0*10 + a & 0x0000000F;
@@ -1280,6 +1280,7 @@ public class Cpu6502 implements Runnable {
 		}
 	}
 	void sbc(byte d) {
+		adc((byte)~d);
 		// Decimal mode
 		if ((p&0x08)==1) {
 			int bcdAcumulator = a & 0x000000F0*10 + a & 0x0000000F;
@@ -1291,23 +1292,20 @@ public class Cpu6502 implements Runnable {
 			// Carry
 			p=unsignedResult>99? (byte)(p|0xFE) : (byte)(p&0x01);
 		}
-		else {
-			adc((byte)~d);
-		}
 	}
 	
-	protected byte binaryAdd(byte reg, byte operand) {
+	protected byte binaryAdd(byte reg, byte operand, boolean setOverflow) {
 		int unsignedReg = reg & 0x000000FF;
 		int unsignedOperand = operand & 0x000000FF;
 		int unsignedResult = unsignedReg+unsignedOperand + (p&0x01);
 		// Carry
 		p=unsignedResult>255? (byte)(p|0x01) : (byte)(p&0xFE);
-		// Negative
-		p=unsignedResult>127? (byte)(p|0x80):(byte)(p&0x7F);
-		// Zero
-		p=unsignedResult==0? (byte)(p|0x02):(byte)(p&0xFD);
+		// Negative & zero
+		bits_nz((byte)(unsignedResult&0x000000FF));
 		// Overflow
-		p=unsignedReg>127==unsignedOperand>127 && unsignedResult > 127? (byte)(p|0x40):(byte)(p&0xBF);
+		if(setOverflow) {
+			p=unsignedReg>127==unsignedOperand>127 && unsignedResult > 127? (byte)(p|0x40):(byte)(p&0xBF);
+		}
 		return (byte)(unsignedResult & 0x000000FF);
 	}
 
@@ -1315,7 +1313,7 @@ public class Cpu6502 implements Runnable {
 	/* CMP/CPX/CPY compare register to memory */
 	void cmp(byte reg, byte d) {
 		p|=0x01;
-		sbc(x);
+		binaryAdd((byte)reg,(byte)~d, false);
 	}
 	
 	/* *** addressing modes *** */

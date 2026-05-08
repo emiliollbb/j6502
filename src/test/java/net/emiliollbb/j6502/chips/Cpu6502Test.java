@@ -1254,7 +1254,7 @@ public class Cpu6502Test {
 		cpu.step();
 		int cycles = cpu.step();
 		Assertions.assertEquals((byte)0x89, cpu.getA());
-		Assertions.assertEquals((byte)0x40, cpu.getP());
+		Assertions.assertEquals((byte)0xC0, cpu.getP());
 		Assertions.assertEquals(3, cycles);
 	}
 	@Test
@@ -1273,7 +1273,7 @@ public class Cpu6502Test {
 		cpu.step();
 		int cycles = cpu.step();
 		Assertions.assertEquals((byte)0x89, cpu.getA());
-		Assertions.assertEquals((byte)0x40, cpu.getP());
+		Assertions.assertEquals((byte)0xC0, cpu.getP());
 		Assertions.assertEquals(4, cycles);
 	}
 	@Test
@@ -1289,7 +1289,7 @@ public class Cpu6502Test {
 		cpu.step();
 		int cycles = cpu.step();
 		Assertions.assertEquals((byte)0x89, cpu.getA());
-		Assertions.assertEquals((byte)0x40, cpu.getP());
+		Assertions.assertEquals((byte)0xC0, cpu.getP());
 		Assertions.assertEquals(4, cycles);
 	}
 	@Test
@@ -1351,7 +1351,7 @@ public class Cpu6502Test {
 		cpu.step();
 		int cycles = cpu.step();
 		Assertions.assertEquals((byte)0x89, cpu.getA());
-		Assertions.assertEquals((byte)0x40, cpu.getP());
+		Assertions.assertEquals((byte)0xC0, cpu.getP());
 		Assertions.assertEquals(6, cycles);
 	}
 	@Test
@@ -1372,7 +1372,7 @@ public class Cpu6502Test {
 		cpu.step();
 		int cycles = cpu.step();
 		Assertions.assertEquals((byte)0x89, cpu.getA());
-		Assertions.assertEquals((byte)0x40, cpu.getP());
+		Assertions.assertEquals((byte)0xC0, cpu.getP());
 		Assertions.assertEquals(5, cycles);
 	}
 	@ParameterizedTest
@@ -1578,7 +1578,7 @@ public class Cpu6502Test {
 	}	
 	@ParameterizedTest
 	@CsvSource({
-		// 23-13=10
+		// 23-13=10; C=1 V=0 N=0
 		"35,19,true,16,1,3",
 		})
 	void testSBCInmediateDEC(byte acumulator, byte operand, boolean carry, 
@@ -1628,7 +1628,7 @@ public class Cpu6502Test {
 	@CsvSource({
 		"0x55,0x55,0x03,2", // X=OP
 		"0x55,0x54,0x01,2", // X>OP
-		"0x55,0x56,0x00,2", // X<OP
+		"0x55,0x56,-128,2", // X<OP
 		})
 	void testCPXInmediate(byte xreg, byte operand,
 			byte expectedFlags, int expectedCycles) {
@@ -1690,7 +1690,7 @@ public class Cpu6502Test {
 		int cycles = cpu.step();
 		Assertions.assertEquals((byte) 0x56, cpu.getY());
 		Assertions.assertEquals((byte) 0x01, cpu.getP());
-		Assertions.assertEquals(3, cycles);
+		Assertions.assertEquals(2, cycles);
 	}
 	@Test
 	void testCPYZeroPage() {
