@@ -1725,6 +1725,157 @@ public class Cpu6502Test {
 		Assertions.assertEquals(4, cycles);
 	}
 	
+	@Test
+	void testCMPInmediate() {
+		loadProgram(0x0200, new int[] {
+				// LDA acumulator
+				0xA9, 0x56, 
+				// CMP operand
+				0xC9, 0x55
+				});
+		cpu.reset();
+		cpu.step();
+		int cycles = cpu.step();
+		Assertions.assertEquals(0x56, cpu.getA());
+		Assertions.assertEquals(0x01, cpu.getP());
+		Assertions.assertEquals(2, cycles);
+	}
+	@Test
+	void testCMPZeroPage() {
+		//0x55 + 0x34
+		Mockito.when(device.peek(0x0003)).thenReturn((byte)0x54);
+		loadProgram(0x0200, new int[] {
+				// LDA #$55
+				0xA9, 0x55,
+				// CMP #$03
+				0XC5, 0x03
+				});
+		cpu.reset();
+		cpu.step();
+		int cycles = cpu.step();
+		Assertions.assertEquals((byte)0x55, cpu.getA());
+		Assertions.assertEquals((byte)0x01, cpu.getP());
+		Assertions.assertEquals(3, cycles);
+	}
+	@Test
+	void testCMPZeroPageX() {
+		Mockito.when(device.peek(0x0012)).thenReturn((byte)0x54);
+		loadProgram(0x0200, new int[] {
+				// LDX #0F
+				0xA2, 0x0F,
+				// LDA #$55
+				0xA9, 0x55,
+				// CMP #$03
+				0xD5, 0x03
+				});
+		cpu.reset();
+		cpu.step();
+		cpu.step();
+		int cycles = cpu.step();
+		Assertions.assertEquals((byte)0x55, cpu.getA());
+		Assertions.assertEquals((byte)0x01, cpu.getP());
+		Assertions.assertEquals(4, cycles);
+	}
+	@Test
+	void testCMPAbsolute() {
+		Mockito.when(device.peek(0xF003)).thenReturn((byte)0x54);
+		loadProgram(0x0200, new int[] {
+				// LDA #$55
+				0xA9, 0x55,
+				// CMP $F003
+				0XCD, 0x03, 0XF0
+				});
+		cpu.reset();
+		cpu.step();
+		int cycles = cpu.step();
+		Assertions.assertEquals((byte)0x55, cpu.getA());
+		Assertions.assertEquals((byte)0x01, cpu.getP());
+		Assertions.assertEquals(4, cycles);
+	}
+	@Test
+	void testCMPAbsoluteX() {
+		Mockito.when(device.peek(0xF003)).thenReturn((byte)0x54);
+		// 85+52=137
+		// 0x55+0x34=0x89 // C=0
+		// 85+52=-119 // V=1 N=1
+		loadProgram(0x0200, new int[] {
+				// LDX #02
+				0xA2, 0x02,
+				// LDA #$55
+				0xA9, 0x55,
+				// CMP $01,X
+				0xDD, 0x01, 0XF0
+				});
+		cpu.reset();
+		cpu.step();
+		cpu.step();
+		int cycles = cpu.step();
+		Assertions.assertEquals((byte)0x55, cpu.getA());
+		Assertions.assertEquals((byte)0x01, cpu.getP());
+		Assertions.assertEquals(4, cycles);
+	}
+	@Test
+	void testCMPAbsoluteY() {
+		Mockito.when(device.peek(0xF003)).thenReturn((byte)0x54);
+		loadProgram(0x0200, new int[] {
+				// LDY #02
+				0xA0, 0x02,
+				// LDA #$55
+				0xA9, 0x55,
+				// CMP $01,Y
+				0xD9, 0x01, 0XF0
+				});
+		cpu.reset();
+		cpu.step();
+		cpu.step();
+		int cycles = cpu.step();
+		Assertions.assertEquals((byte)0x55, cpu.getA());
+		Assertions.assertEquals((byte)0x01, cpu.getP());
+		Assertions.assertEquals(4, cycles);
+	}
+	@Test
+	void testCMPIndirectX() {
+		Mockito.when(device.peek(0x0005)).thenReturn((byte)0x03);
+		Mockito.when(device.peek(0x0006)).thenReturn((byte)0xF0);
+		Mockito.when(device.peek(0xF003)).thenReturn((byte)0x54);
+		loadProgram(0x0200, new int[] {
+				// LDX #02
+				0xA2, 0x02,
+				// LDA #$55
+				0xA9, 0x55,
+				// CMP ($03,X)
+				0xC1, 0x03
+				});
+		cpu.reset();
+		cpu.step();
+		cpu.step();
+		int cycles = cpu.step();
+		Assertions.assertEquals((byte)0x55, cpu.getA());
+		Assertions.assertEquals((byte)0x01, cpu.getP());
+		Assertions.assertEquals(6, cycles);
+	}
+	@Test
+	void testCMPIndirectY() {
+		Mockito.when(device.peek(0x0005)).thenReturn((byte)0x01);
+		Mockito.when(device.peek(0x0006)).thenReturn((byte)0xF0);
+		Mockito.when(device.peek(0xF003)).thenReturn((byte)0x54);
+		loadProgram(0x0200, new int[] {
+				// LDY #02
+				0xA0, 0x02,
+				// LDA #$55
+				0xA9, 0x55,
+				// CMP ($05),Y
+				0xD1, 0x05
+				});
+		cpu.reset();
+		cpu.step();
+		cpu.step();
+		int cycles = cpu.step();
+		Assertions.assertEquals((byte)0x55, cpu.getA());
+		Assertions.assertEquals((byte)0x01, cpu.getP());
+		Assertions.assertEquals(5, cycles);
+	}
+	
 	private String printByte(byte b) {
 		return String.format("0x%02X", b)+ "("+b+")";
 	}

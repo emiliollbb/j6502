@@ -726,6 +726,47 @@ public class Cpu6502 implements Runnable {
 			cycles = 4;
 			break;
 
+		/* *** CMP: Compare Memory And Accumulator *** */
+		case (byte) 0xC9:
+			if (ver > 3) System.out.println("[CMP#]");
+			cmp(a, peek(pc++));
+			break;
+		case (byte) 0xC5:
+			if (ver > 3) System.out.println("[CMPz]");
+			cmp(a, peek(peek(pc++)));
+			cycles = 3;
+			break;
+		case (byte) 0xD5:
+			if (ver > 3) System.out.println("[CMPzx]");
+			cmp(a, peek(am_zx()));
+			cycles = 4;
+			break;
+		case (byte) 0xCD:
+			if (ver > 3) System.out.println("[CMPa]");
+			cmp(a, peek(am_a()));
+			cycles = 4;
+			break;
+		case (byte) 0xD9:
+			if (ver > 3) System.out.println("[CMPy]");
+			cmp(a, peek(am_ay()));
+			cycles = 4 + page;
+			break;
+		case (byte) 0xC1:
+			if (ver > 3) System.out.println("[CMP(x)]");
+			cmp(a, peek(am_ix()));
+			cycles = 6;
+			break;
+		case (byte) 0xD1:
+			if (ver > 3) System.out.println("[CMP(y)]");
+			cmp(a, peek(am_iy()));
+			cycles = 5 + page;
+			break;
+		
+		case (byte) 0xDD:
+			if (ver > 3) System.out.println("[CMPx]");
+			cmp(a, peek(am_ax()));
+			cycles = 4 + page;
+			break;
 
 			/* *** Bxx: Branch on flag condition *** */
 		case (byte) 0x90:
@@ -873,51 +914,7 @@ public class Cpu6502 implements Runnable {
 //				if (ver > 2) System.out.println("[BVS]");
 //				break;
 
-//	/* *** CMP: Compare Memory And Accumulator *** */
-//			case 0xC9:
-//				cmp(a, peek(pc++));
-//				if (ver > 3) System.out.println("[CMP#]");
-//				break;
-//			case 0xCD:
-//				cmp(a, peek(am_a()));
-//				if (ver > 3) System.out.println("[CMPa]");
-//				cycles = 4;
-//				break;
-//			case 0xC5:
-//				cmp(a, peek(peek(pc++)));
-//				if (ver > 3) System.out.println("[CMPz]");
-//				cycles = 3;
-//				break;
-//			case 0xC1:
-//				cmp(a, peek(am_ix()));
-//				if (ver > 3) System.out.println("[CMP(x)]");
-//				cycles = 6;
-//				break;
-//			case 0xD1:
-//				cmp(a, peek(am_iy(&page)));
-//				if (ver > 3) System.out.println("[CMP(y)]");
-//				cycles = 5 + page;
-//				break;
-//			case 0xD5:
-//				cmp(a, peek(am_zx()));
-//				if (ver > 3) System.out.println("[CMPzx]");
-//				cycles = 4;
-//				break;
-//			case 0xDD:
-//				cmp(a, peek(am_ax(&page)));
-//				if (ver > 3) System.out.println("[CMPx]");
-//				cycles = 4 + page;
-//				break;
-//			case 0xD9:
-//				cmp(a, peek(am_ay(&page)));
-//				if (ver > 3) System.out.println("[CMPy]");
-//				cycles = 4 + page;
-//				break;
-//			case 0xD2:			// CMOS only
-//				cmp(a, peek(am_iz()));
-//				if (ver > 3) System.out.println("[CMP(z)]");
-//				cycles = 5;
-//				break;
+
 
 
 
