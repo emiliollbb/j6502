@@ -28,6 +28,9 @@ public class Durango {
 		cpu.listDevices();
 		
 		cpu.reset();
+		for(int i=0; i<10; i++) {
+			cpu.step();
+		}
 		//new Thread(cpu).start();
 		
 	}

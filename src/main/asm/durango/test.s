@@ -3,6 +3,11 @@
 
 _main:
 .(
+	; Set video mode
+    ; [HiRes Invert S1 S0    RGB LED NC NC]
+    LDA #$3F
+    STA $df80
+
 	LDX #0
 	STX $6000
 	INX
