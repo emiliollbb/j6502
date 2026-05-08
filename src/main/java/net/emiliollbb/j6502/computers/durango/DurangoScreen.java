@@ -10,11 +10,13 @@ public class DurangoScreen extends Canvas{
 	private static final long serialVersionUID = -1643011527112910725L;
 	private int zoom;
 	private RamChip ram;
+	private DurangoRom rom;
 	
-	public DurangoScreen(int zoom, RamChip ram) {
+	public DurangoScreen(int zoom, RamChip ram, DurangoRom rom) {
     	super();
-    	this.zoom=zoom;
+    	this.zoom=zoom*2;
     	this.ram=ram;
+    	this.rom=rom;
     }
 	
 	protected void drawPixel(Graphics g, int x, int y, Color color) {
@@ -40,7 +42,7 @@ public class DurangoScreen extends Canvas{
      */
     private void updatePixel(Graphics g, int addr) {
       // Read video mode [HiRes Invert S1 S0    RGB LED NC NC]
-      byte videoModeReg = ram.peek(0xdf80);
+      byte videoModeReg = rom.peek(0xdf80);
       
       // Flags
       var hiRes = (videoModeReg & 0x80)>>7;      
@@ -85,14 +87,14 @@ public class DurangoScreen extends Canvas{
       }
 	
       // Process invert flag
-      if((ram.peek(0xdf80) & 0x40)>>6 == 1) {
+      if((rom.peek(0xdf80) & 0x40)>>6 == 1) {
         red = 0xff-red;
         green = 0xff - green;
         blue = 0xff - blue;
       }
 	
       // Process RGB flag
-      if((ram.peek(0xdf80) & 0x08)>>3 == 0) {
+      if((rom.peek(0xdf80) & 0x08)>>3 == 0) {
         red = (red + green + blue) / 3;
         green = red;
         blue = green;
@@ -106,7 +108,7 @@ public class DurangoScreen extends Canvas{
       int color = color_index == 0 ? 0x00 : 0xff;
 
       // Process invert flag
-      if((ram.peek(0xdf80) & 0x40)>>6 == 1) {
+      if((rom.peek(0xdf80) & 0x40)>>6 == 1) {
         color = 0xff-color;
       }
       
@@ -121,7 +123,7 @@ public class DurangoScreen extends Canvas{
      */
     private void drawColorPixel(Graphics g, int addr) {
       // Calculate screen address
-      int screenAddress = ((ram.peek(0xdf80) & 0x30)>>4)*0x2000;
+      int screenAddress = ((rom.peek(0xdf80) & 0x30)>>4)*0x2000;
       // Calculate screen y coord
       int y = (int)Math.floor((addr - screenAddress) * 2 / 128);
       // Calculate screen x coord
@@ -136,7 +138,7 @@ public class DurangoScreen extends Canvas{
     
     private void drawHiResPixel(Graphics g, int addr) {
       // Calculate screen address
-      int screenAddress = ((ram.peek(0xdf80) & 0x30)>>4)*0x2000;
+      int screenAddress = ((rom.peek(0xdf80) & 0x30)>>4)*0x2000;
       // Calculate screen y coord
       int y = (int) Math.floor((addr - screenAddress) * 8 / 256);
       // Calculate screen x coord

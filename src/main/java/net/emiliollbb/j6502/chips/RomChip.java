@@ -8,7 +8,7 @@ import java.nio.file.Files;
 import net.emiliollbb.j6502.interfaces.IBusDevice;
 
 public class RomChip extends AbstractBusDevice implements IBusDevice {
-	private byte[] rom;
+	protected byte[] rom;
 	
 	public RomChip(int startAddress, int size, byte[] data) {
 		super("ROM", startAddress, size);
