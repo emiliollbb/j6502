@@ -120,6 +120,59 @@ public class Cpu65C02 extends Cpu6502 {
 //			super.step();
 //			cycles = 6 + page;	// 7 for NMOS
 //			break;
+
+//			/* *** TRB: Test and Reset Bits, CMOS only *** */
+//			case 0x1C:
+//				adr = am_a();
+//				temp = peek(adr);
+//				if (temp & a)		p &= 0b11111101;	// set Z accordingly
+//				else 				p |= 0b00000010;
+//				poke(adr, temp & ~a);
+//				if (ver > 3) System.out.println("[TRBa]");
+//				cycles = 6;
+//				break;
+//			case 0x14:
+//				adr = peek(pc++);
+//				temp = peek(adr);
+//				if (temp & a)		p &= 0b11111101;	// set Z accordingly
+//				else 				p |= 0b00000010;
+//				poke(adr, temp & ~a);
+//				if (ver > 3) System.out.println("[TRBz]");
+//				cycles = 5;
+//				break;
+//	/* *** TSB: Test and Set Bits, CMOS only *** */
+//			case 0x0C:
+//				adr = am_a();
+//				temp = peek(adr);
+//				if (temp & a)		p &= 0b11111101;	// set Z accordingly
+//				else 				p |= 0b00000010;
+//				poke(adr, temp | a);
+//				if (ver > 3) System.out.println("[TSBa]");
+//				cycles = 6;
+//				break;
+//			case 0x04:
+//				adr = peek(pc++);
+//				temp = peek(adr);
+//				if (temp & a)		p &= 0b11111101;	// set Z accordingly
+//				else 				p |= 0b00000010;
+//				poke(adr, temp | a);
+//				if (ver > 3) System.out.println("[TSBz]");
+//				cycles = 5;
+//				break;
+			
+
+//			/* *** *** special control 'opcodes' *** *** */
+//			/* *** Emulator Breakpoint  (WAI on WDC) *** */
+//					case 0xCB:
+////						if (ver)	System.out.println(" Status @ $%x04:", pc-1);	// must allow warnings to display status request
+////						stat();
+//						run = 1;		// pause execution
+//						break;
+			/* *** Graceful Halt (STP on WDC) *** */
+					case (byte)0xDB:
+						System.out.println(" ...HALT!");
+						cycles = 0;	// definitively stop execution
+						break;
 			
 		default:
 			pc--;

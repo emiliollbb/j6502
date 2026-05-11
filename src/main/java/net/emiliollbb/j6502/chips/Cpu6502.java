@@ -915,6 +915,69 @@ public class Cpu6502 implements Runnable {
 			cycles = 7;
 			break;			
 		
+			//
+//			/* *** BIT: Test Bits in Memory with Accumulator *** */
+//					case 0x2C:
+//						temp = peek(am_a());
+//						p &= 0b00111101;			// pre-clear N, V & Z
+//						p |= (temp & 0b11000000);	// copy bits 7 & 6 as N & Z
+//						p |= (a & temp)?0:2;		// set Z accordingly
+//						if (ver > 3) System.out.println("[BITa]");
+//						cycles = 4;
+//						break;
+//					case 0x24:
+//						temp = peek(peek(pc++));
+//						p &= 0b00111101;			// pre-clear N, V & Z
+//						p |= (temp & 0b11000000);	// copy bits 7 & 6 as N & Z
+//						p |= (a & temp)?0:2;		// set Z accordingly
+//						if (ver > 3) System.out.println("[BITz]");
+//						cycles = 3;
+//						break;
+//					case 0x89:			// CMOS only
+//						temp = peek(pc++);
+//						p &= 0b11111101;			// pre-clear Z only, is this OK?
+//						p |= (a & temp)?0:2;		// set Z accordingly
+//						if (ver > 3) System.out.println("[BIT#]");
+//						break;
+//					case 0x3C:			// CMOS only
+//						temp = peek(am_ax(&page));
+//						p &= 0b00111101;			// pre-clear N, V & Z
+//						p |= (temp & 0b11000000);	// copy bits 7 & 6 as N & Z
+//						p |= (a & temp)?0:2;		// set Z accordingly
+//						if (ver > 3) System.out.println("[BITx]");
+//						cycles = 4 + page;
+//						break;
+//					case 0x34:			// CMOS only
+//						temp = peek(am_zx());
+//						p &= 0b00111101;			// pre-clear N, V & Z
+//						p |= (temp & 0b11000000);	// copy bits 7 & 6 as N & Z
+//						p |= (a & temp)?0:2;		// set Z accordingly
+//						if (ver > 3) System.out.println("[BITzx]");
+//						cycles = 4;
+//						break;
+//			/* *** Bxx: Branch on flag condition *** */
+//					case 0x30:
+//						if(p & 0b10000000) {
+//							rel(&page);
+//							cycles = 3 + page;
+//						} else pc++;	// must skip offset if not done EEEEEK
+//						if (ver > 2) System.out.println("[BMI]");
+//						break;
+//					case 0xD0:
+//						if(!(p & 0b00000010)) {
+//							rel(&page);
+//							cycles = 3 + page;
+//						} else pc++;	// must skip offset if not done EEEEEK
+//						if (ver > 2) System.out.println("[BNE]");
+//						break;
+//					case 0x10:
+//						if(!(p & 0b10000000)) {
+//							rel(&page);
+//							cycles = 3 + page;
+//						} else pc++;	// must skip offset if not done EEEEEK
+//						if (ver > 2) System.out.println("[BPL]");
+//						break;			
+			
 			/* *** Bxx: Branch on flag condition *** */
 		case (byte) 0x90:
 			if (ver > 2) System.out.println("[BCC]");
@@ -947,68 +1010,7 @@ public class Cpu6502 implements Runnable {
 			
 
 
-//
-//	/* *** BIT: Test Bits in Memory with Accumulator *** */
-//			case 0x2C:
-//				temp = peek(am_a());
-//				p &= 0b00111101;			// pre-clear N, V & Z
-//				p |= (temp & 0b11000000);	// copy bits 7 & 6 as N & Z
-//				p |= (a & temp)?0:2;		// set Z accordingly
-//				if (ver > 3) System.out.println("[BITa]");
-//				cycles = 4;
-//				break;
-//			case 0x24:
-//				temp = peek(peek(pc++));
-//				p &= 0b00111101;			// pre-clear N, V & Z
-//				p |= (temp & 0b11000000);	// copy bits 7 & 6 as N & Z
-//				p |= (a & temp)?0:2;		// set Z accordingly
-//				if (ver > 3) System.out.println("[BITz]");
-//				cycles = 3;
-//				break;
-//			case 0x89:			// CMOS only
-//				temp = peek(pc++);
-//				p &= 0b11111101;			// pre-clear Z only, is this OK?
-//				p |= (a & temp)?0:2;		// set Z accordingly
-//				if (ver > 3) System.out.println("[BIT#]");
-//				break;
-//			case 0x3C:			// CMOS only
-//				temp = peek(am_ax(&page));
-//				p &= 0b00111101;			// pre-clear N, V & Z
-//				p |= (temp & 0b11000000);	// copy bits 7 & 6 as N & Z
-//				p |= (a & temp)?0:2;		// set Z accordingly
-//				if (ver > 3) System.out.println("[BITx]");
-//				cycles = 4 + page;
-//				break;
-//			case 0x34:			// CMOS only
-//				temp = peek(am_zx());
-//				p &= 0b00111101;			// pre-clear N, V & Z
-//				p |= (temp & 0b11000000);	// copy bits 7 & 6 as N & Z
-//				p |= (a & temp)?0:2;		// set Z accordingly
-//				if (ver > 3) System.out.println("[BITzx]");
-//				cycles = 4;
-//				break;
-//	/* *** Bxx: Branch on flag condition *** */
-//			case 0x30:
-//				if(p & 0b10000000) {
-//					rel(&page);
-//					cycles = 3 + page;
-//				} else pc++;	// must skip offset if not done EEEEEK
-//				if (ver > 2) System.out.println("[BMI]");
-//				break;
-//			case 0xD0:
-//				if(!(p & 0b00000010)) {
-//					rel(&page);
-//					cycles = 3 + page;
-//				} else pc++;	// must skip offset if not done EEEEEK
-//				if (ver > 2) System.out.println("[BNE]");
-//				break;
-//			case 0x10:
-//				if(!(p & 0b10000000)) {
-//					rel(&page);
-//					cycles = 3 + page;
-//				} else pc++;	// must skip offset if not done EEEEEK
-//				if (ver > 2) System.out.println("[BPL]");
-//				break;
+
 
 //	/* *** Bxx: Branch on flag condition *** */
 //			case 0x50:
@@ -1058,7 +1060,19 @@ public class Cpu6502 implements Runnable {
 //				break;
 	
 	
+//			/* *** TSX: Transfer Stack Pointer to Index X *** */
+//			case 0xBA:
+//				x = s;
+//				bits_nz(x);
+//				if (ver > 3) System.out.println("[TSX]");
+//				break;
 
+//	/* *** TXS: Transfer Index X to Stack Pointer *** */
+//			case 0x9A:
+//				s = x;
+//				bits_nz(s);
+//				if (ver > 3) System.out.println("[TXS]");
+//				break;
 
 
 
@@ -1116,6 +1130,9 @@ public class Cpu6502 implements Runnable {
 //				cycles = 4;
 //				break;
 
+
+
+			
 //	/* *** RTI: Return from Interrupt *** */
 //			case 0x40:
 //				p = pop();					// retrieve status
@@ -1134,73 +1151,6 @@ public class Cpu6502 implements Runnable {
 //				cycles = 6;
 //				break;
 
-
-
-
-//	/* *** TRB: Test and Reset Bits, CMOS only *** */
-//			case 0x1C:
-//				adr = am_a();
-//				temp = peek(adr);
-//				if (temp & a)		p &= 0b11111101;	// set Z accordingly
-//				else 				p |= 0b00000010;
-//				poke(adr, temp & ~a);
-//				if (ver > 3) System.out.println("[TRBa]");
-//				cycles = 6;
-//				break;
-//			case 0x14:
-//				adr = peek(pc++);
-//				temp = peek(adr);
-//				if (temp & a)		p &= 0b11111101;	// set Z accordingly
-//				else 				p |= 0b00000010;
-//				poke(adr, temp & ~a);
-//				if (ver > 3) System.out.println("[TRBz]");
-//				cycles = 5;
-//				break;
-//	/* *** TSB: Test and Set Bits, CMOS only *** */
-//			case 0x0C:
-//				adr = am_a();
-//				temp = peek(adr);
-//				if (temp & a)		p &= 0b11111101;	// set Z accordingly
-//				else 				p |= 0b00000010;
-//				poke(adr, temp | a);
-//				if (ver > 3) System.out.println("[TSBa]");
-//				cycles = 6;
-//				break;
-//			case 0x04:
-//				adr = peek(pc++);
-//				temp = peek(adr);
-//				if (temp & a)		p &= 0b11111101;	// set Z accordingly
-//				else 				p |= 0b00000010;
-//				poke(adr, temp | a);
-//				if (ver > 3) System.out.println("[TSBz]");
-//				cycles = 5;
-//				break;
-//	/* *** TSX: Transfer Stack Pointer to Index X *** */
-//			case 0xBA:
-//				x = s;
-//				bits_nz(x);
-//				if (ver > 3) System.out.println("[TSX]");
-//				break;
-
-//	/* *** TXS: Transfer Index X to Stack Pointer *** */
-//			case 0x9A:
-//				s = x;
-//				bits_nz(s);
-//				if (ver > 3) System.out.println("[TXS]");
-//				break;
-
-//	/* *** *** special control 'opcodes' *** *** */
-//	/* *** Emulator Breakpoint  (WAI on WDC) *** */
-//			case 0xCB:
-////				if (ver)	System.out.println(" Status @ $%x04:", pc-1);	// must allow warnings to display status request
-////				stat();
-//				run = 1;		// pause execution
-//				break;
-	/* *** Graceful Halt (STP on WDC) *** */
-			case (byte)0xDB:
-				System.out.println(" ...HALT!");
-				cycles = 0;	// definitively stop execution
-				break;
 
 
 				/* *** BRK: force break *** */
