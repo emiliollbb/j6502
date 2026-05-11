@@ -106,9 +106,12 @@ public class Cpu65C02 extends Cpu6502 {
 //			if (ver > 3) System.out.println("[CMP(z)]");
 //			cycles = 5;
 //			break;
-		case (byte) 0x1E:
-			super.step();
-			cycles = 6 + page;
+//		case (byte) 0x1E:
+//			super.step();
+//			cycles = 6 + page;
+//		case (byte) 0x5E:
+//			super.step();
+//			cycles = 6 + page;
 			
 		default:
 			pc--;

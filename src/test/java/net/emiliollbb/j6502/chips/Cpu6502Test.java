@@ -1955,6 +1955,85 @@ public class Cpu6502Test {
 	}
 	
 	
+	@ParameterizedTest
+	@CsvSource({
+		"-84,true,86,0,2", //-84=10101100 44=01010110
+		"-84,false,86,0,2",
+		})
+	void testLSRInmediate(byte acumulator, boolean carry, 
+			byte expectedResult, byte expectedFlags, int expectedCycles) {
+		loadProgram(0x0200, new int[] {
+				// CLC/SEC
+				carry?0x38:0x18, 
+				// LDA acumulator
+				0xA9, acumulator, 
+				// LSR
+				0x4A
+				});
+		cpu.reset();
+		cpu.step();
+		cpu.step();
+		int cycles = cpu.step();
+		Assertions.assertEquals(expectedResult, cpu.getA());
+		Assertions.assertEquals(expectedFlags, cpu.getP());
+		Assertions.assertEquals(expectedCycles, cycles);
+	}
+	@Test
+	void testLSRZeroPage() {
+		// 01010101
+		Mockito.when(device.peek(0xA0)).thenReturn((byte)0x55);
+		loadProgram(0x0200, new int[] {
+				// LSR 0xA0
+				0x46, 0xA0
+				});
+		cpu.reset();
+		int cycles = cpu.step();
+		Assertions.assertEquals(5, cycles);
+		// 00101010
+		Mockito.verify(device).poke(0xA0, (byte)0x2A);
+	}
+	@Test
+	void testLSRZeroPageX() {
+		Mockito.when(device.peek(0xAA)).thenReturn((byte)0x55);
+		loadProgram(0x0200, new int[] {
+				// LDX #$A1
+				0xA2, 0xA1,
+				// LSR
+				0x56, 0x09
+				});
+		cpu.reset();
+		cpu.step();
+		int cycles = cpu.step();
+		Assertions.assertEquals(6, cycles);
+		Mockito.verify(device).poke(0xAA, (byte)0x2A);
+	}
+	@Test
+	void testLSRAbsolute() {
+		Mockito.when(device.peek(0xA3A1)).thenReturn((byte)0x55);
+		loadProgram(0x0200, new int[] {
+				// LSR
+				0x4E, 0xA1, 0xA3,
+				});
+		cpu.reset();
+		int cycles = cpu.step();
+		Assertions.assertEquals(6, cycles);
+		Mockito.verify(device).poke(0xA3A1, (byte)0x2A);
+	}
+	@Test
+	void testLSRAbsoluteX() {
+		Mockito.when(device.peek(0xA312)).thenReturn((byte)0x55);
+		loadProgram(0x0200, new int[] {
+				// LDX #0F
+				0xA2, 0x0F,
+				// LSR
+				0x5E, 0x03, 0xA3
+				});
+		cpu.reset();
+		cpu.step();
+		int cycles = cpu.step();
+		Assertions.assertEquals(7, cycles);
+		Mockito.verify(device).poke(0xA312, (byte)0x2A);
+	}
 	private String printByte(byte b) {
 		return String.format("0x%02X", b)+ "("+b+")";
 	}

@@ -802,9 +802,46 @@ public class Cpu6502 implements Runnable {
 			temp = peek(adr);
 			temp=asl(temp);
 			poke(adr, temp);
-			cycles = 7 + page;
+			cycles = 7;
 			break;			
 
+		/* *** LSR: Shift One Bit Right (Memory or Accumulator) *** */
+		case (byte) 0x4A:
+			if (ver > 3) System.out.println("[LSR]");
+			a=lsr(a);
+			break;
+		case (byte) 0x46:
+			if (ver > 3) System.out.println("[LSRz]");
+			temp = peek(peek(pc)&0x000000FF);
+			temp=lsr(temp);
+			poke(peek(pc++)&0x000000FF, temp);
+			cycles = 5;
+			break;
+		case (byte) 0x56:
+			if (ver > 3) System.out.println("[LSRzx]");
+			adr = am_zx();
+			temp = peek(adr);
+			temp=lsr(temp);
+			poke(adr, temp);
+			cycles = 6;
+			break;	
+		case (byte) 0x4E:
+			if (ver > 3) System.out.println("[LSRa]");
+			adr=am_a();
+			temp = peek(adr);
+			temp=lsr(temp);
+			poke(adr, temp);
+			cycles = 6;
+			break;
+		case (byte) 0x5E:
+			if (ver > 3) System.out.println("[LSRx]");
+			adr = am_ax();
+			temp = peek(adr);
+			temp=lsr(temp);
+			poke(adr, temp);
+			cycles = 7;
+			break;
+			
 			/* *** Bxx: Branch on flag condition *** */
 		case (byte) 0x90:
 			if (ver > 2) System.out.println("[BCC]");
@@ -949,42 +986,7 @@ public class Cpu6502 implements Runnable {
 	
 	
 
-//	/* *** LSR: Shift One Bit Right (Memory or Accumulator) *** */
-//			case 0x4E:
-//				adr=am_a();
-//				temp = peek(adr);
-//				lsr(&temp);
-//				poke(adr, temp);
-//				if (ver > 3) System.out.println("[LSRa]");
-//				cycles = 6;
-//				break;
-//			case 0x46:
-//				temp = peek(peek(pc));
-//				lsr(&temp);
-//				poke(peek(pc++), temp);
-//				if (ver > 3) System.out.println("[LSRz]");
-//				cycles = 5;
-//				break;
-//			case 0x4A:
-//				lsr(&a);
-//				if (ver > 3) System.out.println("[LSR]");
-//				break;
-//			case 0x56:
-//				adr = am_zx();
-//				temp = peek(adr);
-//				lsr(&temp);
-//				poke(adr, temp);
-//				if (ver > 3) System.out.println("[LSRzx]");
-//				cycles = 6;
-//				break;
-//			case 0x5E:
-//				adr = am_ax(&page);
-//				temp = peek(adr);
-//				lsr(&temp);
-//				poke(adr, temp);
-//				if (ver > 3) System.out.println("[LSRx]");
-//				cycles = 6 + page;	// 7 for NMOS
-//				break;
+
 
 
 //	/* *** PHA: Push Accumulator on Stack *** */
@@ -1234,14 +1236,16 @@ public class Cpu6502 implements Runnable {
 		return d;
 	}
 
-//	/* LSR, shift right */
-//	void lsr(byte *d) {
-//		p &= 0b11111110;		// clear C
-//		p |= (*d) & 1;			// will take previous bit 0
-//		(*d) >>= 1;				// eeeek
-//		bits_nz(*d);
-//	}
-//
+	/* LSR, shift right */
+	protected byte lsr(byte d) {
+		p &= 0b11111110;		// clear C
+		p |= d & 1;			// will take previous bit 0
+		int out = (d&0x000000FF)>>1;				// eeeek
+		d=(byte)(out&0x000000FF);
+		bits_nz(d);
+		return d;
+	}
+
 //	/* ROL, rotate left */
 //	void rol(byte *d) {
 //		byte tmp = (p & 1);		// keep previous C
