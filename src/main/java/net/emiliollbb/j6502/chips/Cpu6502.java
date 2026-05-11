@@ -775,9 +775,9 @@ public class Cpu6502 implements Runnable {
 			break;
 		case (byte) 0x06:
 			if (ver > 3) System.out.println("[ASLz]");
-			temp = peek(peek(pc));
+			temp = peek(peek(pc)&0x000000FF);
 			temp=asl(temp);
-			poke(peek(pc++), temp);
+			poke(peek(pc++)&0x000000FF, temp);
 			cycles = 5;
 			break;
 		case (byte) 0x16:
@@ -802,7 +802,7 @@ public class Cpu6502 implements Runnable {
 			temp = peek(adr);
 			temp=asl(temp);
 			poke(adr, temp);
-			cycles = 6 + page;	// 7 on NMOS
+			cycles = 7 + page;
 			break;			
 
 			/* *** Bxx: Branch on flag condition *** */

@@ -1899,6 +1899,61 @@ public class Cpu6502Test {
 		Assertions.assertEquals(expectedFlags, cpu.getP());
 		Assertions.assertEquals(expectedCycles, cycles);
 	}
+	@Test
+	void testASLZeroPage() {
+		Mockito.when(device.peek(0xA0)).thenReturn((byte)0x55);
+		loadProgram(0x0200, new int[] {
+				// ASL 0xA0
+				0x06, 0xA0
+				});
+		cpu.reset();
+		int cycles = cpu.step();
+		Assertions.assertEquals(5, cycles);
+		Mockito.verify(device).poke(0xA0, (byte)0xAA);
+	}
+	@Test
+	void testASLZeroPageX() {
+		Mockito.when(device.peek(0xAA)).thenReturn((byte)0x55);
+		loadProgram(0x0200, new int[] {
+				// LDX #$A1
+				0xA2, 0xA1,
+				// ASL
+				0x16, 0x09
+				});
+		cpu.reset();
+		cpu.step();
+		int cycles = cpu.step();
+		Assertions.assertEquals(6, cycles);
+		Mockito.verify(device).poke(0xAA, (byte)0xAA);
+	}
+	@Test
+	void testASLAbsolute() {
+		Mockito.when(device.peek(0xA3A1)).thenReturn((byte)0x55);
+		loadProgram(0x0200, new int[] {
+				// ASL
+				0x0E, 0xA1, 0xA3,
+				});
+		cpu.reset();
+		int cycles = cpu.step();
+		Assertions.assertEquals(6, cycles);
+		Mockito.verify(device).poke(0xA3A1, (byte)0xAA);
+	}
+	@Test
+	void testASLAbsoluteX() {
+		Mockito.when(device.peek(0xA312)).thenReturn((byte)0x55);
+		loadProgram(0x0200, new int[] {
+				// LDX #0F
+				0xA2, 0x0F,
+				// ASL
+				0x1E, 0x03, 0xA3
+				});
+		cpu.reset();
+		cpu.step();
+		int cycles = cpu.step();
+		Assertions.assertEquals(7, cycles);
+		Mockito.verify(device).poke(0xA312, (byte)0xAA);
+	}
+	
 	
 	private String printByte(byte b) {
 		return String.format("0x%02X", b)+ "("+b+")";
