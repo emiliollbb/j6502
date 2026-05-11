@@ -1240,8 +1240,7 @@ public class Cpu6502 implements Runnable {
 	protected byte lsr(byte d) {
 		p &= 0b11111110;		// clear C
 		p |= d & 1;			// will take previous bit 0
-		int out = (d&0x000000FF)>>1;				// eeeek
-		d=(byte)(out&0x000000FF);
+		d=(byte)((d&0x000000FF)>>1);				// eeeek
 		bits_nz(d);
 		return d;
 	}
