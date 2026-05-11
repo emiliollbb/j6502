@@ -767,6 +767,43 @@ public class Cpu6502 implements Runnable {
 			cmp(a, peek(am_ax()));
 			cycles = 4 + page;
 			break;
+			
+		/* *** ASL: Shift Left one Bit (Memory or Accumulator) *** */
+		case (byte) 0x0A:
+			if (ver > 3) System.out.println("[ASL]");
+			a=asl(a);
+			break;
+		case (byte) 0x06:
+			if (ver > 3) System.out.println("[ASLz]");
+			temp = peek(peek(pc));
+			temp=asl(temp);
+			poke(peek(pc++), temp);
+			cycles = 5;
+			break;
+		case (byte) 0x16:
+			if (ver > 3) System.out.println("[ASLzx]");
+			adr = am_zx();
+			temp = peek(adr);
+			temp=asl(temp);
+			poke(adr, temp);
+			cycles = 6;
+			break;	
+		case (byte) 0x0E:
+			if (ver > 3) System.out.println("[ASLa]");
+			adr = am_a();
+			temp = peek(adr);
+			temp=asl(temp);
+			poke(adr, temp);
+			cycles = 6;
+			break;
+		case (byte) 0x1E:
+			if (ver > 3) System.out.println("[ASLx]");
+			adr = am_ax();
+			temp = peek(adr);
+			temp=asl(temp);
+			poke(adr, temp);
+			cycles = 6 + page;	// 7 on NMOS
+			break;			
 
 			/* *** Bxx: Branch on flag condition *** */
 		case (byte) 0x90:
@@ -799,42 +836,7 @@ public class Cpu6502 implements Runnable {
 
 			
 
-//	/* *** ASL: Shift Left one Bit (Memory or Accumulator) *** */
-//			case 0x0E:
-//				adr = am_a();
-//				temp = peek(adr);
-//				asl(&temp);
-//				poke(adr, temp);
-//				if (ver > 3) System.out.println("[ASLa]");
-//				cycles = 6;
-//				break;
-//			case 0x06:
-//				temp = peek(peek(pc));
-//				asl(&temp);
-//				poke(peek(pc++), temp);
-//				if (ver > 3) System.out.println("[ASLz]");
-//				cycles = 5;
-//				break;
-//			case 0x0A:
-//				asl(&a);
-//				if (ver > 3) System.out.println("[ASL]");
-//				break;
-//			case 0x16:
-//				adr = am_zx();
-//				temp = peek(adr);
-//				asl(&temp);
-//				poke(adr, temp);
-//				if (ver > 3) System.out.println("[ASLzx]");
-//				cycles = 6;
-//				break;
-//			case 0x1E:
-//				adr = am_ax(&page);
-//				temp = peek(adr);
-//				asl(&temp);
-//				poke(adr, temp);
-//				if (ver > 3) System.out.println("[ASLx]");
-//				cycles = 6 + page;	// 7 on NMOS
-//				break;
+
 //
 //	/* *** BIT: Test Bits in Memory with Accumulator *** */
 //			case 0x2C:
@@ -1217,20 +1219,21 @@ public class Cpu6502 implements Runnable {
 	
 	/* *** opcode assistants *** */
 	/* compute usual N & Z flags from value */
-	void bits_nz(byte b) {
+	protected void bits_nz(byte b) {
 		p &= 0b01111101;		// pre-clear N & Z
 		p |= (b & 128);			// set N as bit 7
 		p |= (b==0)?2:0;		// set Z accordingly
 	}
-//
-//	/* ASL, shift left */
-//	void asl(byte *d) {
-//		p &= 0b11111110;		// clear C
-//		p |= ((*d) & 128) >> 7;	// will take previous bit 7
-//		(*d) <<= 1;				// EEEEEEEEK
-//		bits_nz(*d);
-//	}
-//
+
+	/* ASL, shift left */
+	protected byte asl(byte d) {
+		p &= 0b11111110;		// clear C
+		p |= (d & 128) >> 7;	// will take previous bit 7
+		d <<= 1;				// EEEEEEEEK
+		bits_nz(d);
+		return d;
+	}
+
 //	/* LSR, shift right */
 //	void lsr(byte *d) {
 //		p &= 0b11111110;		// clear C
@@ -1262,7 +1265,7 @@ public class Cpu6502 implements Runnable {
 //	}
 //
 	/* ADC, add with carry */
-	void adc(byte d) {
+	protected void adc(byte d) {
 		a=binaryAdd(a, d, true);		
 		// Decimal mode
 		if ((p&0x08)==1) {
@@ -1276,7 +1279,7 @@ public class Cpu6502 implements Runnable {
 			p=unsignedResult>99? (byte)(p|0x01) : (byte)(p&0xFE);
 		}
 	}
-	void sbc(byte d) {
+	protected void sbc(byte d) {
 		adc((byte)~d);
 		// Decimal mode
 		if ((p&0x08)==1) {
@@ -1308,7 +1311,7 @@ public class Cpu6502 implements Runnable {
 
 
 	/* CMP/CPX/CPY compare register to memory */
-	void cmp(byte reg, byte d) {
+	protected void cmp(byte reg, byte d) {
 		p|=0x01;
 		binaryAdd((byte)reg,(byte)~d, false);
 	}

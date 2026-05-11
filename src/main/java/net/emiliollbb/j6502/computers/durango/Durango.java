@@ -5,7 +5,6 @@ import java.util.Arrays;
 
 import net.emiliollbb.j6502.chips.Cpu65C02;
 import net.emiliollbb.j6502.chips.RamChip;
-import net.emiliollbb.j6502.chips.RomChip;
 
 public class Durango {
 	/* 16K RAM $0000 - $7FFF */
@@ -21,7 +20,7 @@ public class Durango {
 		// 32K ROM
 		rom = new DurangoRom(0x8000, 0x8000, new File("/home/emilio/proyectos/j6502/workspace/j6502/src/main/asm/durango/test.bin"));
 		// Durango screen		
-		screen = new DurangoScreen(2, ram, rom);
+		screen = new DurangoScreen(4, ram, rom);
 		
 		cpu = new Cpu65C02(10, Arrays.asList(ram, rom));
 		cpu.setVerbose(10);

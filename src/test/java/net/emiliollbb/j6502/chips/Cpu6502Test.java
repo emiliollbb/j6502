@@ -1876,6 +1876,30 @@ public class Cpu6502Test {
 		Assertions.assertEquals(5, cycles);
 	}
 	
+	@ParameterizedTest
+	@CsvSource({
+		"-84,true,88,1,2", //-84=10101100 88=01011000
+		"-84,false,88,1,2",
+		})
+	void testASLInmediate(byte acumulator, boolean carry, 
+			byte expectedResult, byte expectedFlags, int expectedCycles) {
+		loadProgram(0x0200, new int[] {
+				// CLC/SEC
+				carry?0x38:0x18, 
+				// LDA acumulator
+				0xA9, acumulator, 
+				// ASL
+				0x0A
+				});
+		cpu.reset();
+		cpu.step();
+		cpu.step();
+		int cycles = cpu.step();
+		Assertions.assertEquals(expectedResult, cpu.getA());
+		Assertions.assertEquals(expectedFlags, cpu.getP());
+		Assertions.assertEquals(expectedCycles, cycles);
+	}
+	
 	private String printByte(byte b) {
 		return String.format("0x%02X", b)+ "("+b+")";
 	}
