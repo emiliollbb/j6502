@@ -112,6 +112,14 @@ public class Cpu65C02 extends Cpu6502 {
 //		case (byte) 0x5E:
 //			super.step();
 //			cycles = 6 + page;
+//		case (byte) 0x3E:
+//			super.step();
+//			cycles = 6 + page;	// 7 for NMOS
+//			break;
+//		case (byte) 0x7E:
+//			super.step();
+//			cycles = 6 + page;	// 7 for NMOS
+//			break;
 			
 		default:
 			pc--;

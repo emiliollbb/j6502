@@ -842,6 +842,79 @@ public class Cpu6502 implements Runnable {
 			cycles = 7;
 			break;
 			
+		/* *** ROL: Rotate One Bit Left (Memory or Accumulator) *** */
+		case (byte) 0x2E:
+			if (ver > 3) System.out.println("[ROLa]");
+			adr = am_a();
+			temp = peek(adr);
+			temp=rol(temp);
+			poke(adr, temp);
+			cycles = 6;
+			break;
+		case (byte) 0x26:
+			if (ver > 3) System.out.println("[ROLz]");
+			temp = peek(peek(pc));
+			temp=rol(temp);
+			poke(peek(pc++), temp);
+			cycles = 5;
+			break;
+		case (byte) 0x36:
+			if (ver > 3) System.out.println("[ROLzx]");
+			adr = am_zx();
+			temp = peek(adr);
+			temp=rol(temp);
+			poke(adr, temp);
+			cycles = 6;
+			break;
+		case (byte) 0x3E:
+			if (ver > 3) System.out.println("[ROLx]");
+			adr = am_ax();
+			temp = peek(adr);
+			temp=rol(temp);
+			poke(adr, temp);
+			cycles = 7;
+			break;
+		case (byte) 0x2A:
+			if (ver > 3) System.out.println("[ROL]");
+			a=rol(a);
+			break;
+		/* *** ROR: Rotate One Bit Right (Memory or Accumulator) *** */
+		case (byte) 0x6E:
+			if (ver > 3) System.out.println("[RORa]");
+			adr = am_a();
+			temp = peek(adr);
+			temp=ror(temp);
+			poke(adr, temp);
+			cycles = 6;
+			break;
+		case (byte) 0x66:
+			if (ver > 3) System.out.println("[RORz]");
+			temp = peek(peek(pc));
+			temp=ror(temp);
+			poke(peek(pc++), temp);
+			cycles = 5;
+			break;
+		case (byte) 0x6A:
+			if (ver > 3) System.out.println("[ROR]");
+			a=ror(a);
+			break;
+		case (byte) 0x76:
+			if (ver > 3) System.out.println("[RORzx]");
+			adr = am_zx();
+			temp = peek(adr);
+			temp=ror(temp);
+			poke(adr, temp);
+			cycles = 6;
+			break;
+		case (byte) 0x7E:
+			if (ver > 3) System.out.println("[RORx]");
+			adr = am_ax();
+			temp = peek(adr);
+			temp=ror(temp);
+			poke(adr, temp);
+			cycles = 7;
+			break;			
+		
 			/* *** Bxx: Branch on flag condition *** */
 		case (byte) 0x90:
 			if (ver > 2) System.out.println("[BCC]");
@@ -1042,78 +1115,7 @@ public class Cpu6502 implements Runnable {
 //				bits_nz(y);		// EEEEEEEEEEEEEEEEEEEEK
 //				cycles = 4;
 //				break;
-//	/* *** ROL: Rotate One Bit Left (Memory or Accumulator) *** */
-//			case 0x2E:
-//				adr = am_a();
-//				temp = peek(adr);
-//				rol(&temp);
-//				poke(adr, temp);
-//				if (ver > 3) System.out.println("[ROLa]");
-//				cycles = 6;
-//				break;
-//			case 0x26:
-//				temp = peek(peek(pc));
-//				rol(&temp);
-//				poke(peek(pc++), temp);
-//				if (ver > 3) System.out.println("[ROLz]");
-//				cycles = 5;
-//				break;
-//			case 0x36:
-//				adr = am_zx();
-//				temp = peek(adr);
-//				rol(&temp);
-//				poke(adr, temp);
-//				if (ver > 3) System.out.println("[ROLzx]");
-//				cycles = 6;
-//				break;
-//			case 0x3E:
-//				adr = am_ax(&page);
-//				temp = peek(adr);
-//				rol(&temp);
-//				poke(adr, temp);
-//				if (ver > 3) System.out.println("[ROLx]");
-//				cycles = 6 + page;	// 7 for NMOS
-//				break;
-//			case 0x2A:
-//				rol(&a);
-//				if (ver > 3) System.out.println("[ROL]");
-//				break;
-//	/* *** ROR: Rotate One Bit Right (Memory or Accumulator) *** */
-//			case 0x6E:
-//				adr = am_a();
-//				temp = peek(adr);
-//				ror(&temp);
-//				poke(adr, temp);
-//				if (ver > 3) System.out.println("[RORa]");
-//				cycles = 6;
-//				break;
-//			case 0x66:
-//				temp = peek(peek(pc));
-//				ror(&temp);
-//				poke(peek(pc++), temp);
-//				if (ver > 3) System.out.println("[RORz]");
-//				cycles = 5;
-//				break;
-//			case 0x6A:
-//				ror(&a);
-//				if (ver > 3) System.out.println("[ROR]");
-//				break;
-//			case 0x76:
-//				adr = am_zx();
-//				temp = peek(adr);
-//				ror(&temp);
-//				poke(adr, temp);
-//				if (ver > 3) System.out.println("[RORzx]");
-//				cycles = 6;
-//				break;
-//			case 0x7E:
-//				adr = am_ax(&page);
-//				temp = peek(adr);
-//				ror(&temp);
-//				poke(adr, temp);
-//				if (ver > 3) System.out.println("[RORx]");
-//				cycles = 6 + page;	// 7 for NMOS
-//				break;
+
 //	/* *** RTI: Return from Interrupt *** */
 //			case 0x40:
 //				p = pop();					// retrieve status
@@ -1245,28 +1247,30 @@ public class Cpu6502 implements Runnable {
 		return d;
 	}
 
-//	/* ROL, rotate left */
-//	void rol(byte *d) {
-//		byte tmp = (p & 1);		// keep previous C
-//
-//		p &= 0b11111110;		// clear C
-//		p |= ((*d) & 128) >> 7;	// will take previous bit 7
-//		(*d) <<= 1;				// eeeeeek
-//		(*d) |= tmp;			// rotate C
-//		bits_nz(*d);
-//	}
-//
-//	/* ROR, rotate right */
-//	void ror(byte *d) {
-//		byte tmp = (p & 1)<<7;	// keep previous C (shifted)
-//
-//		p &= 0b11111110;		// clear C
-//		p |= (*d) & 1;			// will take previous bit 0
-//		(*d) >>= 1;				// eeeek
-//		(*d) |= tmp;			// rotate C
-//		bits_nz(*d);
-//	}
-//
+	/* ROL, rotate left */
+	protected byte rol(byte d) {
+		byte tmp = (byte)(p & 1);		// keep previous C
+
+		p &= 0b11111110;		// clear C
+		p |= (d & 128) >> 7;	// will take previous bit 7
+		d <<= 1;				// eeeeeek
+		d |= tmp;			// rotate C
+		bits_nz(d);
+		return d;
+	}
+
+	/* ROR, rotate right */
+	protected byte ror(byte d) {
+		byte tmp = (byte)((p & 1)<<7);	// keep previous C (shifted)
+
+		p &= 0b11111110;		// clear C
+		p |= d & 1;			// will take previous bit 0
+		d >>= 1;				// eeeek
+		d |= tmp;			// rotate C
+		bits_nz(d);
+		return d;
+	}
+
 	/* ADC, add with carry */
 	protected void adc(byte d) {
 		a=binaryAdd(a, d, true);		
