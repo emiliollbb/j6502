@@ -843,24 +843,28 @@ public class Cpu6502 implements Runnable {
 			break;
 			
 		/* *** ROL: Rotate One Bit Left (Memory or Accumulator) *** */
-		case (byte) 0x2E:
-			if (ver > 3) System.out.println("[ROLa]");
-			adr = am_a();
-			temp = peek(adr);
-			temp=rol(temp);
-			poke(adr, temp);
-			cycles = 6;
+		case (byte) 0x2A:
+			if (ver > 3) System.out.println("[ROL]");
+			a=rol(a);
 			break;
 		case (byte) 0x26:
 			if (ver > 3) System.out.println("[ROLz]");
-			temp = peek(peek(pc));
+			temp = peek(peek(pc)&0x000000FF);
 			temp=rol(temp);
-			poke(peek(pc++), temp);
+			poke(peek(pc++)&0x000000FF, temp);
 			cycles = 5;
 			break;
 		case (byte) 0x36:
 			if (ver > 3) System.out.println("[ROLzx]");
 			adr = am_zx();
+			temp = peek(adr);
+			temp=rol(temp);
+			poke(adr, temp);
+			cycles = 6;
+			break;	
+		case (byte) 0x2E:
+			if (ver > 3) System.out.println("[ROLa]");
+			adr = am_a();
 			temp = peek(adr);
 			temp=rol(temp);
 			poke(adr, temp);
@@ -874,18 +878,11 @@ public class Cpu6502 implements Runnable {
 			poke(adr, temp);
 			cycles = 7;
 			break;
-		case (byte) 0x2A:
-			if (ver > 3) System.out.println("[ROL]");
-			a=rol(a);
-			break;
+		
 		/* *** ROR: Rotate One Bit Right (Memory or Accumulator) *** */
-		case (byte) 0x6E:
-			if (ver > 3) System.out.println("[RORa]");
-			adr = am_a();
-			temp = peek(adr);
-			temp=ror(temp);
-			poke(adr, temp);
-			cycles = 6;
+		case (byte) 0x6A:
+			if (ver > 3) System.out.println("[ROR]");
+			a=ror(a);
 			break;
 		case (byte) 0x66:
 			if (ver > 3) System.out.println("[RORz]");
@@ -894,13 +891,17 @@ public class Cpu6502 implements Runnable {
 			poke(peek(pc++), temp);
 			cycles = 5;
 			break;
-		case (byte) 0x6A:
-			if (ver > 3) System.out.println("[ROR]");
-			a=ror(a);
-			break;
 		case (byte) 0x76:
 			if (ver > 3) System.out.println("[RORzx]");
 			adr = am_zx();
+			temp = peek(adr);
+			temp=ror(temp);
+			poke(adr, temp);
+			cycles = 6;
+			break;	
+		case (byte) 0x6E:
+			if (ver > 3) System.out.println("[RORa]");
+			adr = am_a();
 			temp = peek(adr);
 			temp=ror(temp);
 			poke(adr, temp);
@@ -1202,7 +1203,7 @@ public class Cpu6502 implements Runnable {
 		byte tmp = (byte)(p & 1);		// keep previous C
 
 		p &= 0b11111110;		// clear C
-		p |= (d & 128) >> 7;	// will take previous bit 7
+		p |= (d &0x000000FF) >> 7;	// will take previous bit 7
 		d <<= 1;				// eeeeeek
 		d |= tmp;			// rotate C
 		bits_nz(d);

@@ -2034,6 +2034,98 @@ public class Cpu6502Test {
 		Assertions.assertEquals(7, cycles);
 		Mockito.verify(device).poke(0xA312, (byte)0x2A);
 	}
+	
+	@ParameterizedTest
+	@CsvSource({
+		"-84,true,89,1,2", //-84=10101100 89=01011001
+		"-84,false,88,1,2",
+		})
+	void testROLInmediate(byte acumulator, boolean carry, 
+			byte expectedResult, byte expectedFlags, int expectedCycles) {
+		loadProgram(0x0200, new int[] {
+				// CLC/SEC
+				carry?0x38:0x18, 
+				// LDA acumulator
+				0xA9, acumulator, 
+				// ROL
+				0x2A
+				});
+		cpu.reset();
+		cpu.step();
+		cpu.step();
+		int cycles = cpu.step();
+		Assertions.assertEquals(expectedResult, cpu.getA());
+		Assertions.assertEquals(expectedFlags, cpu.getP());
+		Assertions.assertEquals(expectedCycles, cycles);
+	}
+	@Test
+	void testROLZeroPage() {
+		// 0x55 = 01010101
+		Mockito.when(device.peek(0xA0)).thenReturn((byte)0x55);
+		loadProgram(0x0200, new int[] {
+				// SEC
+				0x38,
+				// ROL 0xA0
+				0x26, 0xA0
+				});
+		cpu.reset();
+		cpu.step();
+		int cycles = cpu.step();
+		Assertions.assertEquals(5, cycles);
+		Mockito.verify(device).poke(0xA0, (byte)0xAB);
+	}
+	@Test
+	void testROLZeroPageX() {
+		Mockito.when(device.peek(0xAA)).thenReturn((byte)0x55);
+		loadProgram(0x0200, new int[] {
+				// LDX #$A1
+				0xA2, 0xA1,
+				// SEC
+				0x38,
+				// ROL
+				0x36, 0x09
+				});
+		cpu.reset();
+		cpu.step();
+		cpu.step();
+		int cycles = cpu.step();
+		Assertions.assertEquals(6, cycles);
+		Mockito.verify(device).poke(0xAA, (byte)0xAB);
+	}
+	@Test
+	void testROLAbsolute() {
+		Mockito.when(device.peek(0xA3A1)).thenReturn((byte)0x55);
+		loadProgram(0x0200, new int[] {
+				// SEC
+				0x38,
+				// ROL
+				0x2E, 0xA1, 0xA3,
+				});
+		cpu.reset();
+		cpu.step();
+		int cycles = cpu.step();
+		Assertions.assertEquals(6, cycles);
+		Mockito.verify(device).poke(0xA3A1, (byte)0xAB);
+	}
+	@Test
+	void testROLAbsoluteX() {
+		Mockito.when(device.peek(0xA312)).thenReturn((byte)0x55);
+		loadProgram(0x0200, new int[] {
+				// LDX #0F
+				0xA2, 0x0F,
+				// SEC
+				0x38,
+				// ROL
+				0x3E, 0x03, 0xA3
+				});
+		cpu.reset();
+		cpu.step();
+		cpu.step();
+		int cycles = cpu.step();
+		Assertions.assertEquals(7, cycles);
+		Mockito.verify(device).poke(0xA312, (byte)0xAB);
+	}
+	
 	private String printByte(byte b) {
 		return String.format("0x%02X", b)+ "("+b+")";
 	}
