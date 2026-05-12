@@ -403,9 +403,10 @@ public class Cpu6502Test {
 	@CsvSource({
 		"0x55,0x00",
 		"0x00,0x02",
-		"0xA5,0x80",
+		"-91,-128",
+		"-84,-128"
 		})
-	void testLDAInmediate(int value, int p) {
+	void testLDAInmediate(byte value, byte p) {
 		loadProgram(0x0200, new int[] {0xA9, value});
 		cpu.reset();
 		int cycles = cpu.step();
@@ -2124,6 +2125,97 @@ public class Cpu6502Test {
 		int cycles = cpu.step();
 		Assertions.assertEquals(7, cycles);
 		Mockito.verify(device).poke(0xA312, (byte)0xAB);
+	}
+	
+	@ParameterizedTest
+	@CsvSource({
+		"-84,true,-42,-128,2", //-84=10101100 -42=11010110
+		"-84,false,86,0,2", //-84=10101100 86=01010110   11010110
+		})
+	void testRORInmediate(byte acumulator, boolean carry, 
+			byte expectedResult, byte expectedFlags, int expectedCycles) {
+		loadProgram(0x0200, new int[] {
+				// CLC/SEC
+				carry?0x38:0x18, 
+				// LDA acumulator
+				0xA9, acumulator, 
+				// ROR
+				0x6A
+				});
+		cpu.reset();
+		cpu.step();
+		cpu.step();
+		int cycles = cpu.step();
+		Assertions.assertEquals(expectedResult, cpu.getA());
+		Assertions.assertEquals(expectedFlags, cpu.getP());
+		Assertions.assertEquals(expectedCycles, cycles);
+	}
+	@Test
+	void testRORZeroPage() {
+		Mockito.when(device.peek(0xA0)).thenReturn((byte)0x57);
+		loadProgram(0x0200, new int[] {
+				// SEC
+				0x38,
+				// ROR 0xA0
+				0x66, 0xA0
+				});
+		cpu.reset();
+		cpu.step();
+		int cycles = cpu.step();
+		Assertions.assertEquals(5, cycles);
+		Mockito.verify(device).poke(0xA0, (byte)-85);
+	}
+	@Test
+	void testRORZeroPageX() {
+		Mockito.when(device.peek(0xAA)).thenReturn((byte)0x57);
+		loadProgram(0x0200, new int[] {
+				// LDX #$A1
+				0xA2, 0xA1,
+				// SEC
+				0x38,
+				// ROR
+				0x76, 0x09
+				});
+		cpu.reset();
+		cpu.step();
+		cpu.step();
+		int cycles = cpu.step();
+		Assertions.assertEquals(6, cycles);
+		Mockito.verify(device).poke(0xAA, (byte)-85);
+	}
+	@Test
+	void testRORAbsolute() {
+		Mockito.when(device.peek(0xA3A1)).thenReturn((byte)0x57);
+		loadProgram(0x0200, new int[] {
+				// SEC
+				0x38,
+				// ROR
+				0x6E, 0xA1, 0xA3,
+				});
+		cpu.reset();
+		cpu.step();
+		int cycles = cpu.step();
+		Assertions.assertEquals(6, cycles);
+		Mockito.verify(device).poke(0xA3A1, (byte)-85);
+	}
+	@Test
+	void testRORAbsoluteX() {
+		// 0x55 = 01010111 -> 10101011
+		Mockito.when(device.peek(0xA312)).thenReturn((byte)0x57);
+		loadProgram(0x0200, new int[] {
+				// LDX #0F
+				0xA2, 0x0F,
+				// SEC
+				0x38,
+				// ROR
+				0x7E, 0x03, 0xA3
+				});
+		cpu.reset();
+		cpu.step();
+		cpu.step();
+		int cycles = cpu.step();
+		Assertions.assertEquals(7, cycles);
+		Mockito.verify(device).poke(0xA312, (byte)-85);
 	}
 	
 	private String printByte(byte b) {

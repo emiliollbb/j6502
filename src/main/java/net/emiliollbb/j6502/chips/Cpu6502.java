@@ -886,9 +886,9 @@ public class Cpu6502 implements Runnable {
 			break;
 		case (byte) 0x66:
 			if (ver > 3) System.out.println("[RORz]");
-			temp = peek(peek(pc));
+			temp = peek(peek(pc)&0x000000FF);
 			temp=ror(temp);
-			poke(peek(pc++), temp);
+			poke(peek(pc++)&0x000000FF, temp);
 			cycles = 5;
 			break;
 		case (byte) 0x76:
@@ -1212,12 +1212,12 @@ public class Cpu6502 implements Runnable {
 
 	/* ROR, rotate right */
 	protected byte ror(byte d) {
-		byte tmp = (byte)((p & 1)<<7);	// keep previous C (shifted)
+		byte tmp = (byte)(((p & 1)<<7)&0x000000FF);	// keep previous C (shifted)
 
 		p &= 0b11111110;		// clear C
-		p |= d & 1;			// will take previous bit 0
-		d >>= 1;				// eeeek
-		d |= tmp;			// rotate C
+		p = (byte)((p|d&0x01)&0x000000FF);			// will take previous bit 0
+		d = (byte)((d >> 1)&0x0000007F);				// eeeek
+		d = (byte)((d|tmp)&0x000000FF);			// rotate C
 		bits_nz(d);
 		return d;
 	}
