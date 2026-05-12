@@ -916,46 +916,25 @@ public class Cpu6502 implements Runnable {
 			cycles = 7;
 			break;			
 		
-			//
-//			/* *** BIT: Test Bits in Memory with Accumulator *** */
-//					case 0x2C:
-//						temp = peek(am_a());
-//						p &= 0b00111101;			// pre-clear N, V & Z
-//						p |= (temp & 0b11000000);	// copy bits 7 & 6 as N & Z
-//						p |= (a & temp)?0:2;		// set Z accordingly
-//						if (ver > 3) System.out.println("[BITa]");
-//						cycles = 4;
-//						break;
-//					case 0x24:
-//						temp = peek(peek(pc++));
-//						p &= 0b00111101;			// pre-clear N, V & Z
-//						p |= (temp & 0b11000000);	// copy bits 7 & 6 as N & Z
-//						p |= (a & temp)?0:2;		// set Z accordingly
-//						if (ver > 3) System.out.println("[BITz]");
-//						cycles = 3;
-//						break;
-//					case 0x89:			// CMOS only
-//						temp = peek(pc++);
-//						p &= 0b11111101;			// pre-clear Z only, is this OK?
-//						p |= (a & temp)?0:2;		// set Z accordingly
-//						if (ver > 3) System.out.println("[BIT#]");
-//						break;
-//					case 0x3C:			// CMOS only
-//						temp = peek(am_ax(&page));
-//						p &= 0b00111101;			// pre-clear N, V & Z
-//						p |= (temp & 0b11000000);	// copy bits 7 & 6 as N & Z
-//						p |= (a & temp)?0:2;		// set Z accordingly
-//						if (ver > 3) System.out.println("[BITx]");
-//						cycles = 4 + page;
-//						break;
-//					case 0x34:			// CMOS only
-//						temp = peek(am_zx());
-//						p &= 0b00111101;			// pre-clear N, V & Z
-//						p |= (temp & 0b11000000);	// copy bits 7 & 6 as N & Z
-//						p |= (a & temp)?0:2;		// set Z accordingly
-//						if (ver > 3) System.out.println("[BITzx]");
-//						cycles = 4;
-//						break;
+		/* *** BIT: Test Bits in Memory with Accumulator *** */
+		case 0x24:
+			if (ver > 3) System.out.println("[BITz]");
+			temp = peek(peek(pc++));
+			p = (byte)((p&0b00111101)&0x000000FF);			// pre-clear N, V & Z
+			p = (byte)((p|(temp&0b11000000))&0x000000FF);	// copy bits 7 & 6 as N & Z
+			p=(byte)((a&temp&0x000000FF)==0?p|2:p|0);
+			cycles = 3;
+			break;
+		case 0x2C:
+			if (ver > 3) System.out.println("[BITa]");
+			temp = peek(am_a());
+			p = (byte)((p&0b00111101)&0x000000FF);			// pre-clear N, V & Z
+			p = (byte)((p|(temp&0b11000000))&0x000000FF);	// copy bits 7 & 6 as N & Z
+			p=(byte)((a&temp&0x000000FF)==0?p|2:p|0);
+			cycles = 4;
+			break;
+
+
 //			/* *** Bxx: Branch on flag condition *** */
 //					case 0x30:
 //						if(p & 0b10000000) {
@@ -1051,15 +1030,6 @@ public class Cpu6502 implements Runnable {
 //				if (ver > 2)	System.out.println("[JMP(x)]");
 //				cycles = 6;
 //				break;
-//	/* *** JSR: Jump to New Location Saving Return Address *** */
-//			case 0x20:
-//				push((pc+1)>>8);		// stack one byte before return address, right at MSB
-//				push((pc+1)&255);
-//				pc = am_a();			// get ocyclesand
-//				if (ver > 2)	System.out.println("[JSR]");
-//				cycles = 6;
-//				break;
-	
 	
 //			/* *** TSX: Transfer Stack Pointer to Index X *** */
 //			case 0xBA:
@@ -1131,7 +1101,14 @@ public class Cpu6502 implements Runnable {
 //				cycles = 4;
 //				break;
 
-
+//			/* *** JSR: Jump to New Location Saving Return Address *** */
+//			case 0x20:
+//				push((pc+1)>>8);		// stack one byte before return address, right at MSB
+//				push((pc+1)&255);
+//				pc = am_a();			// get ocyclesand
+//				if (ver > 2)	System.out.println("[JSR]");
+//				cycles = 6;
+//				break;
 
 			
 //	/* *** RTI: Return from Interrupt *** */

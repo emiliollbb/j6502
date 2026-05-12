@@ -168,6 +168,28 @@ public class Cpu65C02 extends Cpu6502 {
 ////						stat();
 //						run = 1;		// pause execution
 //						break;
+//			case 0x89:			// CMOS only
+//			temp = peek(pc++);
+//			p &= 0b11111101;			// pre-clear Z only, is this OK?
+//			p |= (a & temp)?0:2;		// set Z accordingly
+//			if (ver > 3) System.out.println("[BIT#]");
+//			break;
+//		case 0x3C:			// CMOS only
+//			temp = peek(am_ax(&page));
+//			p &= 0b00111101;			// pre-clear N, V & Z
+//			p |= (temp & 0b11000000);	// copy bits 7 & 6 as N & Z
+//			p |= (a & temp)?0:2;		// set Z accordingly
+//			if (ver > 3) System.out.println("[BITx]");
+//			cycles = 4 + page;
+//			break;
+//		case 0x34:			// CMOS only
+//			temp = peek(am_zx());
+//			p &= 0b00111101;			// pre-clear N, V & Z
+//			p |= (temp & 0b11000000);	// copy bits 7 & 6 as N & Z
+//			p |= (a & temp)?0:2;		// set Z accordingly
+//			if (ver > 3) System.out.println("[BITzx]");
+//			cycles = 4;
+//			break;
 			/* *** Graceful Halt (STP on WDC) *** */
 					case (byte)0xDB:
 						System.out.println(" ...HALT!");
