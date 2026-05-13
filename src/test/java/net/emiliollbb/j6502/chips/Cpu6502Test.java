@@ -2222,6 +2222,43 @@ public class Cpu6502Test {
 		Mockito.verify(device).poke(0xA312, (byte)-85);
 	}
 	
+	@ParameterizedTest
+	@CsvSource({
+		"0x55,0x34,0x00",
+		"0,-64,-62"
+		})
+	void testBITZeroPage(byte acumulator, byte operand, byte expectedFlags) {
+		Mockito.when(device.peek(0x0003)).thenReturn(operand);
+		loadProgram(0x0200, new int[] {
+				// LDA
+				0xA9, acumulator,
+				// BIT #$03
+				0X24, 0x03
+				});
+		cpu.reset();
+		cpu.step();
+		int cycles = cpu.step();
+		Assertions.assertEquals(acumulator, cpu.getA());
+		Assertions.assertEquals(expectedFlags, cpu.getP());
+		Assertions.assertEquals(3, cycles);
+	}
+	@Test
+	void testBITAbsolute() {
+		Mockito.when(device.peek(0xF003)).thenReturn((byte)-64);
+		loadProgram(0x0200, new int[] {
+				// LDA
+				0xA9, 0,
+				// AND $F003
+				0X2C, 0x03, 0XF0
+				});
+		cpu.reset();
+		cpu.step();
+		int cycles = cpu.step();
+		Assertions.assertEquals(0, cpu.getA());
+		Assertions.assertEquals(-62, cpu.getP());
+		Assertions.assertEquals(4, cycles);
+	}
+	
 	private String printByte(byte b) {
 		return String.format("0x%02X", b)+ "("+b+")";
 	}
