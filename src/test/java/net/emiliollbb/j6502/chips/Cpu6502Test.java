@@ -477,19 +477,23 @@ public class Cpu6502Test {
 		Assertions.assertEquals(4, cycles);
 	}
 	
-	@Test
-	void testANDInmediate() {
+	@ParameterizedTest
+	@CsvSource({
+		"0x55,0x34,0x14,0x00",
+		})
+	void testANDInmediate(byte acumulator, byte operand,
+			byte expectedAcumulator, byte expectedFlags) {
 		loadProgram(0x0200, new int[] {
 				// LDA #$55
-				0xA9, 0x55,
+				0xA9, acumulator,
 				// AND #$34
-				0X29, 0x34
+				0X29, operand
 				});
 		cpu.reset();
 		cpu.step();
 		int cycles = cpu.step();
-		Assertions.assertEquals(0x14, cpu.getA());
-		Assertions.assertEquals(0x00, cpu.getP());
+		Assertions.assertEquals(expectedAcumulator, cpu.getA());
+		Assertions.assertEquals(expectedFlags, cpu.getP());
 		Assertions.assertEquals(2, cycles);
 	}
 	@Test
