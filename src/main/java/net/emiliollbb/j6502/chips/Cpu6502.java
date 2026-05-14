@@ -946,86 +946,63 @@ public class Cpu6502 implements Runnable {
 			cycles = 5;
 			break;
 
-
-//			/* *** Bxx: Branch on flag condition *** */
-//					case 0x30:
-//						if(p & 0b10000000) {
-//							rel(&page);
-//							cycles = 3 + page;
-//						} else pc++;	// must skip offset if not done EEEEEK
-//						if (ver > 2) System.out.println("[BMI]");
-//						break;
-//					case 0xD0:
-//						if(!(p & 0b00000010)) {
-//							rel(&page);
-//							cycles = 3 + page;
-//						} else pc++;	// must skip offset if not done EEEEEK
-//						if (ver > 2) System.out.println("[BNE]");
-//						break;
-//					case 0x10:
-//						if(!(p & 0b10000000)) {
-//							rel(&page);
-//							cycles = 3 + page;
-//						} else pc++;	// must skip offset if not done EEEEEK
-//						if (ver > 2) System.out.println("[BPL]");
-//						break;			
-			
-			/* *** Bxx: Branch on flag condition *** */
+		/* *** Bxx: Branch on flag condition *** */
+		case (byte) 0xB0:
+			if (ver > 2) System.out.println("[BCS]");
+			if((p & 0b00000001)!=0) {
+				page=rel(page);
+				cycles = 3 + page;
+			} else pc++;	// must skip offset if not done EEEEEK
+			break;
 		case (byte) 0x90:
 			if (ver > 2) System.out.println("[BCC]");
 			if((p & 0x01)==0) {
 				page=rel(page);
 				cycles = 3 + page;
-			} 
-			else {
-				pc++;	// must skip offset if not done EEEEEK
-			}
+			} else pc++;
 			break;
-//			case 0xB0:
-//				if(p & 0b00000001) {
-//					rel(&page);
-//					cycles = 3 + page;
-//					if (ver > 2) System.out.println("[BCS]");
-//				} else pc++;	// must skip offset if not done EEEEEK
-//				break;
-//			case 0xF0:
-//				if(p & 0b00000010) {
-//					rel(&page);
-//					cycles = 3 + page;
-//					if (ver > 2) System.out.println("[BEQ]");
-//				} else pc++;	// must skip offset if not done EEEEEK
-//				break;
-
-
-
-
-			
-
-
-
-
-//	/* *** Bxx: Branch on flag condition *** */
-//			case 0x50:
-//				if(!(p & 0b01000000)) {
-//					rel(&page);
-//					cycles = 3 + page;
-//				} else pc++;	// must skip offset if not done EEEEEK
-//				if (ver > 2) System.out.println("[BVC]");
-//				break;
-//			case 0x70:
-//				if(p & 0b01000000) {
-//					rel(&page);
-//					cycles = 3 + page;
-//				} else pc++;	// must skip offset if not done EEEEEK
-//				if (ver > 2) System.out.println("[BVS]");
-//				break;
-
-
-
-
-
-
-
+		case (byte) 0xF0:
+			if (ver > 2) System.out.println("[BEQ]");
+			if((p & 0b00000010)!=0) {
+				page=rel(page);
+				cycles = 3 + page;
+			} else pc++;	// must skip offset if not done EEEEEK
+			break;
+		case (byte) 0xD0:
+			if (ver > 2) System.out.println("[BNE]");
+			if((p & 0b00000010)==0) {
+				page=rel(page);
+				cycles = 3 + page;
+			} else pc++;	// must skip offset if not done EEEEEK
+			break;
+		case (byte) 0x30:
+			if (ver > 2) System.out.println("[BMI]");
+			if((p & 0b10000000)!=0) {
+				page=rel(page);
+				cycles = 3 + page;
+			} else pc++;	// must skip offset if not done EEEEEK
+			break;
+		case (byte) 0x10:
+			if (ver > 2) System.out.println("[BPL]");
+			if((p & 0b10000000)==0) {
+				page=rel(page);
+				cycles = 3 + page;
+			} else pc++;	// must skip offset if not done EEEEEK
+			break;			
+		case (byte) 0x70:
+			if (ver > 2) System.out.println("[BVS]");
+			if((p & 0b01000000)!=0) {
+				page=rel(page);
+				cycles = 3 + page;
+			} else pc++;	// must skip offset if not done EEEEEK
+			break;			
+		case (byte) 0x50:
+			if (ver > 2) System.out.println("[BVC]");
+			if((p & 0b01000000)==0) {
+				page=rel(page);
+				cycles = 3 + page;
+			} else pc++;	// must skip offset if not done EEEEEK
+			break;
 
 	
 //			/* *** TSX: Transfer Stack Pointer to Index X *** */

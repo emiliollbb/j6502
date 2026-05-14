@@ -11,6 +11,7 @@ import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.stubbing.LenientStubber;
 
 import net.emiliollbb.j6502.interfaces.IBusDevice;
 
@@ -28,11 +29,20 @@ public class Cpu6502Test {
 	}
 	
 	private void loadProgram(int begin, int[] data) {
+		loadProgram(begin, data, false);
+	}
+	
+	private void loadProgram(int begin, int[] data, boolean lenient) {
 		//pc = peek(0xFFFC) | peek(0xFFFD)<<8 & 0x0000FFFF;
 		Mockito.when(device.peek(0xFFFC)).thenReturn((byte)(begin & 0x000000FF));
 		Mockito.when(device.peek(0xFFFD)).thenReturn((byte)((begin & 0x0000FF00) >>8));
 		for(int i=0; i<data.length; i++) {
-			Mockito.when(device.peek(begin+i)).thenReturn((byte)data[i]);
+			if(lenient) {
+				Mockito.lenient().when(device.peek(begin+i)).thenReturn((byte)data[i]);
+			}
+			else {
+				Mockito.when(device.peek(begin+i)).thenReturn((byte)data[i]);
+			}
 		}
 	}
 	
@@ -2282,6 +2292,46 @@ public class Cpu6502Test {
 		int cycles = cpu.step();
 		Assertions.assertEquals(0xB057, cpu.getPc());
 		Assertions.assertEquals(5, cycles);
+	}
+	
+	@Test
+	void testBCS() {
+		loadProgram(0x0200, new int[] {
+				// BCS
+				0xB0,10,
+				// SEC
+				0x38, 
+				// BCS
+				0xB0,10
+				}, true);
+		cpu.reset();
+		int cycles = cpu.step();
+		cpu.step();
+		int cycles2 = cpu.step();
+		Assertions.assertEquals(0x020F, cpu.getPc());
+		Assertions.assertEquals(2, cycles);
+		Assertions.assertEquals(3, cycles2);
+	}
+	@Test
+	void testBCC() {
+		loadProgram(0x0200, new int[] {
+				// SEC
+				0x38,
+				// BCC
+				0x90,10,
+				// CLC
+				0x18, 
+				// BCC
+				0x90,10
+				}, true);
+		cpu.reset();
+		cpu.step();
+		int cycles = cpu.step();
+		cpu.step();
+		int cycles2 = cpu.step();
+		Assertions.assertEquals(0x0210, cpu.getPc());
+		Assertions.assertEquals(2, cycles);
+		Assertions.assertEquals(3, cycles2);
 	}
 	
 	private String printByte(byte b) {
