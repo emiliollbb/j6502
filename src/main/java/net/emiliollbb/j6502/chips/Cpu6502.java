@@ -941,7 +941,8 @@ public class Cpu6502 implements Runnable {
 			break;
 		case (byte) 0x6C:
 			if (ver > 2)	System.out.println("[JMP()]");
-			pc = am_ai();
+			int j=am_a();
+			pc= getWord(peek(j), peek(j+1));
 			cycles = 5;
 			break;
 
@@ -1315,10 +1316,4 @@ public class Cpu6502 implements Runnable {
 		bound = off==-2?-3: ((old & 0x0000FF00)==(pc & 0x0000FF00))?0:1;	// check page crossing
 		return bound;
 	}
-
-	protected int am_ai(){
-		int j=am_a();
-		return getWord(peek(j), peek(j+1));
-	}
-	
 }
