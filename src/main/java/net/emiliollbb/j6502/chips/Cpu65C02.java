@@ -190,6 +190,16 @@ public class Cpu65C02 extends Cpu6502 {
 //			if (ver > 3) System.out.println("[BITzx]");
 //			cycles = 4;
 //			break;
+//			case 0x7C:			// CMOS only
+//			pc = am_aix();
+//			if (ver > 2)	System.out.println("[JMP(x)]");
+//			cycles = 6;
+//			break;
+//		case (byte) 0x6C:
+//			if (ver > 2)	System.out.println("[JMP()]");
+//			pc = am_ai();
+//			cycles = 6;		// 5 for NMOS!
+//			break;
 			/* *** Graceful Halt (STP on WDC) *** */
 					case (byte)0xDB:
 						System.out.println(" ...HALT!");

@@ -2259,6 +2259,31 @@ public class Cpu6502Test {
 		Assertions.assertEquals(4, cycles);
 	}
 	
+	@Test
+	void testJMPAbsolute() {
+		loadProgram(0x0200, new int[] {
+				// LDA
+				0x4C, 0X02, 0XC0,
+				});
+		cpu.reset();
+		int cycles = cpu.step();
+		Assertions.assertEquals(0xC002, cpu.getPc());
+		Assertions.assertEquals(3, cycles);
+	}
+	@Test
+	void testJMPZeroPage() {
+		Mockito.when(device.peek(0xC0A0)).thenReturn((byte)0x57);
+		Mockito.when(device.peek(0xC0A1)).thenReturn((byte)0xB0);
+		loadProgram(0x0200, new int[] {
+				// JMP 0xA0
+				0x6C, 0xA0, 0XC0,
+				});
+		cpu.reset();
+		int cycles = cpu.step();
+		Assertions.assertEquals(0xB057, cpu.getPc());
+		Assertions.assertEquals(5, cycles);
+	}
+	
 	private String printByte(byte b) {
 		return String.format("0x%02X", b)+ "("+b+")";
 	}

@@ -917,7 +917,7 @@ public class Cpu6502 implements Runnable {
 			break;			
 		
 		/* *** BIT: Test Bits in Memory with Accumulator *** */
-		case 0x24:
+		case (byte) 0x24:
 			if (ver > 3) System.out.println("[BITz]");
 			temp = peek(peek(pc++));
 			p = (byte)((p&0b00111101)&0x000000FF);			// pre-clear N, V & Z
@@ -925,13 +925,24 @@ public class Cpu6502 implements Runnable {
 			p=(byte)((a&temp&0x000000FF)==0?p|2:p|0);
 			cycles = 3;
 			break;
-		case 0x2C:
+		case (byte) 0x2C:
 			if (ver > 3) System.out.println("[BITa]");
 			temp = peek(am_a());
 			p = (byte)((p&0b00111101)&0x000000FF);			// pre-clear N, V & Z
 			p = (byte)((p|(temp&0b11000000))&0x000000FF);	// copy bits 7 & 6 as N & Z
 			p=(byte)((a&temp&0x000000FF)==0?p|2:p|0);
 			cycles = 4;
+			break;
+		/* *** JMP: Jump to New Location *** */
+		case (byte) 0x4C:
+			if (ver > 2)	System.out.println("[JMP]");
+			pc = am_a();
+			cycles = 3;
+			break;
+		case (byte) 0x6C:
+			if (ver > 2)	System.out.println("[JMP()]");
+			pc = am_ai();
+			cycles = 5;
 			break;
 
 
@@ -1014,22 +1025,7 @@ public class Cpu6502 implements Runnable {
 
 
 
-//	/* *** JMP: Jump to New Location *** */
-//			case 0x4C:
-//				pc = am_a();
-//				if (ver > 2)	System.out.println("[JMP]");
-//				cycles = 3;
-//				break;
-//			case 0x6C:
-//				pc = am_ai();
-//				if (ver > 2)	System.out.println("[JMP()]");
-//				cycles = 6;		// 5 for NMOS!
-//				break;
-//			case 0x7C:			// CMOS only
-//				pc = am_aix();
-//				if (ver > 2)	System.out.println("[JMP(x)]");
-//				cycles = 6;
-//				break;
+
 	
 //			/* *** TSX: Transfer Stack Pointer to Index X *** */
 //			case 0xBA:
@@ -1320,6 +1316,9 @@ public class Cpu6502 implements Runnable {
 		return bound;
 	}
 
-	
+	protected int am_ai(){
+		int j=am_a();
+		return getWord(peek(j), peek(j+1));
+	}
 	
 }
