@@ -2420,6 +2420,54 @@ public class Cpu6502Test {
 		Assertions.assertEquals(3, cycles2);
 	}
 	
+	@Test
+	void testBVS() {
+		loadProgram(0x0200, new int[] {
+				// LDA 100
+				0xA9, 100,
+				// BVS
+				0x70,10,
+				// ADC 100
+				0x18,0x69, 100, 
+				// BVS
+				0x70,10
+				}, true);
+		cpu.reset();
+		cpu.step();
+		cpu.step();
+		int cycles = cpu.step();
+		cpu.step();
+		int cycles2 = cpu.step();
+		Assertions.assertEquals(0x0213, cpu.getPc());
+		Assertions.assertEquals(2, cycles);
+		Assertions.assertEquals(3, cycles2);
+	}
+	@Test
+	void testBVC() {
+		loadProgram(0x0200, new int[] {
+				// LDA 100
+				0xA9, 100,
+				// ADC 100
+				0x18,0x69, 100, 
+				// BVC
+				0x50,10,
+				// CLV
+				0xB8,
+				// BVC
+				0x50,10
+				}, true);
+		cpu.reset();
+		cpu.step();
+		cpu.step();
+		int cycles = cpu.step();
+		cpu.step();
+		cpu.step();
+		int cycles2 = cpu.step();
+		Assertions.assertEquals(0x0214, cpu.getPc());
+		Assertions.assertEquals(2, cycles);
+		Assertions.assertEquals(3, cycles2);
+	}
+	
 	private String printByte(byte b) {
 		return String.format("0x%02X", b)+ "("+b+")";
 	}
