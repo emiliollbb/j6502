@@ -2467,6 +2467,36 @@ public class Cpu6502Test {
 		Assertions.assertEquals(2, cycles);
 		Assertions.assertEquals(3, cycles2);
 	}
+	@Test
+	void testTXS() {
+		loadProgram(0x0200, new int[] {
+				// LDX 0XFF
+				0xA2, 0xFF,
+				0x9A
+				});
+		cpu.reset();
+		cpu.step();
+		int cycles = cpu.step();
+		Assertions.assertEquals((byte) 0xFF, cpu.getS());
+		Assertions.assertEquals(2, cycles);
+	}
+	@Test
+	void testSTX() {
+		loadProgram(0x0200, new int[] {
+				// LDX 0XFF
+				0xA2, 0xFF,
+				0x9A,
+				0xA2, 0x00,
+				0xBA
+				});
+		cpu.reset();
+		cpu.step();
+		cpu.step();
+		cpu.step();
+		int cycles = cpu.step();
+		Assertions.assertEquals((byte) 0xFF, cpu.getX());
+		Assertions.assertEquals(2, cycles);
+	}
 	
 	private String printByte(byte b) {
 		return String.format("0x%02X", b)+ "("+b+")";

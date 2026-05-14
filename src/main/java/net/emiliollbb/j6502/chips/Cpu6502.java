@@ -89,6 +89,9 @@ public class Cpu6502 implements Runnable {
 	public byte getP() {
 		return p;
 	}
+	public byte getS() {
+		return s;
+	}
 	public int getSpeed() {
 		return speed;
 	}
@@ -1003,48 +1006,31 @@ public class Cpu6502 implements Runnable {
 				cycles = 3 + page;
 			} else pc++;	// must skip offset if not done EEEEEK
 			break;
-
-	
-//			/* *** TSX: Transfer Stack Pointer to Index X *** */
-//			case 0xBA:
-//				x = s;
-//				bits_nz(x);
-//				if (ver > 3) System.out.println("[TSX]");
-//				break;
-
-//	/* *** TXS: Transfer Index X to Stack Pointer *** */
-//			case 0x9A:
-//				s = x;
-//				bits_nz(s);
-//				if (ver > 3) System.out.println("[TXS]");
-//				break;
-
-
-
-//	/* *** PHA: Push Accumulator on Stack *** */
-//			case 0x48:
-//				push(a);
-//				if (ver > 3) System.out.println("[PHA]");
-//				cycles = 3;
-//				break;
+			/* *** TXS: Transfer Index X to Stack Pointer *** */
+		case (byte) 0x9A:
+			if (ver > 3) System.out.println("[TXS]");
+			s = x;
+			bits_nz(s);
+			break;
+		/* *** TSX: Transfer Stack Pointer to Index X *** */
+		case (byte) 0xBA:
+			x = s;
+			bits_nz(x);
+			if (ver > 3) System.out.println("[TSX]");
+			break;
+	/* *** PHA: Push Accumulator on Stack *** */
+			case 0x48:
+				push(a);
+				if (ver > 3) System.out.println("[PHA]");
+				cycles = 3;
+				break;
 //	/* *** PHP: Push Processor Status on Stack *** */
 //			case 0x08:
 //				push(p);
 //				if (ver > 3) System.out.println("[PHP]");
 //				cycles = 3;
 //				break;
-//	/* *** PHX: Push Index X on Stack *** */
-//			case 0xDA:			// CMOS only
-//				push(x);
-//				if (ver > 3) System.out.println("[PHX]");
-//				cycles = 3;
-//				break;
-//	/* *** PHY: Push Index Y on Stack *** */
-//			case 0x5A:			// CMOS only
-//				push(y);
-//				if (ver > 3) System.out.println("[PHY]");
-//				cycles = 3;
-//				break;
+
 //	/* *** PLA: Pull Accumulator from Stack *** */
 //			case 0x68:
 //				a = pop();
@@ -1292,5 +1278,12 @@ public class Cpu6502 implements Runnable {
 		// Old page == new page ?
 		bound = off==-2?-3: ((old & 0x0000FF00)==(pc & 0x0000FF00))?0:1;	// check page crossing
 		return bound;
+	}
+	
+	protected void push(byte b)	{ 
+		poke(0x100 + s--, b); 
+	}
+	protected byte pop() {
+		return peek(++s + 0x100);
 	}
 }

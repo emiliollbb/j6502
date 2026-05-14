@@ -200,6 +200,18 @@ public class Cpu65C02 extends Cpu6502 {
 //			pc = am_ai();
 //			cycles = 6;		// 5 for NMOS!
 //			break;
+			/* *** PHX: Push Index X on Stack *** */
+//		case (byte) 0xDA:			// CMOS only
+//			push(x);
+//			if (ver > 3) System.out.println("[PHX]");
+//			cycles = 3;
+//			break;
+//		/* *** PHY: Push Index Y on Stack *** */
+//		case (byte) 0x5A:			// CMOS only
+//			push(y);
+//			if (ver > 3) System.out.println("[PHY]");
+//			cycles = 3;
+//			break;
 			/* *** Graceful Halt (STP on WDC) *** */
 					case (byte)0xDB:
 						System.out.println(" ...HALT!");
