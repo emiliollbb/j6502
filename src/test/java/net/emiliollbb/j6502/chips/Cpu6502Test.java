@@ -2521,6 +2521,25 @@ public class Cpu6502Test {
 		Assertions.assertEquals((byte) 0xFE, cpu.getS());
 		Assertions.assertEquals(3, cycles);
 	}
+	@Test
+	void testPLA() {
+		Mockito.when(device.peek(0x01FF)).thenReturn((byte)0x55);
+		loadProgram(0x0200, new int[] {
+				// LDX 0XFF
+				0xA2, 0xFE,
+				// TXS
+				0x9A,
+				// PLA
+				0x68
+				});
+		cpu.reset();
+		cpu.step();
+		cpu.step();
+		int cycles = cpu.step();
+		Assertions.assertEquals((byte) 0x55, cpu.getA());
+		Assertions.assertEquals((byte) 0xFF, cpu.getS());
+		Assertions.assertEquals(4, cycles);
+	}
 	
 	private String printByte(byte b) {
 		return String.format("0x%02X", b)+ "("+b+")";

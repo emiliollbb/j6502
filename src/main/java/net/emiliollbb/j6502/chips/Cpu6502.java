@@ -1018,26 +1018,28 @@ public class Cpu6502 implements Runnable {
 			bits_nz(x);
 			if (ver > 3) System.out.println("[TSX]");
 			break;
-	/* *** PHA: Push Accumulator on Stack *** */
-			case 0x48:
-				push(a);
-				if (ver > 3) System.out.println("[PHA]");
-				cycles = 3;
-				break;
-//	/* *** PHP: Push Processor Status on Stack *** */
+		/* *** PHA: Push Accumulator on Stack *** */
+		case (byte) 0x48:
+			push(a);
+			if (ver > 3) System.out.println("[PHA]");
+			cycles = 3;
+			break;
+		/* *** PLA: Pull Accumulator from Stack *** */
+		case (byte) 0x68:
+			a = pop();
+			if (ver > 3) System.out.println("[PLA]");
+			bits_nz(a);
+			cycles = 4;
+			break;
+				
+				//	/* *** PHP: Push Processor Status on Stack *** */
 //			case 0x08:
 //				push(p);
 //				if (ver > 3) System.out.println("[PHP]");
 //				cycles = 3;
 //				break;
 
-//	/* *** PLA: Pull Accumulator from Stack *** */
-//			case 0x68:
-//				a = pop();
-//				if (ver > 3) System.out.println("[PLA]");
-//				bits_nz(a);
-//				cycles = 4;
-//				break;
+
 //	/* *** PLP: Pull Processor Status from Stack *** */
 //			case 0x28:
 //				p = pop();
