@@ -23,6 +23,7 @@ public class Durango {
 		screen = new DurangoScreen(4, ram, rom);
 		
 		cpu = new Cpu65C02(10, Arrays.asList(ram, rom));
+		//cpu.setSpeed(1);
 		cpu.setVerbose(10);
 		cpu.listDevices();
 		
@@ -30,8 +31,11 @@ public class Durango {
 		for(int i=0; i<10; i++) {
 			cpu.step();
 		}
-		//new Thread(cpu).start();
 		
+	}
+	
+	public Cpu65C02 getCpu() {
+		return cpu;
 	}
 
 	public DurangoScreen getScreen() {

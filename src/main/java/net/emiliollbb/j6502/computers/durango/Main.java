@@ -3,6 +3,9 @@ package net.emiliollbb.j6502.computers.durango;
 import java.awt.Frame;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.time.Duration;
+
+import javax.swing.SwingWorker;
 
 public class Main {
 	// main function
@@ -16,6 +19,17 @@ public class Main {
 
         // Making the Frame visible
         frame.setVisible(true);
+        
+        SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
+        	  @Override
+        	  protected Void doInBackground() throws Exception {
+        		  while(true) {
+        			  durango.getCpu().step();
+        			  Thread.sleep(Duration.ofMillis(1000));
+        		  }
+        	  }
+        	};
+        worker.execute();
 
         // Using WindowListener for closing the window
         frame.addWindowListener(new WindowAdapter() {

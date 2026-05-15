@@ -8,7 +8,7 @@ import java.util.List;
 
 import net.emiliollbb.j6502.interfaces.IBusDevice;
 
-public class Cpu6502 implements Runnable {
+public class Cpu6502 {
 	protected byte a; 
 	protected byte x;
 	protected byte y;
@@ -99,8 +99,7 @@ public class Cpu6502 implements Runnable {
 		this.speed = speed;
 	}
 
-	@Override
-	public void run() {
+	public void timedStep() {
 		int cycles;
 		reset();
 		do {
