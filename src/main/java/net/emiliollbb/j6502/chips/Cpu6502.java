@@ -1032,36 +1032,20 @@ public class Cpu6502 implements Runnable {
 			cycles = 4;
 			break;
 				
-				//	/* *** PHP: Push Processor Status on Stack *** */
-//			case 0x08:
-//				push(p);
-//				if (ver > 3) System.out.println("[PHP]");
-//				cycles = 3;
-//				break;
-
-
-//	/* *** PLP: Pull Processor Status from Stack *** */
-//			case 0x28:
-//				p = pop();
-//				if (p & 0b00001000)	dec = 1;	// check for decimal flag
-//				else				dec = 0;
-//				if (ver > 3) System.out.println("[PLP]");
-//				cycles = 4;
-//				break;
-//	/* *** PLX: Pull Index X from Stack *** */
-//			case 0xFA:			// CMOS only
-//				x = pop();
-//				if (ver > 3) System.out.println("[PLX]");
-//				bits_nz(x);		// EEEEEEEEEEEEEEEEEEEEK
-//				cycles = 4;
-//				break;
-//	/* *** PLX: Pull Index X from Stack *** */
-//			case 0x7A:			// CMOS only
-//				y = pop();
-//				if (ver > 3) System.out.println("[PLY]");
-//				bits_nz(y);		// EEEEEEEEEEEEEEEEEEEEK
-//				cycles = 4;
-//				break;
+		/* *** PHP: Push Processor Status on Stack *** */
+		case 0x08:
+			if (ver > 3) System.out.println("[PHP]");
+			push(p);
+			cycles = 3;
+			break;
+		/* *** PLP: Pull Processor Status from Stack *** */
+		case 0x28:
+			if (ver > 3) System.out.println("[PLP]");
+			p = pop();
+			if ((p & 0b00001000)!=0)	dec = 1;	// check for decimal flag
+			else				dec = 0;
+			cycles = 4;
+			break;
 
 //			/* *** JSR: Jump to New Location Saving Return Address *** */
 //			case 0x20:

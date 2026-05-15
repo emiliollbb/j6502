@@ -2541,6 +2541,31 @@ public class Cpu6502Test {
 		Assertions.assertEquals(4, cycles);
 	}
 	
+	@Test
+	void testPHP() {
+		loadProgram(0x0200, new int[] {
+				// LDX 0XFF
+				0xA2, 0xFF,
+				// TXS
+				0x9A,
+				// LDX 0X00
+				0xA2, 0x00,
+				// SEC
+				0x38,
+				// PHP
+				0x08
+				});
+		cpu.reset();
+		cpu.step();
+		cpu.step();
+		cpu.step();
+		cpu.step();
+		int cycles = cpu.step();
+		Mockito.verify(device).poke(0x01FF, (byte)0x03);
+		Assertions.assertEquals((byte) 0xFE, cpu.getS());
+		Assertions.assertEquals(3, cycles);
+	}
+	
 	private String printByte(byte b) {
 		return String.format("0x%02X", b)+ "("+b+")";
 	}

@@ -212,6 +212,25 @@ public class Cpu65C02 extends Cpu6502 {
 //			if (ver > 3) System.out.println("[PHY]");
 //			cycles = 3;
 //			break;
+
+//			/* *** PLX: Pull Index X from Stack *** */
+//			case 0xFA:			// CMOS only
+//				x = pop();
+//				if (ver > 3) System.out.println("[PLX]");
+//				bits_nz(x);		// EEEEEEEEEEEEEEEEEEEEK
+//				cycles = 4;
+//				break;
+//	/* *** PLX: Pull Index X from Stack *** */
+//			case 0x7A:			// CMOS only
+//				y = pop();
+//				if (ver > 3) System.out.println("[PLY]");
+//				bits_nz(y);		// EEEEEEEEEEEEEEEEEEEEK
+//				cycles = 4;
+//				break;
+
+			
+			
+			
 			/* *** Graceful Halt (STP on WDC) *** */
 					case (byte)0xDB:
 						System.out.println(" ...HALT!");
