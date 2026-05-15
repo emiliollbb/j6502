@@ -1058,9 +1058,8 @@ public class Cpu6502 implements Runnable {
 		/* *** RTS: Return from Subroutine *** */
 		case (byte) 0x60:
 			if (ver > 2)	System.out.println("[RTS]");
-			pc = pop();					// extract LSB...
-			pc |= (pop() << 8);			// ...and MSB, but is one byte off
-			pc++;						// return instruction address
+			pc=getWord(pop(),pop());
+			pc++;
 			cycles = 6;
 			break;
 

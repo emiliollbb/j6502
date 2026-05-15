@@ -2601,6 +2601,24 @@ public class Cpu6502Test {
 		Mockito.verify(device).poke(0x01FE, (byte)0x05);
 		Assertions.assertEquals(6, cycles);
 	}
+	@Test
+	void testRTS() {
+		Mockito.when(device.peek(0x01FF)).thenReturn((byte)0x02);
+		Mockito.when(device.peek(0x01FE)).thenReturn((byte)0x0A);
+		loadProgram(0x0200, new int[] {
+				// LDX 0XFD, TXS
+				0xA2, 0xFD,	0x9A,
+				// RTS
+				0x60
+				});
+		cpu.reset();
+		cpu.step();
+		cpu.step();
+		int cycles = cpu.step();
+		Assertions.assertEquals(0x020B, cpu.getPc());
+		Assertions.assertEquals((byte) 0xFF, cpu.getS());
+		Assertions.assertEquals(6, cycles);
+	}
 	
 	private String printByte(byte b) {
 		return String.format("0x%02X", b)+ "("+b+")";
