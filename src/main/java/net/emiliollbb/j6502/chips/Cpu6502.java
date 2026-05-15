@@ -1014,20 +1014,20 @@ public class Cpu6502 implements Runnable {
 			break;
 		/* *** TSX: Transfer Stack Pointer to Index X *** */
 		case (byte) 0xBA:
+			if (ver > 3) System.out.println("[TSX]");
 			x = s;
 			bits_nz(x);
-			if (ver > 3) System.out.println("[TSX]");
 			break;
 		/* *** PHA: Push Accumulator on Stack *** */
 		case (byte) 0x48:
-			push(a);
 			if (ver > 3) System.out.println("[PHA]");
+			push(a);
 			cycles = 3;
 			break;
 		/* *** PLA: Pull Accumulator from Stack *** */
 		case (byte) 0x68:
-			a = pop();
 			if (ver > 3) System.out.println("[PLA]");
+			a = pop();
 			bits_nz(a);
 			cycles = 4;
 			break;
