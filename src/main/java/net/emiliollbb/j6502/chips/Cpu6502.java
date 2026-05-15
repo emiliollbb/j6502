@@ -99,23 +99,15 @@ public class Cpu6502 {
 		this.speed = speed;
 	}
 
-	public void timedStep() {
+	public long timedStep() {
 		int cycles;
-		reset();
-		do {
-			Instant start = Instant.now();
-			Instant end = Instant.now();
-			cycles = step();
-			long expectedTime=cycles*1000/speed;
-			long actualTime=start.until(end, ChronoUnit.MILLIS);
-			long sleepTime=expectedTime-actualTime;
-			System.out.println("Sleep time: "+sleepTime);
-			try {
-				Thread.sleep(Duration.ofMillis(sleepTime));
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-		}while(cycles>0);
+		Instant start = Instant.now();
+		Instant end = Instant.now();
+		cycles = step();
+		long expectedTime=cycles*1000/speed;
+		long actualTime=start.until(end, ChronoUnit.MILLIS);
+		long sleepTime=expectedTime-actualTime;
+		return sleepTime;
 	}
 
 	/* execute a single opcode, returning cycle count */
@@ -1256,7 +1248,7 @@ public class Cpu6502 {
 		int old = pc;
 		pc += off;
 		// Old page == new page ?
-		bound = off==-2?-3: ((old & 0x0000FF00)==(pc & 0x0000FF00))?0:1;	// check page crossing
+		bound = ((old & 0x0000FF00)==(pc & 0x0000FF00))?0:1;	// check page crossing
 		return bound;
 	}
 	
