@@ -1280,10 +1280,10 @@ public class Cpu6502 implements Runnable {
 		return bound;
 	}
 	
-	protected void push(byte b)	{ 
-		poke(0x100 + s--, b); 
+	protected void push(byte b)	{
+		poke(getWord(s--, (byte)0x01), b); 
 	}
 	protected byte pop() {
-		return peek(++s + 0x100);
+		return peek(getWord(++s, (byte)0x01));
 	}
 }

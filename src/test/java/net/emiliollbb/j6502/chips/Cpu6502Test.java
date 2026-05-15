@@ -2472,6 +2472,7 @@ public class Cpu6502Test {
 		loadProgram(0x0200, new int[] {
 				// LDX 0XFF
 				0xA2, 0xFF,
+				// TXS
 				0x9A
 				});
 		cpu.reset();
@@ -2485,6 +2486,7 @@ public class Cpu6502Test {
 		loadProgram(0x0200, new int[] {
 				// LDX 0XFF
 				0xA2, 0xFF,
+				// TXS
 				0x9A,
 				0xA2, 0x00,
 				0xBA
@@ -2496,6 +2498,28 @@ public class Cpu6502Test {
 		int cycles = cpu.step();
 		Assertions.assertEquals((byte) 0xFF, cpu.getX());
 		Assertions.assertEquals(2, cycles);
+	}
+	
+	@Test
+	void testPHA() {
+		loadProgram(0x0200, new int[] {
+				// LDX 0XFF
+				0xA2, 0xFF,
+				// TXS
+				0x9A,
+				// LDA
+				0xA9, 0x55,
+				// PHA
+				0x48
+				});
+		cpu.reset();
+		cpu.step();
+		cpu.step();
+		cpu.step();
+		int cycles = cpu.step();
+		Mockito.verify(device).poke(0x01FF, (byte)0x55);
+		Assertions.assertEquals((byte) 0xFE, cpu.getS());
+		Assertions.assertEquals(3, cycles);
 	}
 	
 	private String printByte(byte b) {
