@@ -2603,8 +2603,8 @@ public class Cpu6502Test {
 	}
 	@Test
 	void testRTS() {
-		Mockito.when(device.peek(0x01FF)).thenReturn((byte)0x02);
 		Mockito.when(device.peek(0x01FE)).thenReturn((byte)0x0A);
+		Mockito.when(device.peek(0x01FF)).thenReturn((byte)0x02);
 		loadProgram(0x0200, new int[] {
 				// LDX 0XFD, TXS
 				0xA2, 0xFD,	0x9A,
@@ -2616,6 +2616,27 @@ public class Cpu6502Test {
 		cpu.step();
 		int cycles = cpu.step();
 		Assertions.assertEquals(0x020B, cpu.getPc());
+		Assertions.assertEquals((byte) 0xFF, cpu.getS());
+		Assertions.assertEquals(6, cycles);
+	}
+	
+	@Test
+	void testRTI() {
+		Mockito.when(device.peek(0x01FD)).thenReturn((byte)0x03);
+		Mockito.when(device.peek(0x01FE)).thenReturn((byte)0x0A);
+		Mockito.when(device.peek(0x01FF)).thenReturn((byte)0x02);
+		loadProgram(0x0200, new int[] {
+				// LDX 0XFD, TXS
+				0xA2, 0xFC,	0x9A,
+				// RTI
+				0x40
+				});
+		cpu.reset();
+		cpu.step();
+		cpu.step();
+		int cycles = cpu.step();
+		Assertions.assertEquals(0x020A, cpu.getPc());
+		Assertions.assertEquals((byte) 0x13, cpu.getP());
 		Assertions.assertEquals((byte) 0xFF, cpu.getS());
 		Assertions.assertEquals(6, cycles);
 	}

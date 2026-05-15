@@ -1062,31 +1062,26 @@ public class Cpu6502 implements Runnable {
 			pc++;
 			cycles = 6;
 			break;
-
-
 			
-//	/* *** RTI: Return from Interrupt *** */
-//			case 0x40:
-//				p = pop();					// retrieve status
-//				p |= 0b00010000;			// forget possible B flag
-//				pc = pop();					// extract LSB...
-//				pc |= (pop() << 8);			// ...and MSB, address is correct
-//				if (ver > 2)	System.out.println("[RTI]");
-//				cycles = 6;
-//				break;
+		/* *** RTI: Return from Interrupt *** */
+		case 0x40:
+			if (ver > 2)	System.out.println("[RTI]");
+			p = pop();					// retrieve status
+			p |= 0b00010000;			// forget possible B flag
+			pc=getWord(pop(),pop());
+			cycles = 6;
+			break;
 
-
-
-				/* *** BRK: force break *** */
-				case 0x00:
-					if (ver > 1) System.out.println("[BRK]");
-					pc++;
-					System.out.println("******************************************");
-					System.out.println("ACUMULATOR: "+printByte(a));
-					System.out.println("REGISTER X: "+printByte(x));
-					System.out.println("REGISTER Y: "+printByte(y));
-					System.out.println("******************************************");
-					cycles=0;
+		/* *** BRK: force break *** */
+		case 0x00:
+			if (ver > 1) System.out.println("[BRK]");
+			pc++;
+			System.out.println("******************************************");
+			System.out.println("ACUMULATOR: "+printByte(a));
+			System.out.println("REGISTER X: "+printByte(x));
+			System.out.println("REGISTER Y: "+printByte(y));
+			System.out.println("******************************************");
+			cycles=0;
 			
 			default:
 				throw new RuntimeException("Opcode "+printByte(opcode)+" invalid!");
@@ -1270,6 +1265,8 @@ public class Cpu6502 implements Runnable {
 		poke(getWord(s--, (byte)0x01), b); 
 	}
 	protected byte pop() {
-		return peek(getWord(++s, (byte)0x01));
+		byte d =peek(getWord(++s, (byte)0x01));
+		if(ver>6) System.out.println("pop "+printByte(s)+" -> "+printByte(d));
+		return d;
 	}
 }
