@@ -1033,13 +1033,13 @@ public class Cpu6502 implements Runnable {
 			break;
 				
 		/* *** PHP: Push Processor Status on Stack *** */
-		case 0x08:
+		case (byte) 0x08:
 			if (ver > 3) System.out.println("[PHP]");
 			push(p);
 			cycles = 3;
 			break;
 		/* *** PLP: Pull Processor Status from Stack *** */
-		case 0x28:
+		case (byte) 0x28:
 			if (ver > 3) System.out.println("[PLP]");
 			p = pop();
 			if ((p & 0b00001000)!=0)	dec = 1;	// check for decimal flag
@@ -1047,14 +1047,23 @@ public class Cpu6502 implements Runnable {
 			cycles = 4;
 			break;
 
-//			/* *** JSR: Jump to New Location Saving Return Address *** */
-//			case 0x20:
-//				push((pc+1)>>8);		// stack one byte before return address, right at MSB
-//				push((pc+1)&255);
-//				pc = am_a();			// get ocyclesand
-//				if (ver > 2)	System.out.println("[JSR]");
-//				cycles = 6;
-//				break;
+		/* *** JSR: Jump to New Location Saving Return Address *** */
+		case (byte) 0x20:
+			if (ver > 2)	System.out.println("[JSR]");
+			push((byte)(((pc+1)>>8)&0x000000FF));		// stack one byte before return address, right at MSB
+			push((byte)((pc+1)&0x000000FF));
+			pc = am_a();			// get ocyclesand
+			cycles = 6;
+			break;
+		/* *** RTS: Return from Subroutine *** */
+		case (byte) 0x60:
+			if (ver > 2)	System.out.println("[RTS]");
+			pc = pop();					// extract LSB...
+			pc |= (pop() << 8);			// ...and MSB, but is one byte off
+			pc++;						// return instruction address
+			cycles = 6;
+			break;
+
 
 			
 //	/* *** RTI: Return from Interrupt *** */
@@ -1064,14 +1073,6 @@ public class Cpu6502 implements Runnable {
 //				pc = pop();					// extract LSB...
 //				pc |= (pop() << 8);			// ...and MSB, address is correct
 //				if (ver > 2)	System.out.println("[RTI]");
-//				cycles = 6;
-//				break;
-//	/* *** RTS: Return from Subroutine *** */
-//			case 0x60:
-//				pc = pop();					// extract LSB...
-//				pc |= (pop() << 8);			// ...and MSB, but is one byte off
-//				pc++;						// return instruction address
-//				if (ver > 2)	System.out.println("[RTS]");
 //				cycles = 6;
 //				break;
 

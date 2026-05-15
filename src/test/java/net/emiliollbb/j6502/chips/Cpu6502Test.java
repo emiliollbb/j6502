@@ -2585,6 +2585,23 @@ public class Cpu6502Test {
 		Assertions.assertEquals(4, cycles);
 	}
 	
+	@Test
+	void testJSR() {
+		loadProgram(0x0200, new int[] {
+				// LDX 0xFF, TXS
+				0xA2, 0xFF,	0x9A,
+				// JSR $1103
+				0x20, 0x03, 0x11});
+		cpu.reset();
+		cpu.step();
+		cpu.step();
+		int cycles = cpu.step();
+		Assertions.assertEquals(0x1103, cpu.getPc());
+		Mockito.verify(device).poke(0x01FF, (byte)0x02);
+		Mockito.verify(device).poke(0x01FE, (byte)0x05);
+		Assertions.assertEquals(6, cycles);
+	}
+	
 	private String printByte(byte b) {
 		return String.format("0x%02X", b)+ "("+b+")";
 	}
