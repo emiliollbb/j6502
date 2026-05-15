@@ -1269,4 +1269,37 @@ public class Cpu6502 implements Runnable {
 		if(ver>6) System.out.println("pop "+printByte(s)+" -> "+printByte(d));
 		return d;
 	}
+	
+	/* emulate !NMI signal */
+	protected void nmi() {
+		intack();								// acknowledge and save
+
+		pc = peek(0xFFFA) | peek(0xFFFB)<<8;	// NMI vector
+		if (ver > 1)	System.out.println(" NMI: PC=>"+printByte(pc));
+	}
+
+	/* emulate !IRQ signal */
+	protected void irq() {
+		if ((p & 4)!=0) {								// if not masked...
+			p &= 0b11101111;						// clear B, as this is IRQ!
+			intack();								// acknowledge and save
+			p |= 0b00010000;						// retrieve current status
+
+			pc = peek(0xFFFE) | peek(0xFFFF)<<8;	// IRQ/BRK vector
+			if (ver > 1)	System.out.println(" IRQ: PC=>"+printByte(pc));
+		}
+	}
+	
+	/* *** interrupt support *** */
+	/* acknowledge interrupt and save status */
+	protected int intack() {
+		push((byte)((pc>>8)&0x000000FF));		// stack one byte before return address, right at MSB
+		push((byte)(pc&0x000000FF));
+		push(p);
+
+		p |= 0b00000100;						// set interrupt mask
+		p &= 0b11110111;						// and clear Decimal mode (CMOS only)
+		dec = 0;
+		return 7;								// interrupt acknowledge time
+	}
 }
