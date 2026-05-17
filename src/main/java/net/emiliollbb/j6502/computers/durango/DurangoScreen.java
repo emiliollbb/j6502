@@ -32,6 +32,7 @@ public class DurangoScreen extends Canvas{
 	@Override
     public void paint(Graphics g) {
         super.paint(g);
+        g.setColor(Color.WHITE);
         for(int i=0x6000; i<0x8000; i++) {
         	updatePixel(g,i);
         }        

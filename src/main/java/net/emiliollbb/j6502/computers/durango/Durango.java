@@ -20,7 +20,7 @@ public class Durango {
 		// 32K ROM
 		rom = new DurangoRom(0x8000, 0x8000, new File("/home/emilio/proyectos/j6502/workspace/j6502/src/main/asm/durango/test.bin"));
 		// Durango screen		
-		screen = new DurangoScreen(4, ram, rom);
+		screen = new DurangoScreen(2, ram, rom);
 		
 		cpu = new Cpu65C02(10, Arrays.asList(ram, rom));
 		cpu.setSpeed(10);
@@ -28,10 +28,6 @@ public class Durango {
 		cpu.listDevices();
 		
 		cpu.reset();
-		for(int i=0; i<10; i++) {
-			cpu.step();
-		}
-		
 	}
 	
 	public Cpu65C02 getCpu() {

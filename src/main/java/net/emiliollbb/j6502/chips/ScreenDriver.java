@@ -58,7 +58,7 @@ public class ScreenDriver extends AbstractBusDevice {
 		int relativeAddr = addr-startAddress;
 		vram[relativeAddr]=data;
 		virtualScreen.setPixel(relativeAddr%128, (int)relativeAddr/128, palette[data%palette.length]);
-		virtualScreen.repaint();
+		//virtualScreen.repaint();
 	}
 
 	public VirtualScreen getVirtualScreen() {
