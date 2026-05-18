@@ -19,11 +19,16 @@ public class Cpu6502 {
 	protected int dec;
 	protected int speed;
 	protected int page;
+	protected boolean irq;
+	protected boolean nmi;
 	
 	protected List<IBusDevice> busDevices;
 	
 	public Cpu6502(int speed) {
 		pc=0;
+		page=0;
+		irq=false;
+		nmi=false;
 		this.speed=speed;
 		busDevices=new LinkedList<>();
 	}
@@ -112,13 +117,35 @@ public class Cpu6502 {
 
 	/* execute a single opcode, returning cycle count */
 	public int step() {
-		int cycles = 2;			// base cycle count
-		page = 0;			// page boundary flag, for speed penalties
-		byte opcode, temp;
-		int adr;
-
-		opcode = peek(pc++);	// get opcode and point to next one (or operand)
+		if(nmi) {
+			nmi=false;
+			return nmi();
+		}
+		if(irq) {
+			irq=false;
+			return irq();
+		}
+		
+		byte opcode = peek(pc++);	// get opcode and point to next one (or operand)
 		if(ver>5) System.out.println("OPCODE: "+printByte(opcode));
+		int cycles = runOpcode(opcode);
+		
+		return cycles;
+	}
+	
+	public void triggerNMI() {
+		nmi=true;
+	}
+	
+	public void triggerIRQ() {
+		irq=true;
+	}
+
+	protected int runOpcode(byte opcode) {
+		page = 0;			// page boundary flag, for speed penalties
+		int cycles = 2;			// base cycle count
+		byte temp;
+		int adr;
 		switch(opcode) {
 		/** INDEX REGISTERS MANIPULATION **/
 		/* *** LDX: Load Index X with Memory *** */
@@ -1077,7 +1104,6 @@ public class Cpu6502 {
 			default:
 				throw new RuntimeException("Opcode "+printByte(opcode)+" invalid!");
 		}
-		
 		return cycles;
 	}
 	
@@ -1248,7 +1274,7 @@ public class Cpu6502 {
 		int old = pc;
 		pc += off;
 		// Old page == new page ?
-		bound = ((old & 0x0000FF00)==(pc & 0x0000FF00))?0:1;	// check page crossing
+		bound = off==-2?-3: ((old & 0x0000FF00)==(pc & 0x0000FF00))?0:1;	// check page crossing
 		return bound;
 	}
 	
@@ -1262,28 +1288,29 @@ public class Cpu6502 {
 	}
 	
 	/* emulate !NMI signal */
-	protected void nmi() {
-		intack();								// acknowledge and save
-
-		pc = peek(0xFFFA) | peek(0xFFFB)<<8;	// NMI vector
+	protected int nmi() {
 		if (ver > 1)	System.out.println(" NMI: PC=>"+printByte(pc));
+		intack();								// acknowledge and save
+		pc = peek(0xFFFA) | peek(0xFFFB)<<8;	// NMI vector
+		return 7;
 	}
 
 	/* emulate !IRQ signal */
-	protected void irq() {
+	protected int irq() {
 		if ((p & 4)!=0) {								// if not masked...
 			p &= 0b11101111;						// clear B, as this is IRQ!
 			intack();								// acknowledge and save
 			p |= 0b00010000;						// retrieve current status
-
 			pc = peek(0xFFFE) | peek(0xFFFF)<<8;	// IRQ/BRK vector
 			if (ver > 1)	System.out.println(" IRQ: PC=>"+printByte(pc));
+			return 7;								// interrupt acknowledge time
 		}
+		return 2;
 	}
 	
 	/* *** interrupt support *** */
 	/* acknowledge interrupt and save status */
-	protected int intack() {
+	protected void intack() {
 		push((byte)((pc>>8)&0x000000FF));		// stack one byte before return address, right at MSB
 		push((byte)(pc&0x000000FF));
 		push(p);
@@ -1291,6 +1318,5 @@ public class Cpu6502 {
 		p |= 0b00000100;						// set interrupt mask
 		p &= 0b11110111;						// and clear Decimal mode (CMOS only)
 		dec = 0;
-		return 7;								// interrupt acknowledge time
 	}
 }

@@ -15,14 +15,11 @@ public class Cpu65C02 extends Cpu6502 {
 	}
 
 	@Override
-	public int step() {
-		int cycles = 2;			// base cycle count
+	protected int runOpcode(byte opcode) {
 		page = 0;			// page boundary flag, for speed penalties
-		byte opcode, temp;
-		short adr;
-
-		opcode = peek(pc++);	// get opcode and point to next one (or operand)
-		if(ver>5) System.out.println("OPCODE: "+printByte(opcode));
+		int cycles = 2;			// base cycle count
+		byte temp;
+		int adr;
 		switch(opcode) {
 		case (byte)0x80:			// CMOS only
 			if (ver > 2) System.out.println("[BRA]");
@@ -238,8 +235,7 @@ public class Cpu65C02 extends Cpu6502 {
 						break;
 			
 		default:
-			pc--;
-			cycles=super.step();
+			cycles=super.runOpcode(opcode);
 		}
 		return cycles;
 		
