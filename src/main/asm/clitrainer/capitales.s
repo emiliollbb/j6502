@@ -10,14 +10,19 @@ KEY_PRESSED = $020A
 ; -- main method --
 _main:
 .(
-	LDA #'A'
+	LDX #$ff
+	loop01:
+	INX
+	LDA text01,x
 	STA $8001
-	LDA #$0D
-	STA $8001
+	BNE loop01
+	
 	end: BRA end
 .)
 
-
+text01:
+.asc "Bienvenido al juego de las Capitales. Te voy a preguntar por un pais y tendras que decirme su capital."
+.byt 0
 
 _init:
 .(
