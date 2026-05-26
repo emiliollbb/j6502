@@ -11,7 +11,8 @@ import net.emiliollbb.j6502.computers.hid.CLIDevice;
 public class CliTrainer {
 	private Cpu65C02 cpu;
 
-	public CliTrainer() throws Exception{
+	public CliTrainer(String img) throws Exception{
+		
 		cpu = new Cpu65C02(10, Arrays.asList(
 				/* 32K RAM $0000 - $7FFF */
 				new RamChip(0x0000, 0x8000), 
@@ -19,7 +20,7 @@ public class CliTrainer {
 				new CLIDevice(0x8000, System.out, System.in), 
 				/* 16k ROM $C000 - $FFFFF */
 				new RomChip(0xC000, 0x4000, 
-						new File("/home/emilio/proyectos/j6502/workspace/j6502/src/main/asm/clitrainer/testcpx.bin"))));
+						new File(img))));
 		//cpu.setVerbose(10);
 	}
 	
@@ -29,6 +30,6 @@ public class CliTrainer {
 	}
 
 	public static void main(String[] args) throws Exception {
-		 new CliTrainer().run();
+		new CliTrainer(args[0]).run();
 	}
 }
