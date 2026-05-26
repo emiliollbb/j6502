@@ -75,7 +75,7 @@ public class Cpu6502 {
 		if(ver>1) System.out.println("RESET! "+printByte(pc));
 	}
 	
-	private int getWord(byte a, byte b) {
+	protected int getWord(byte a, byte b) {
 		return  a & 0x000000FF | (b & 0x0000FF)<<8;
 	}
 	
@@ -710,11 +710,6 @@ public class Cpu6502 {
 			if (ver > 3) System.out.println("[SBCy]");
 			sbc(peek(am_ay()));
 			cycles = 4 + dec + page;
-			break;
-		case (byte) 0xF2:			// CMOS only
-			if (ver > 3) System.out.println("[SBC(z)]");
-			sbc(peek(am_iz()));
-			cycles = 5 + dec;
 			break;
 		/* *** CPX: Compare Memory And Index X *** */
 		case (byte) 0xE0:
