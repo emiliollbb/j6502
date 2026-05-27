@@ -3,6 +3,8 @@ NMI_ADDR = $0202
 INT_COUNTER = $0206
 KEY_PRESSED = $020A
 
+text_pointer=$20
+
 ; == 16K ROM ==
 *=$c000
 
@@ -17,7 +19,26 @@ _main:
 	STA $8001
 	BNE loop01
 	
+	LDA #<capitales
+	STA text_pointer
+	LDA #>capitales
+	STA text_pointer+1
+	
+	JSR print_country
+	STA $8000
+	
 	end: BRA end
+.)
+
+print_country:
+.(
+	LDY #$FF
+	loop:
+	INY
+	LDA (text_pointer),Y
+	STA $8001
+	BNE loop
+	RTS
 .)
 
 text01:

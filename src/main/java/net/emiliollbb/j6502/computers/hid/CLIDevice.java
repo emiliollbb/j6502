@@ -49,7 +49,8 @@ public class CLIDevice  extends AbstractBusDevice {
 			}
 		}
 		else if(addr==DATA_ADDR) {
-			out.print((char)data);
+			out.print(data!=0?(char)data:'\n');
+			out.flush();
 		} 
 	}
 
