@@ -52,15 +52,18 @@ public class Cpu6502 {
 	protected String printByte(int b) {
 		return String.format("0x%02X", b)+ "("+b+")";
 	}
+	protected String printWord(int b) {
+		return String.format("0x%04X", b);
+	}
 	
 	protected byte peek(int addr) {
-		if(ver>5) System.out.print("peek "+printByte(addr));
+		if(ver>5) System.out.print("peek "+printWord(addr));
 		byte value= busDevices.stream().filter(d -> d.isInRange(addr)).findFirst().get().peek(addr);
 		if(ver>5) System.out.println(" -> "+printByte(value));
 		return value;
 	}
 	protected void poke(int addr, byte data) {
-		if(ver>5) System.out.println("poke "+printByte(addr)+" -> "+printByte(data));
+		if(ver>5) System.out.println("poke "+printWord(addr)+" -> "+printByte(data));
 		busDevices.stream().filter(d -> d.isInRange(addr)).findFirst().get().poke(addr, data);
 	}
 	
@@ -150,48 +153,48 @@ public class Cpu6502 {
 		/** INDEX REGISTERS MANIPULATION **/
 		/* *** LDX: Load Index X with Memory *** */
 		case (byte) 0xA2:
-			if (ver > 3) System.out.println("[LDX#] "+printByte(x));
+			if (ver > 3) System.out.println("["+printWord(pc)+"] [LDX#] "+printByte(x));
 			x = peek(pc++);
 			bits_nz(x);
 			break;
 		case (byte) 0xA6:
-			if (ver > 3) System.out.println("[LDXz]");
+			if (ver > 3) System.out.println("["+printWord(pc)+"] [LDXz]");
 			x = peek(peek(pc++));
 			bits_nz(x);
 			cycles = 3;
 			break;
 		case (byte) 0xB6:
-			if (ver > 3) System.out.println("[LDXzy]");
+			if (ver > 3) System.out.println("["+printWord(pc)+"] [LDXzy]");
 			x = peek(am_zy());
 			bits_nz(x);
 			cycles = 4;
 			break;	
 		case (byte) 0xAE:
-			if (ver > 3) System.out.println("[LDXa]");
+			if (ver > 3) System.out.println("["+printWord(pc)+"] [LDXa]");
 			x = peek(am_a());
 			bits_nz(x);
 			cycles = 4;
 			break;
 		case (byte) 0xBE:
-			if (ver > 3) System.out.println("[LDXy]");
+			if (ver > 3) System.out.println("["+printWord(pc)+"] [LDXy]");
 			x = peek(am_ay());
 			bits_nz(x);
 			cycles = 4 + page;
 			break;
 		/* *** LDY: Load Index Y with Memory *** */
 		case (byte) 0xA0:
-			if (ver > 3) System.out.println("[LDY#]");
+			if (ver > 3) System.out.println("["+printWord(pc)+"] [LDY#]");
 			y = peek(pc++);
 			bits_nz(y);
 			break;
 		case (byte) 0xA4:
-			if (ver > 3) System.out.println("[LDYz]");
+			if (ver > 3) System.out.println("["+printWord(pc)+"] [LDYz]");
 			y = peek(peek(pc++));
 			bits_nz(y);
 			cycles = 3;
 			break;
 		case (byte) 0xB4:
-			if (ver > 3) System.out.println("[LDYzx]");
+			if (ver > 3) System.out.println("["+printWord(pc)+"] [LDYzx]");
 			y = peek(am_zx());
 			bits_nz(y);
 			cycles = 4;
@@ -199,116 +202,116 @@ public class Cpu6502 {
 		case (byte) 0xAC:
 			y = peek(am_a());
 			bits_nz(y);
-			if (ver > 3) System.out.println("[LDYa]");
+			if (ver > 3) System.out.println("["+printWord(pc)+"] [LDYa]");
 			cycles = 4;
 			break;
 		case (byte) 0xBC:
 			y = peek(am_ax());
 			bits_nz(y);
-			if (ver > 3) System.out.println("[LDYx]");
+			if (ver > 3) System.out.println("["+printWord(pc)+"] [LDYx]");
 			cycles = 4 + page;
 			break;
 		/* *** TAX: Transfer Accumulator to Index X *** */
 		case (byte) 0xAA:
-			if (ver > 3) System.out.println("[TAX]");
+			if (ver > 3) System.out.println("["+printWord(pc)+"] [TAX]");
 			x = a;
 			bits_nz(x);
 			break;
 		/* *** TXA: Transfer Index X to Accumulator *** */
 		case (byte) 0x8A:
-			if (ver > 3) System.out.println("[TXA]");
+			if (ver > 3) System.out.println("["+printWord(pc)+"] [TXA]");
 			a = x;
 			bits_nz(a);
 			break;
 		/* *** DEX: Decrement Index X by One *** */
 		case (byte) 0xCA:
-			if (ver > 3) System.out.println("[DEX]");
+			if (ver > 3) System.out.println("["+printWord(pc)+"] [DEX]");
 			x--;
 			bits_nz(x);
 			break;
 		/* *** INX: Increment Index X by One *** */
 		case (byte) 0xE8:
-			if (ver > 3) System.out.println("[INX]");
+			if (ver > 3) System.out.println("["+printWord(pc)+"] [INX]");
 			x++;
 			bits_nz(x);
 			break;
 		/* *** TAY: Transfer Accumulator to Index Y *** */
 		case (byte) 0xA8:
-			if (ver > 3) System.out.println("[TAY]");
+			if (ver > 3) System.out.println("["+printWord(pc)+"] [TAY]");
 			y = a;
 			bits_nz(y);
 			break;
 		/* *** TYA: Transfer Index Y to Accumulator *** */
 		case (byte) 0x98:
-			if (ver > 3) System.out.println("[TYA]");
+			if (ver > 3) System.out.println("["+printWord(pc)+"] [TYA]");
 			a = y;
 			bits_nz(a);
 			break;
 		/* *** DEY: Decrement Index Y by One *** */
 		case (byte) 0x88:
-			if (ver > 3) System.out.println("[DEY]");
+			if (ver > 3) System.out.println("["+printWord(pc)+"] [DEY]");
 			y--;
 			bits_nz(y);
 			break;
 		/* *** INY: Increment Index Y by One *** */
 		case (byte) 0xC8:
-			if (ver > 3) System.out.println("[INY]");
+			if (ver > 3) System.out.println("["+printWord(pc)+"] [INY]");
 			y++;
 			bits_nz(y);
 			break;
 			/* *** STX: Store Index X in Memory *** */
 		case (byte) 0x86:
-			if (ver > 3) System.out.println("[STXz]");
+			if (ver > 3) System.out.println("["+printWord(pc)+"] [STXz]");
 			poke(peek(pc++) & 0X000000FF, x);
 			cycles = 3;
 			break;
 		case (byte) 0x96:
-			if (ver > 3) System.out.println("[STXzy]");
+			if (ver > 3) System.out.println("["+printWord(pc)+"] [STXzy]");
 			poke(am_zy(), x);
 			cycles = 4;
 			break;	
 		case (byte) 0x8E:
-			if (ver > 3) System.out.println("[STXa]");
+			if (ver > 3) System.out.println("["+printWord(pc)+"] [STXa]");
 			poke(am_a(), x);
 			cycles = 4;
 			break;
 			/* *** STY: Store Index Y in Memory *** */
 		case (byte) 0x84:
-			if (ver > 3) System.out.println("[STYz]");
+			if (ver > 3) System.out.println("["+printWord(pc)+"] [STYz]");
 			poke(peek(pc++) & 0X000000FF, y);
 			cycles = 3;
 			break;
 		case (byte) 0x94:
-			if (ver > 3) System.out.println("[STYzx]");
+			if (ver > 3) System.out.println("["+printWord(pc)+"] [STYzx]");
 			poke(am_zx(), y);
 			cycles = 4;
 			break;
 		case (byte) 0x8C:
-			if (ver > 3) System.out.println("[STYa]");
+			if (ver > 3) System.out.println("["+printWord(pc)+"] [STYa]");
 			poke(am_a(), y);
 			cycles = 4;
 			break;
 		/** ACUMULATOR OPERATIONS **/
 			/* *** LDA: Load Accumulator with Memory *** */
 		case (byte) 0xA9:
-			if (ver > 3) System.out.println("[LDA#]");
+			if (ver > 3) System.out.println("["+printWord(pc)+"] [LDA#]");
 			a = peek(pc++);
 			bits_nz(a);
 			break;
 		case (byte) 0xA5:
-			if (ver > 3) System.out.println("[LDAz]");
+			if (ver > 3) System.out.println("["+printWord(pc)+"] [LDAz]");
 			a = peek(peek(pc++));
 			bits_nz(a);
 			cycles = 3;
 			break;		
 		case (byte) 0xB5:
-			if (ver > 3) System.out.println("[LDAzx]");
+			if (ver > 3) System.out.println("["+printWord(pc)+"] [LDAzx]");
 			a = peek(am_zx());
 			bits_nz(a);
 			cycles = 4;
 			break;			
 		case (byte) 0xAD:
-			if (ver > 3) System.out.println("[LDAa]");
+			if (ver > 3) System.out.println("["+printWord(pc)+"] [LDAa]");
 			a = peek(am_a());
 			bits_nz(a);
 			cycles = 4;
@@ -316,67 +319,67 @@ public class Cpu6502 {
 		case (byte) 0xBD:
 			a = peek(am_ax());
 			bits_nz(a);
-			if (ver > 3) System.out.println("[LDAx]");
+			if (ver > 3) System.out.println("["+printWord(pc)+"] [LDAx]");
 			cycles = 4 + page;
 			break;
 		case (byte) 0xB9:
 			a = peek(am_ay());
 			bits_nz(a);
-			if (ver > 3) System.out.println("[LDAy]");
+			if (ver > 3) System.out.println("["+printWord(pc)+"] [LDAy]");
 			cycles = 4 + page;
 			break;			
 		case (byte) 0xA1:
-			if (ver > 3) System.out.println("[LDA(x)]");
+			if (ver > 3) System.out.println("["+printWord(pc)+"] [LDA(x)]");
 			a = peek(am_ix());
 			bits_nz(a);
 			cycles = 6;
 			break;
 		case (byte) 0xB1:
-			if (ver > 3) System.out.println("[LDA(y)]");
+			if (ver > 3) System.out.println("["+printWord(pc)+"] [LDA(y)]");
 			a = peek(am_iy());
 			bits_nz(a);
 			cycles = 5 + page;
 			break;
 			/* *** STA: Store Accumulator in Memory *** */
 		case (byte) 0x85:
-			if (ver > 3) System.out.println("[STAz]");
+			if (ver > 3) System.out.println("["+printWord(pc)+"] [STAz]");
 			poke(peek(pc++) & 0X000000FF, a);
 			cycles = 3;
 			break;
 		case (byte) 0x95:
-			if (ver > 3) System.out.println("[STAzx]");
+			if (ver > 3) System.out.println("["+printWord(pc)+"] [STAzx]");
 			poke(am_zx(), a);
 			cycles = 4;
 			break;
 		case (byte) 0x8D:
-			if (ver > 3) System.out.println("[STAa]");
+			if (ver > 3) System.out.println("["+printWord(pc)+"] [STAa]");
 			poke(am_a(), a);
 			cycles = 4;
 			break;
 		case (byte) 0x9D:
-			if (ver > 3) System.out.println("[STAx]");
+			if (ver > 3) System.out.println("["+printWord(pc)+"] [STAx]");
 			poke(am_ax(), a);
 			cycles = 5;		// ...and not 4, as expected
 			break;
 		case (byte) 0x99:
-			if (ver > 3) System.out.println("[STAy]");
+			if (ver > 3) System.out.println("["+printWord(pc)+"] [STAy]");
 			poke(am_ay(), a);
 			cycles = 5;		// ...and not 4, as expected
 			break;
 		case (byte) 0x81:
-			if (ver > 3) System.out.println("[STA(x)]");
+			if (ver > 3) System.out.println("["+printWord(pc)+"] [STA(x)]");
 			poke(am_ix(), a);
 			cycles = 6;
 			break;			
 		case (byte) 0x91:
-			if (ver > 3) System.out.println("[STA(y)]");
+			if (ver > 3) System.out.println("["+printWord(pc)+"] [STA(y)]");
 			poke(am_iy(), a);
 			cycles = 6;		// ...and not 5, as expected
 			break;
 
 		/* *** INC: Increment Memory (or Accumulator) by One *** */
 		case (byte) 0xE6:
-			if (ver > 3) System.out.println("[INCz]");
+			if (ver > 3) System.out.println("["+printWord(pc)+"] [INCz]");
 			temp = peek(peek(pc)&0x000000FF);
 			temp++;
 			poke(peek(pc++)&0x000000FF, temp);
@@ -384,7 +387,7 @@ public class Cpu6502 {
 			cycles = 5;
 			break;
 		case (byte) 0xF6:
-			if (ver > 3) System.out.println("[INCzx]");
+			if (ver > 3) System.out.println("["+printWord(pc)+"] [INCzx]");
 			adr = am_zx();
 			temp = peek(adr);
 			temp++;
@@ -393,7 +396,7 @@ public class Cpu6502 {
 			cycles = 6;
 			break;
 		case (byte) 0xEE:
-			if (ver > 3) System.out.println("[INCa]");
+			if (ver > 3) System.out.println("["+printWord(pc)+"] [INCa]");
 			adr = am_a();
 			temp = peek(adr);
 			temp++;
@@ -402,7 +405,7 @@ public class Cpu6502 {
 			cycles = 6;
 			break;
 		case (byte) 0xFE:
-			if (ver > 3) System.out.println("[INCx]");
+			if (ver > 3) System.out.println("["+printWord(pc)+"] [INCx]");
 			adr = am_ax();
 			temp = peek(adr);
 			temp++;
@@ -413,7 +416,7 @@ public class Cpu6502 {
 
 		/* *** DEC: Decrement Memory (or Accumulator) by One *** */
 		case (byte) 0xC6:
-			if (ver > 3) System.out.println("[DECz]");
+			if (ver > 3) System.out.println("["+printWord(pc)+"] [DECz]");
 			temp = peek(peek(pc)&0x000000FF);
 			temp--;
 			poke(peek(pc++)&0x000000FF, temp);
@@ -421,7 +424,7 @@ public class Cpu6502 {
 			cycles = 5;
 			break;
 		case (byte) 0xD6:
-			if (ver > 3) System.out.println("[DECzx]");
+			if (ver > 3) System.out.println("["+printWord(pc)+"] [DECzx]");
 			adr = am_zx();
 			temp = peek(adr);
 			temp--;
@@ -430,7 +433,7 @@ public class Cpu6502 {
 			cycles = 6;
 			break;			
 		case (byte) 0xCE:
-			if (ver > 3) System.out.println("[DECa]");
+			if (ver > 3) System.out.println("["+printWord(pc)+"] [DECa]");
 			adr = am_a();
 			temp = peek(adr);
 			temp--;
@@ -439,7 +442,7 @@ public class Cpu6502 {
 			cycles = 6;
 			break;
 		case (byte) 0xDE:
-			if (ver > 3) System.out.println("[DECx]");
+			if (ver > 3) System.out.println("["+printWord(pc)+"] [DECx]");
 			adr = am_ax();
 			temp = peek(adr);
 			temp--;
@@ -450,53 +453,53 @@ public class Cpu6502 {
 
 		/* *** NOP: No Ocyclesation *** */
 		case (byte) 0xEA:
-			if (ver > 3) System.out.println("[NOP]");
+			if (ver > 3) System.out.println("["+printWord(pc)+"] [NOP]");
 			break;				
 			
 		/* *** AND: "And" Memory with Accumulator *** */
 		case (byte) 0x29:
-			if (ver > 3) System.out.println("[AND#]");
+			if (ver > 3) System.out.println("["+printWord(pc)+"] [AND#]");
 			a &= peek(pc++);
 			bits_nz(a);
 			break;
 		case (byte) 0x25:
-			if (ver > 3) System.out.println("[ANDz]");
+			if (ver > 3) System.out.println("["+printWord(pc)+"] [ANDz]");
 			a &= peek(peek(pc++));
 			bits_nz(a);
 			cycles = 3;
 			break;
 		case (byte) 0x35:
-			if (ver > 3) System.out.println("[ANDzx]");
+			if (ver > 3) System.out.println("["+printWord(pc)+"] [ANDzx]");
 			a &= peek(am_zx());
 			bits_nz(a);
 			cycles = 4;
 			break;			
 		case (byte) 0x2D:
-			if (ver > 3) System.out.println("[ANDa]");
+			if (ver > 3) System.out.println("["+printWord(pc)+"] [ANDa]");
 			a &= peek(am_a());
 			bits_nz(a);
 			cycles = 4;
 			break;
 		case (byte) 0x3D:
-			if (ver > 3) System.out.println("[ANDx]");
+			if (ver > 3) System.out.println("["+printWord(pc)+"] [ANDx]");
 			a &= peek(am_ax());
 			bits_nz(a);
 			cycles = 4 + page;
 			break;		
 		case 0x39:
-			if (ver > 3) System.out.println("[ANDy]");
+			if (ver > 3) System.out.println("["+printWord(pc)+"] [ANDy]");
 			a &= peek(am_ay());
 			bits_nz(a);
 			cycles = 4 + page;
 			break;	
 		case (byte) 0x21:
-			if (ver > 3) System.out.println("[AND(x)]");
+			if (ver > 3) System.out.println("["+printWord(pc)+"] [AND(x)]");
 			a &= peek(am_ix());
 			bits_nz(a);
 			cycles = 6;
 			break;
 		case (byte) 0x31:
-			if (ver > 3) System.out.println("[AND(y)]");
+			if (ver > 3) System.out.println("["+printWord(pc)+"] [AND(y)]");
 			a &= peek(am_iy());
 			bits_nz(a);
 			cycles = 5 + page;
@@ -505,299 +508,299 @@ public class Cpu6502 {
 		case (byte) 0x09:
 			a |= peek(pc++);
 			bits_nz(a);
-			if (ver > 3) System.out.println("[ORA#]");
+			if (ver > 3) System.out.println("["+printWord(pc)+"] [ORA#]");
 			break;
 		case (byte) 0x05:
-			if (ver > 3) System.out.println("[ORAz]");
+			if (ver > 3) System.out.println("["+printWord(pc)+"] [ORAz]");
 			a |= peek(peek(pc++));
 			bits_nz(a);
 			cycles = 3;
 			break;
 		case (byte) 0x15:
-			if (ver > 3) System.out.println("[ORAzx]");
+			if (ver > 3) System.out.println("["+printWord(pc)+"] [ORAzx]");
 			a |= peek(am_zx());
 			bits_nz(a);
 			cycles = 4;
 			break;			
 		case (byte) 0x0D:
-			if (ver > 3) System.out.println("[ORAa]");
+			if (ver > 3) System.out.println("["+printWord(pc)+"] [ORAa]");
 			a |= peek(am_a());
 			bits_nz(a);
 			cycles = 4;
 			break;
 		case (byte) 0x1D:
-			if (ver > 3) System.out.println("[ORAx]");
+			if (ver > 3) System.out.println("["+printWord(pc)+"] [ORAx]");
 			a |= peek(am_ax());
 			bits_nz(a);
 			cycles = 4 + page;
 			break;
 		case (byte) 0x19:
-			if (ver > 3) System.out.println("[ORAy]");
+			if (ver > 3) System.out.println("["+printWord(pc)+"] [ORAy]");
 			a |= peek(am_ay());
 			bits_nz(a);
 			cycles = 4 + page;
 			break;			
 		case (byte) 0x01:
-			if (ver > 3) System.out.println("[ORA(x)]");
+			if (ver > 3) System.out.println("["+printWord(pc)+"] [ORA(x)]");
 			a |= peek(am_ix());
 			bits_nz(a);
 			cycles = 6;
 			break;
 		case (byte) 0x11:
-			if (ver > 3) System.out.println("[ORA(y)]");
+			if (ver > 3) System.out.println("["+printWord(pc)+"] [ORA(y)]");
 			a |= peek(am_iy());
 			bits_nz(a);
 			cycles = 5 + page;
 			break;
 			/* *** EOR: "Exclusive Or" Memory with Accumulator *** */
 		case (byte) 0x49:
-			if (ver > 3) System.out.println("[EOR#]");
+			if (ver > 3) System.out.println("["+printWord(pc)+"] [EOR#]");
 			a ^= peek(pc++);
 			bits_nz(a);
 			break;
 		case (byte) 0x45:
-			if (ver > 3) System.out.println("[EORz]");
+			if (ver > 3) System.out.println("["+printWord(pc)+"] [EORz]");
 			a ^= peek(peek(pc++));
 			bits_nz(a);
 			cycles = 3;
 			break;
 		case (byte) 0x55:
-			if (ver > 3) System.out.println("[EORzx]");
+			if (ver > 3) System.out.println("["+printWord(pc)+"] [EORzx]");
 			a ^= peek(am_zx());
 			bits_nz(a);
 			cycles = 4;
 			break;			
 		case (byte) 0x4D:
-			if (ver > 3) System.out.println("[EORa]");
+			if (ver > 3) System.out.println("["+printWord(pc)+"] [EORa]");
 			a ^= peek(am_a());
 			bits_nz(a);
 			cycles = 4;
 			break;
 		case (byte) 0x5D:
-			if (ver > 3) System.out.println("[EORx]");
+			if (ver > 3) System.out.println("["+printWord(pc)+"] [EORx]");
 			a ^= peek(am_ax());
 			bits_nz(a);
 			cycles = 4 + page;
 			break;
 		case (byte) 0x59:
-			if (ver > 3) System.out.println("[EORy]");
+			if (ver > 3) System.out.println("["+printWord(pc)+"] [EORy]");
 			a ^= peek(am_ay());
 			bits_nz(a);
 			cycles = 4 + page;
 			break;			
 		case (byte) 0x41:
-			if (ver > 3) System.out.println("[EOR(x)]");
+			if (ver > 3) System.out.println("["+printWord(pc)+"] [EOR(x)]");
 			a ^= peek(am_ix());
 			bits_nz(a);
 			cycles = 6;
 			break;
 		case (byte) 0x51:
-			if (ver > 3) System.out.println("[EOR(y)]");
+			if (ver > 3) System.out.println("["+printWord(pc)+"] [EOR(y)]");
 			a ^= peek(am_iy());
 			bits_nz(a);
 			cycles = 5 + page;
 			break;
 		/* *** Flags *** */
 		case (byte) 0x18:
-			if (ver > 3) System.out.println("[CLC]");
+			if (ver > 3) System.out.println("["+printWord(pc)+"] [CLC]");
 			p &= 0b11111110;
 			break;
 		case (byte) 0x38:
-			if (ver > 3) System.out.println("[SEC]");
+			if (ver > 3) System.out.println("["+printWord(pc)+"] [SEC]");
 			p |= 0b00000001;
 			break;
 		case (byte) 0x58:
-			if (ver > 3) System.out.println("[CLI]");
+			if (ver > 3) System.out.println("["+printWord(pc)+"] [CLI]");
 			p &= 0b11111011;
 			break;
 		case (byte) 0x78:
-			if (ver > 3) System.out.println("[SEI]");
+			if (ver > 3) System.out.println("["+printWord(pc)+"] [SEI]");
 			p |= 0b00000100;
 			break;
 		case (byte) 0xB8:
-			if (ver > 3) System.out.println("[CLV]");
+			if (ver > 3) System.out.println("["+printWord(pc)+"] [CLV]");
 			p &= 0b10111111;
 			break;			
 		case (byte) 0xD8:
-			if (ver > 3) System.out.println("[CLD]");
+			if (ver > 3) System.out.println("["+printWord(pc)+"] [CLD]");
 			p &= 0b11110111;
 			dec = 0;
 			break;
 		case (byte) 0xF8:
-			if (ver > 3) System.out.println("[SED]");
+			if (ver > 3) System.out.println("["+printWord(pc)+"] [SED]");
 			p |= 0b00001000;
 			dec = 1;
 			break;
 		/* *** ADC: Add Memory to Accumulator with Carry *** */
 		case (byte) 0x69:
-			if (ver > 3) System.out.println("[ADC#]");
+			if (ver > 3) System.out.println("["+printWord(pc)+"] [ADC#]");
 			adc(peek(pc++));
 			cycles += dec;
 			break;
 		case (byte) 0x6D:
-			if (ver > 3) System.out.println("[ADCa]");
+			if (ver > 3) System.out.println("["+printWord(pc)+"] [ADCa]");
 			adc(peek(am_a()));
 			cycles = 4 + dec;
 			break;
 		case (byte) 0x65:
-			if (ver > 3) System.out.println("[ADCz]");
+			if (ver > 3) System.out.println("["+printWord(pc)+"] [ADCz]");
 			adc(peek(peek(pc++)));
 			cycles = 3 + dec;
 			break;
 		case (byte) 0x61:
-			if (ver > 3) System.out.println("[ADC(x)]");
+			if (ver > 3) System.out.println("["+printWord(pc)+"] [ADC(x)]");
 			adc(peek(am_ix()));
 			cycles = 6 + dec;
 			break;
 		case (byte) 0x71:
-			if (ver > 3) System.out.println("[ADC(y)]");
+			if (ver > 3) System.out.println("["+printWord(pc)+"] [ADC(y)]");
 			adc(peek(am_iy()));
 			cycles = 5 + dec + page;
 			break;
 		case (byte) 0x75:
-			if (ver > 3) System.out.println("[ADCzx]");
+			if (ver > 3) System.out.println("["+printWord(pc)+"] [ADCzx]");
 			adc(peek(am_zx()));
 			cycles = 4 + dec;
 			break;
 		case (byte) 0x7D:
-			if (ver > 3) System.out.println("[ADCx]");
+			if (ver > 3) System.out.println("["+printWord(pc)+"] [ADCx]");
 			adc(peek(am_ax()));
 			cycles = 4 + dec + page;
 			break;
 		case (byte) 0x79:
-			if (ver > 3) System.out.println("[ADCy]");
+			if (ver > 3) System.out.println("["+printWord(pc)+"] [ADCy]");
 			adc(peek(am_ay()));
 			cycles = 4 + dec + page;
 			break;
 
 		/* *** SBC: Subtract Memory from Accumulator with Borrow *** */
 		case (byte) 0xE9:
-			if (ver > 3) System.out.println("[SBC#]");
+			if (ver > 3) System.out.println("["+printWord(pc)+"] [SBC#]");
 			sbc(peek(pc++));
 			cycles += dec;
 			break;
 		case (byte) 0xED:
-			if (ver > 3) System.out.println("[SBCa]");
+			if (ver > 3) System.out.println("["+printWord(pc)+"] [SBCa]");
 			sbc(peek(am_a()));
 			cycles = 4 + dec;
 			break;
 		case (byte) 0xE5:
-			if (ver > 3) System.out.println("[SBCz]");
+			if (ver > 3) System.out.println("["+printWord(pc)+"] [SBCz]");
 			sbc(peek(peek(pc++)));
 			cycles = 3 + dec;
 			break;
 		case (byte) 0xE1:
-			if (ver > 3) System.out.println("[SBC(x)]");
+			if (ver > 3) System.out.println("["+printWord(pc)+"] [SBC(x)]");
 			sbc(peek(am_ix()));
 			cycles = 6 + dec;
 			break;
 		case (byte) 0xF1:
-			if (ver > 3) System.out.println("[SBC(y)]");
+			if (ver > 3) System.out.println("["+printWord(pc)+"] [SBC(y)]");
 			sbc(peek(am_iy()));
 			cycles = 5 + dec + page;
 			break;
 		case (byte) 0xF5:
-			if (ver > 3) System.out.println("[SBCzx]");
+			if (ver > 3) System.out.println("["+printWord(pc)+"] [SBCzx]");
 			sbc(peek(am_zx()));
 			cycles = 4 + dec;
 			break;
 		case (byte) 0xFD:
-			if (ver > 3) System.out.println("[SBCx]");
+			if (ver > 3) System.out.println("["+printWord(pc)+"] [SBCx]");
 			sbc(peek(am_ax()));
 			cycles = 4 + dec + page;
 			break;
 		case (byte) 0xF9:
-			if (ver > 3) System.out.println("[SBCy]");
+			if (ver > 3) System.out.println("["+printWord(pc)+"] [SBCy]");
 			sbc(peek(am_ay()));
 			cycles = 4 + dec + page;
 			break;
 		/* *** CPX: Compare Memory And Index X *** */
 		case (byte) 0xE0:
-			if (ver > 3) System.out.println("[CPX#]");
+			if (ver > 3) System.out.println("["+printWord(pc)+"] [CPX#]");
 			cmp(x, peek(pc++));
 			break;
 		case (byte) 0xE4:
-			if (ver > 3) System.out.println("[CPXz]");
+			if (ver > 3) System.out.println("["+printWord(pc)+"] [CPXz]");
 			cmp(x, peek(peek(pc++)));
 			cycles = 3;
 			break;
 		case (byte) 0xEC:
-			if (ver > 3) System.out.println("[CPXa]");
+			if (ver > 3) System.out.println("["+printWord(pc)+"] [CPXa]");
 			cmp(x, peek(am_a()));
 			cycles = 4;
 			break;
 	/* *** CPY: Compare Memory And Index Y *** */
 		case (byte) 0xC0:
-			if (ver > 3) System.out.println("[CPY#]");
+			if (ver > 3) System.out.println("["+printWord(pc)+"] [CPY#]");
 			cmp(y, peek(pc++));
 			break;
 		case (byte) 0xC4:
-			if (ver > 3) System.out.println("[CPYz]");
+			if (ver > 3) System.out.println("["+printWord(pc)+"] [CPYz]");
 			cmp(y, peek(peek(pc++)));
 			cycles = 3;
 			break;			
 		case (byte) 0xCC:
-			if (ver > 3) System.out.println("[CPYa]");
+			if (ver > 3) System.out.println("["+printWord(pc)+"] [CPYa]");
 			cmp(y, peek(am_a()));
 			cycles = 4;
 			break;
 
 		/* *** CMP: Compare Memory And Accumulator *** */
 		case (byte) 0xC9:
-			if (ver > 3) System.out.println("[CMP#]");
+			if (ver > 3) System.out.println("["+printWord(pc)+"] [CMP#]");
 			cmp(a, peek(pc++));
 			break;
 		case (byte) 0xC5:
-			if (ver > 3) System.out.println("[CMPz]");
+			if (ver > 3) System.out.println("["+printWord(pc)+"] [CMPz]");
 			cmp(a, peek(peek(pc++)));
 			cycles = 3;
 			break;
 		case (byte) 0xD5:
-			if (ver > 3) System.out.println("[CMPzx]");
+			if (ver > 3) System.out.println("["+printWord(pc)+"] [CMPzx]");
 			cmp(a, peek(am_zx()));
 			cycles = 4;
 			break;
 		case (byte) 0xCD:
-			if (ver > 3) System.out.println("[CMPa]");
+			if (ver > 3) System.out.println("["+printWord(pc)+"] [CMPa]");
 			cmp(a, peek(am_a()));
 			cycles = 4;
 			break;
 		case (byte) 0xD9:
-			if (ver > 3) System.out.println("[CMPy]");
+			if (ver > 3) System.out.println("["+printWord(pc)+"] [CMPy]");
 			cmp(a, peek(am_ay()));
 			cycles = 4 + page;
 			break;
 		case (byte) 0xC1:
-			if (ver > 3) System.out.println("[CMP(x)]");
+			if (ver > 3) System.out.println("["+printWord(pc)+"] [CMP(x)]");
 			cmp(a, peek(am_ix()));
 			cycles = 6;
 			break;
 		case (byte) 0xD1:
-			if (ver > 3) System.out.println("[CMP(y)]");
+			if (ver > 3) System.out.println("["+printWord(pc)+"] [CMP(y)]");
 			cmp(a, peek(am_iy()));
 			cycles = 5 + page;
 			break;
 		
 		case (byte) 0xDD:
-			if (ver > 3) System.out.println("[CMPx]");
+			if (ver > 3) System.out.println("["+printWord(pc)+"] [CMPx]");
 			cmp(a, peek(am_ax()));
 			cycles = 4 + page;
 			break;
 			
 		/* *** ASL: Shift Left one Bit (Memory or Accumulator) *** */
 		case (byte) 0x0A:
-			if (ver > 3) System.out.println("[ASL]");
+			if (ver > 3) System.out.println("["+printWord(pc)+"] [ASL]");
 			a=asl(a);
 			break;
 		case (byte) 0x06:
-			if (ver > 3) System.out.println("[ASLz]");
+			if (ver > 3) System.out.println("["+printWord(pc)+"] [ASLz]");
 			temp = peek(peek(pc)&0x000000FF);
 			temp=asl(temp);
 			poke(peek(pc++)&0x000000FF, temp);
 			cycles = 5;
 			break;
 		case (byte) 0x16:
-			if (ver > 3) System.out.println("[ASLzx]");
+			if (ver > 3) System.out.println("["+printWord(pc)+"] [ASLzx]");
 			adr = am_zx();
 			temp = peek(adr);
 			temp=asl(temp);
@@ -805,7 +808,7 @@ public class Cpu6502 {
 			cycles = 6;
 			break;	
 		case (byte) 0x0E:
-			if (ver > 3) System.out.println("[ASLa]");
+			if (ver > 3) System.out.println("["+printWord(pc)+"] [ASLa]");
 			adr = am_a();
 			temp = peek(adr);
 			temp=asl(temp);
@@ -813,7 +816,7 @@ public class Cpu6502 {
 			cycles = 6;
 			break;
 		case (byte) 0x1E:
-			if (ver > 3) System.out.println("[ASLx]");
+			if (ver > 3) System.out.println("["+printWord(pc)+"] [ASLx]");
 			adr = am_ax();
 			temp = peek(adr);
 			temp=asl(temp);
@@ -823,18 +826,18 @@ public class Cpu6502 {
 
 		/* *** LSR: Shift One Bit Right (Memory or Accumulator) *** */
 		case (byte) 0x4A:
-			if (ver > 3) System.out.println("[LSR]");
+			if (ver > 3) System.out.println("["+printWord(pc)+"] [LSR]");
 			a=lsr(a);
 			break;
 		case (byte) 0x46:
-			if (ver > 3) System.out.println("[LSRz]");
+			if (ver > 3) System.out.println("["+printWord(pc)+"] [LSRz]");
 			temp = peek(peek(pc)&0x000000FF);
 			temp=lsr(temp);
 			poke(peek(pc++)&0x000000FF, temp);
 			cycles = 5;
 			break;
 		case (byte) 0x56:
-			if (ver > 3) System.out.println("[LSRzx]");
+			if (ver > 3) System.out.println("["+printWord(pc)+"] [LSRzx]");
 			adr = am_zx();
 			temp = peek(adr);
 			temp=lsr(temp);
@@ -842,7 +845,7 @@ public class Cpu6502 {
 			cycles = 6;
 			break;	
 		case (byte) 0x4E:
-			if (ver > 3) System.out.println("[LSRa]");
+			if (ver > 3) System.out.println("["+printWord(pc)+"] [LSRa]");
 			adr=am_a();
 			temp = peek(adr);
 			temp=lsr(temp);
@@ -850,7 +853,7 @@ public class Cpu6502 {
 			cycles = 6;
 			break;
 		case (byte) 0x5E:
-			if (ver > 3) System.out.println("[LSRx]");
+			if (ver > 3) System.out.println("["+printWord(pc)+"] [LSRx]");
 			adr = am_ax();
 			temp = peek(adr);
 			temp=lsr(temp);
@@ -860,18 +863,18 @@ public class Cpu6502 {
 			
 		/* *** ROL: Rotate One Bit Left (Memory or Accumulator) *** */
 		case (byte) 0x2A:
-			if (ver > 3) System.out.println("[ROL]");
+			if (ver > 3) System.out.println("["+printWord(pc)+"] [ROL]");
 			a=rol(a);
 			break;
 		case (byte) 0x26:
-			if (ver > 3) System.out.println("[ROLz]");
+			if (ver > 3) System.out.println("["+printWord(pc)+"] [ROLz]");
 			temp = peek(peek(pc)&0x000000FF);
 			temp=rol(temp);
 			poke(peek(pc++)&0x000000FF, temp);
 			cycles = 5;
 			break;
 		case (byte) 0x36:
-			if (ver > 3) System.out.println("[ROLzx]");
+			if (ver > 3) System.out.println("["+printWord(pc)+"] [ROLzx]");
 			adr = am_zx();
 			temp = peek(adr);
 			temp=rol(temp);
@@ -879,7 +882,7 @@ public class Cpu6502 {
 			cycles = 6;
 			break;	
 		case (byte) 0x2E:
-			if (ver > 3) System.out.println("[ROLa]");
+			if (ver > 3) System.out.println("["+printWord(pc)+"] [ROLa]");
 			adr = am_a();
 			temp = peek(adr);
 			temp=rol(temp);
@@ -887,7 +890,7 @@ public class Cpu6502 {
 			cycles = 6;
 			break;
 		case (byte) 0x3E:
-			if (ver > 3) System.out.println("[ROLx]");
+			if (ver > 3) System.out.println("["+printWord(pc)+"] [ROLx]");
 			adr = am_ax();
 			temp = peek(adr);
 			temp=rol(temp);
@@ -897,18 +900,18 @@ public class Cpu6502 {
 		
 		/* *** ROR: Rotate One Bit Right (Memory or Accumulator) *** */
 		case (byte) 0x6A:
-			if (ver > 3) System.out.println("[ROR]");
+			if (ver > 3) System.out.println("["+printWord(pc)+"] [ROR]");
 			a=ror(a);
 			break;
 		case (byte) 0x66:
-			if (ver > 3) System.out.println("[RORz]");
+			if (ver > 3) System.out.println("["+printWord(pc)+"] [RORz]");
 			temp = peek(peek(pc)&0x000000FF);
 			temp=ror(temp);
 			poke(peek(pc++)&0x000000FF, temp);
 			cycles = 5;
 			break;
 		case (byte) 0x76:
-			if (ver > 3) System.out.println("[RORzx]");
+			if (ver > 3) System.out.println("["+printWord(pc)+"] [RORzx]");
 			adr = am_zx();
 			temp = peek(adr);
 			temp=ror(temp);
@@ -916,7 +919,7 @@ public class Cpu6502 {
 			cycles = 6;
 			break;	
 		case (byte) 0x6E:
-			if (ver > 3) System.out.println("[RORa]");
+			if (ver > 3) System.out.println("["+printWord(pc)+"] [RORa]");
 			adr = am_a();
 			temp = peek(adr);
 			temp=ror(temp);
@@ -924,7 +927,7 @@ public class Cpu6502 {
 			cycles = 6;
 			break;
 		case (byte) 0x7E:
-			if (ver > 3) System.out.println("[RORx]");
+			if (ver > 3) System.out.println("["+printWord(pc)+"] [RORx]");
 			adr = am_ax();
 			temp = peek(adr);
 			temp=ror(temp);
@@ -934,7 +937,7 @@ public class Cpu6502 {
 		
 		/* *** BIT: Test Bits in Memory with Accumulator *** */
 		case (byte) 0x24:
-			if (ver > 3) System.out.println("[BITz]");
+			if (ver > 3) System.out.println("["+printWord(pc)+"] [BITz]");
 			temp = peek(peek(pc++));
 			p = (byte)((p&0b00111101)&0x000000FF);			// pre-clear N, V & Z
 			p = (byte)((p|(temp&0b11000000))&0x000000FF);	// copy bits 7 & 6 as N & Z
@@ -942,7 +945,7 @@ public class Cpu6502 {
 			cycles = 3;
 			break;
 		case (byte) 0x2C:
-			if (ver > 3) System.out.println("[BITa]");
+			if (ver > 3) System.out.println("["+printWord(pc)+"] [BITa]");
 			temp = peek(am_a());
 			p = (byte)((p&0b00111101)&0x000000FF);			// pre-clear N, V & Z
 			p = (byte)((p|(temp&0b11000000))&0x000000FF);	// copy bits 7 & 6 as N & Z
@@ -951,12 +954,12 @@ public class Cpu6502 {
 			break;
 		/* *** JMP: Jump to New Location *** */
 		case (byte) 0x4C:
-			if (ver > 2)	System.out.println("[JMP]");
+			if (ver > 2)	System.out.println("["+printWord(pc)+"] [JMP]");
 			pc = am_a();
 			cycles = 3;
 			break;
 		case (byte) 0x6C:
-			if (ver > 2)	System.out.println("[JMP()]");
+			if (ver > 2)	System.out.println("["+printWord(pc)+"] [JMP()]");
 			int j=am_a();
 			pc= getWord(peek(j), peek(j+1));
 			cycles = 5;
@@ -964,56 +967,56 @@ public class Cpu6502 {
 
 		/* *** Bxx: Branch on flag condition *** */
 		case (byte) 0xB0:
-			if (ver > 2) System.out.println("[BCS]");
+			if (ver > 2) System.out.println("["+printWord(pc)+"] [BCS]");
 			if((p & 0b00000001)!=0) {
 				page=rel(page);
 				cycles = 3 + page;
 			} else pc++;	// must skip offset if not done EEEEEK
 			break;
 		case (byte) 0x90:
-			if (ver > 2) System.out.println("[BCC]");
+			if (ver > 2) System.out.println("["+printWord(pc)+"] [BCC]");
 			if((p & 0x01)==0) {
 				page=rel(page);
 				cycles = 3 + page;
 			} else pc++;
 			break;
 		case (byte) 0xF0:
-			if (ver > 2) System.out.println("[BEQ]");
+			if (ver > 2) System.out.println("["+printWord(pc)+"] [BEQ]");
 			if((p & 0b00000010)!=0) {
 				page=rel(page);
 				cycles = 3 + page;
 			} else pc++;	// must skip offset if not done EEEEEK
 			break;
 		case (byte) 0xD0:
-			if (ver > 2) System.out.println("[BNE]");
+			if (ver > 2) System.out.println("["+printWord(pc)+"] [BNE]");
 			if((p & 0b00000010)==0) {
 				page=rel(page);
 				cycles = 3 + page;
 			} else pc++;	// must skip offset if not done EEEEEK
 			break;
 		case (byte) 0x30:
-			if (ver > 2) System.out.println("[BMI]");
+			if (ver > 2) System.out.println("["+printWord(pc)+"] [BMI]");
 			if((p & 0b10000000)!=0) {
 				page=rel(page);
 				cycles = 3 + page;
 			} else pc++;	// must skip offset if not done EEEEEK
 			break;
 		case (byte) 0x10:
-			if (ver > 2) System.out.println("[BPL]");
+			if (ver > 2) System.out.println("["+printWord(pc)+"] [BPL]");
 			if((p & 0b10000000)==0) {
 				page=rel(page);
 				cycles = 3 + page;
 			} else pc++;	// must skip offset if not done EEEEEK
 			break;			
 		case (byte) 0x70:
-			if (ver > 2) System.out.println("[BVS]");
+			if (ver > 2) System.out.println("["+printWord(pc)+"] [BVS]");
 			if((p & 0b01000000)!=0) {
 				page=rel(page);
 				cycles = 3 + page;
 			} else pc++;	// must skip offset if not done EEEEEK
 			break;			
 		case (byte) 0x50:
-			if (ver > 2) System.out.println("[BVC]");
+			if (ver > 2) System.out.println("["+printWord(pc)+"] [BVC]");
 			if((p & 0b01000000)==0) {
 				page=rel(page);
 				cycles = 3 + page;
@@ -1021,25 +1024,25 @@ public class Cpu6502 {
 			break;
 			/* *** TXS: Transfer Index X to Stack Pointer *** */
 		case (byte) 0x9A:
-			if (ver > 3) System.out.println("[TXS]");
+			if (ver > 3) System.out.println("["+printWord(pc)+"] [TXS]");
 			s = x;
 			bits_nz(s);
 			break;
 		/* *** TSX: Transfer Stack Pointer to Index X *** */
 		case (byte) 0xBA:
-			if (ver > 3) System.out.println("[TSX]");
+			if (ver > 3) System.out.println("["+printWord(pc)+"] [TSX]");
 			x = s;
 			bits_nz(x);
 			break;
 		/* *** PHA: Push Accumulator on Stack *** */
 		case (byte) 0x48:
-			if (ver > 3) System.out.println("[PHA]");
+			if (ver > 3) System.out.println("["+printWord(pc)+"] [PHA]");
 			push(a);
 			cycles = 3;
 			break;
 		/* *** PLA: Pull Accumulator from Stack *** */
 		case (byte) 0x68:
-			if (ver > 3) System.out.println("[PLA]");
+			if (ver > 3) System.out.println("["+printWord(pc)+"] [PLA]");
 			a = pop();
 			bits_nz(a);
 			cycles = 4;
@@ -1047,13 +1050,13 @@ public class Cpu6502 {
 				
 		/* *** PHP: Push Processor Status on Stack *** */
 		case (byte) 0x08:
-			if (ver > 3) System.out.println("[PHP]");
+			if (ver > 3) System.out.println("["+printWord(pc)+"] [PHP]");
 			push(p);
 			cycles = 3;
 			break;
 		/* *** PLP: Pull Processor Status from Stack *** */
 		case (byte) 0x28:
-			if (ver > 3) System.out.println("[PLP]");
+			if (ver > 3) System.out.println("["+printWord(pc)+"] [PLP]");
 			p = pop();
 			if ((p & 0b00001000)!=0)	dec = 1;	// check for decimal flag
 			else				dec = 0;
@@ -1062,7 +1065,7 @@ public class Cpu6502 {
 
 		/* *** JSR: Jump to New Location Saving Return Address *** */
 		case (byte) 0x20:
-			if (ver > 2)	System.out.println("[JSR]");
+			if (ver > 2)	System.out.println("["+printWord(pc)+"] [JSR]");
 			push((byte)(((pc+1)>>8)&0x000000FF));		// stack one byte before return address, right at MSB
 			push((byte)((pc+1)&0x000000FF));
 			pc = am_a();			// get ocyclesand
@@ -1070,7 +1073,7 @@ public class Cpu6502 {
 			break;
 		/* *** RTS: Return from Subroutine *** */
 		case (byte) 0x60:
-			if (ver > 2)	System.out.println("[RTS]");
+			if (ver > 2)	System.out.println("["+printWord(pc)+"] [RTS]");
 			pc=getWord(pop(),pop());
 			pc++;
 			cycles = 6;
@@ -1078,7 +1081,7 @@ public class Cpu6502 {
 			
 		/* *** RTI: Return from Interrupt *** */
 		case 0x40:
-			if (ver > 2)	System.out.println("[RTI]");
+			if (ver > 2)	System.out.println("["+printWord(pc)+"] [RTI]");
 			p = pop();					// retrieve status
 			p |= 0b00010000;			// forget possible B flag
 			pc=getWord(pop(),pop());
@@ -1087,7 +1090,7 @@ public class Cpu6502 {
 
 		/* *** BRK: force break *** */
 		case 0x00:
-			if (ver > 1) System.out.println("[BRK]");
+			if (ver > 1) System.out.println("["+printWord(pc)+"] [BRK]");
 			pc++;
 			System.out.println("******************************************");
 			System.out.println("ACUMULATOR: "+printByte(a));
