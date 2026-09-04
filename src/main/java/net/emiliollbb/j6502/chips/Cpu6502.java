@@ -75,7 +75,7 @@ public class Cpu6502 {
 	
 	public void reset() {
 		pc = getWord(peek(0xFFFC), peek(0xFFFD));	// RESET vector
-		if(ver>1) System.out.println("RESET! "+printByte(pc));
+		if(ver>1) System.out.println("RESET! "+printWord(pc));
 	}
 	
 	protected int getWord(byte a, byte b) {
@@ -153,8 +153,8 @@ public class Cpu6502 {
 		/** INDEX REGISTERS MANIPULATION **/
 		/* *** LDX: Load Index X with Memory *** */
 		case (byte) 0xA2:
-			if (ver > 3) System.out.println("["+printWord(pc)+"] [LDX#] "+printByte(x));
 			x = peek(pc++);
+			if (ver > 3) System.out.println("["+printWord(pc)+"] [LDX#] "+printByte(x));
 			bits_nz(x);
 			break;
 		case (byte) 0xA6:
@@ -183,8 +183,8 @@ public class Cpu6502 {
 			break;
 		/* *** LDY: Load Index Y with Memory *** */
 		case (byte) 0xA0:
-			if (ver > 3) System.out.println("["+printWord(pc)+"] [LDY#]");
 			y = peek(pc++);
+			if (ver > 3) System.out.println("["+printWord(pc)+"] [LDY#] "+printByte(y));			
 			bits_nz(y);
 			break;
 		case (byte) 0xA4:
@@ -271,8 +271,9 @@ public class Cpu6502 {
 			cycles = 4;
 			break;	
 		case (byte) 0x8E:
-			if (ver > 3) System.out.println("["+printWord(pc)+"] [STXa]");
-			poke(am_a(), x);
+			int addr = am_a();
+			if (ver > 3) System.out.println("["+printWord(pc)+"] [STXa] "+printWord(addr));
+			poke(addr, x);
 			cycles = 4;
 			break;
 			/* *** STY: Store Index Y in Memory *** */
@@ -287,15 +288,16 @@ public class Cpu6502 {
 			cycles = 4;
 			break;
 		case (byte) 0x8C:
-			if (ver > 3) System.out.println("["+printWord(pc)+"] [STYa]");
-			poke(am_a(), y);
+			addr = am_a();
+			if (ver > 3) System.out.println("["+printWord(pc)+"] [STYa] "+printWord(addr));
+			poke(addr, y);
 			cycles = 4;
 			break;
 		/** ACUMULATOR OPERATIONS **/
 			/* *** LDA: Load Accumulator with Memory *** */
 		case (byte) 0xA9:
-			if (ver > 3) System.out.println("["+printWord(pc)+"] [LDA#]");
 			a = peek(pc++);
+			if (ver > 3) System.out.println("["+printWord(pc)+"] [LDA#] "+printByte(a));
 			bits_nz(a);
 			break;
 		case (byte) 0xA5:
@@ -352,8 +354,9 @@ public class Cpu6502 {
 			cycles = 4;
 			break;
 		case (byte) 0x8D:
-			if (ver > 3) System.out.println("["+printWord(pc)+"] [STAa]");
-			poke(am_a(), a);
+			addr = am_a();
+			if (ver > 3) System.out.println("["+printWord(pc)+"] [STAa] "+printWord(addr));
+			poke(addr, a);
 			cycles = 4;
 			break;
 		case (byte) 0x9D:
@@ -433,8 +436,8 @@ public class Cpu6502 {
 			cycles = 6;
 			break;			
 		case (byte) 0xCE:
-			if (ver > 3) System.out.println("["+printWord(pc)+"] [DECa]");
 			adr = am_a();
+			if (ver > 3) System.out.println("["+printWord(pc)+"] [DECa] "+printWord(adr));
 			temp = peek(adr);
 			temp--;
 			poke(adr, temp);
@@ -506,9 +509,9 @@ public class Cpu6502 {
 			break;
 		/* *** ORA: "Or" Memory with Accumulator *** */
 		case (byte) 0x09:
+			if (ver > 3) System.out.println("["+printWord(pc)+"] [ORA#]");
 			a |= peek(pc++);
 			bits_nz(a);
-			if (ver > 3) System.out.println("["+printWord(pc)+"] [ORA#]");
 			break;
 		case (byte) 0x05:
 			if (ver > 3) System.out.println("["+printWord(pc)+"] [ORAz]");

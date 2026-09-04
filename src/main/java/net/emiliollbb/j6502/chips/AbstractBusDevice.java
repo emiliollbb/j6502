@@ -43,7 +43,7 @@ public abstract class AbstractBusDevice implements IBusDevice {
 	}
 	
 	private String printAddress(int address) {
-		return String.format("0x%02X", address)+ "("+address+")";
+		return String.format("0x%04X", address);
 	}
 
 	protected abstract byte ioRead(int addr);

@@ -21,7 +21,7 @@ public class Cpu65C02 extends Cpu6502 {
 		int adr;
 		switch(opcode) {
 		case (byte)0x80:			// CMOS only
-			if (ver > 2) System.out.println("["+printWord(pc)+"] [BRA]");
+			if (ver > 3) System.out.println("["+printWord(pc)+"] [BRA]");
 			page=rel(page);
 			cycles = 3 + page;
 			break;
@@ -107,7 +107,7 @@ public class Cpu65C02 extends Cpu6502 {
 			break;	
 		
 		case (byte) 0x7C:			// CMOS only
-			if (ver > 2)	System.out.println("["+printWord(pc)+"] [JMP(x)]");
+			if (ver > 3)	System.out.println("["+printWord(pc)+"] [JMP(x)]");
 			int j=am_a();
 			pc= getWord(peek(j+x), peek(j+x+1));
 			cycles = 6;
@@ -141,23 +141,24 @@ public class Cpu65C02 extends Cpu6502 {
 
 		// *** STZ: Store Zero in Memory, CMOS only ***
 		case (byte) 0x64:
-			poke(peek(pc++) & 0X000000FF, (byte)0x00);
 			if (ver > 3) System.out.println("["+printWord(pc)+"] [STZz]");
+			poke(peek(pc++) & 0X000000FF, (byte)0x00);
 			cycles = 3;
 			break;
 		case (byte) 0x9C:
-			poke(am_a(), (byte)0x00);
-			if (ver > 3) System.out.println("["+printWord(pc)+"] [STZa]");
+			int addr = am_a();
+			if (ver > 3) System.out.println("["+printWord(pc)+"] [STZa] "+printWord(addr));
+			poke(addr, (byte)0x00);
 			cycles = 4;
 			break;
 		case (byte) 0x74:
-			poke(am_zx(), (byte)0x00);
 			if (ver > 3) System.out.println("["+printWord(pc)+"] [STZzx]");
+			poke(am_zx(), (byte)0x00);
 			cycles = 4;
 			break;
 		case (byte) 0x9E:
-			poke(am_ax(), (byte)0x00);
 			if (ver > 3) System.out.println("["+printWord(pc)+"] [STZx]");
+			poke(am_ax(), (byte)0x00);
 			cycles = 5;		// ...and not 4, as expected
 			break;			
 						
