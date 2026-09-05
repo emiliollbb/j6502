@@ -26,9 +26,10 @@ public class ZacaVia extends AbstractBusDevice {
 	private byte t1ch; //$5
 	private byte t1ll; //$6
 	private byte t1lh; //$7
-	private byte acr; //$B
-	private byte pcr; //$C
-	private byte ier; //$D
+	private byte acr; //$B 11
+	private byte pcr; //$C 12
+	private byte ifr; //$D 13
+	private byte ier; //$E 14
 
 	@Override
 	protected void ioWrite(int addr, byte data) {
@@ -58,6 +59,8 @@ public class ZacaVia extends AbstractBusDevice {
 			if (ver > 3) System.out.println("T1C-H: "+String.format("0x%02X", data));
 			// Escribir en T1CH ($BFF5), que iniciará la cuenta y copiará el valor en T1LH ($BFF7)
 			t1lh=data;
+			t1ch=t1lh;
+			t1cl=t1ll;
 			break;
 		case 11:
 			if (ver > 3) System.out.println("ACR: "+String.format("0x%02X", data));
@@ -67,9 +70,20 @@ public class ZacaVia extends AbstractBusDevice {
 			if (ver > 3) System.out.println("PCR: "+String.format("0x%02X", data));
 			pcr=data;
 			break;
+		case 13:
+			//ifr = ifr AND (NOT (x AND $7f))
+			ifr = (byte)((ifr & (~(data & 0x7F)))&0x000000FF);
+			if (ver > 3) System.out.println("IFR: "+String.format("0x%02X", ifr));
+			break;
 		case 14:
-			if (ver > 3) System.out.println("IER: "+String.format("0x%02X", data));
-			ier=data;
+			 // x<$80 ? ier = ier AND (NOT (x AND $7f)) : ier = ier OR x
+			if(data<0x80) {
+				ier = (byte)((ier & (~(data & 0x7f)))&0x000000FF);
+			}
+			else {
+				ier = (byte)((ier | data)&0x000000FF);
+			}
+			if (ver > 3) System.out.println("IER: "+String.format("0x%02X", ier));
 			break;	
 		}
 	}
@@ -82,14 +96,15 @@ public class ZacaVia extends AbstractBusDevice {
 				return dataB;
 			case 1:
 				// En el caso del puerto A, el valor leído es siempre el nivel presente en el pin
-				return 0x00;
+				// RETURN (data_a AND ddra) OR (NOT ddra)
+				return (byte)(((dataA & dataDirA) | ~dataDirA)&0x000000FF);
 			case 2:
 				return dataDirB;
 			case 3:
 				return dataDirA;
 			case 14:
-				return (byte)0x80;
+				return (byte)((ier | 0x80)&0x000000FF);
 		}
-		return (byte)0x80;
+		return (byte)0xFF;
 	}
 }
