@@ -62,6 +62,12 @@ public class ZacaVia extends AbstractBusDevice {
 			t1ch=t1lh;
 			t1cl=t1ll;
 			break;
+		case 6:
+			t1ll=data;
+			break;
+		case 7:
+			t1lh=data;
+			break;
 		case 11:
 			if (ver > 3) System.out.println("ACR: "+String.format("0x%02X", data));
 			acr=data;
@@ -77,7 +83,7 @@ public class ZacaVia extends AbstractBusDevice {
 			break;
 		case 14:
 			 // x<$80 ? ier = ier AND (NOT (x AND $7f)) : ier = ier OR x
-			if(data<0x80) {
+			if((data&0x000000FF)<0x80) {
 				ier = (byte)((ier & (~(data & 0x7f)))&0x000000FF);
 			}
 			else {
@@ -102,6 +108,14 @@ public class ZacaVia extends AbstractBusDevice {
 				return dataDirB;
 			case 3:
 				return dataDirA;
+			case 6:
+				return t1ll;
+			case 7:
+				return t1lh;
+			case 11:
+				return acr;
+			case 12:
+				return pcr;
 			case 14:
 				return (byte)((ier | 0x80)&0x000000FF);
 		}
