@@ -1,5 +1,7 @@
 package net.emiliollbb.j6502.chips;
 
+import net.emiliollbb.j6502.computers.hid.LCD16x2;
+
 public class ZacaVia extends AbstractBusDevice {
 	private static final int ver=10;
 	public ZacaVia() {
@@ -30,6 +32,8 @@ public class ZacaVia extends AbstractBusDevice {
 	private byte pcr; //$C 12
 	private byte ifr; //$D 13
 	private byte ier; //$E 14
+	
+	private LCD16x2 lcd;
 
 	@Override
 	protected void ioWrite(int addr, byte data) {
@@ -41,6 +45,8 @@ public class ZacaVia extends AbstractBusDevice {
 		case 1:
 			if (ver > 3) System.out.println("DATA A: "+String.format("0x%02X", data));
 			dataA=data;
+			lcd.setData((byte)(dataA&0x000000F0));
+			lcd.setRS((dataA&0x00000001)==1);
 			break;
 		case 2:
 			if (ver > 3) System.out.println("DATA DIR B: "+String.format("0x%02X", data));
@@ -120,5 +126,12 @@ public class ZacaVia extends AbstractBusDevice {
 				return (byte)((ier | 0x80)&0x000000FF);
 		}
 		return (byte)0xFF;
+	}
+
+	public LCD16x2 getLcd() {
+		return lcd;
+	}
+	public void setLcd(LCD16x2 lcd) {
+		this.lcd = lcd;
 	}
 }

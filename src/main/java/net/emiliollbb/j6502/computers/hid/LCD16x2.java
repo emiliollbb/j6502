@@ -45,6 +45,13 @@ public class LCD16x2 extends Canvas {
 		}
 	}
 	
+	public void setData(byte data) {
+		System.out.println("LCD DATA: "+String.format("0x%02X", data));
+	}
+	public void setRS(boolean rs) {
+		System.out.println("LCD RS: "+rs);
+	}
+	
 	@Override
     public void paint(Graphics g) {
 		g.setColor(BACKGROUND_ON);

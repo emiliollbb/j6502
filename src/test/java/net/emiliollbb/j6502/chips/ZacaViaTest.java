@@ -1,16 +1,23 @@
 package net.emiliollbb.j6502.chips;
 
+import static org.mockito.Mockito.mockitoSession;
+
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import net.emiliollbb.j6502.computers.hid.LCD16x2;
 
 @ExtendWith(MockitoExtension.class)
 public class ZacaViaTest {
+	private static final int DATAB=0xBFF0;
+	private static final int DATAA=0xBFF1;
 	private static final int DDRA=0xBFF3;
 	private static final int DDRB=0xBFF2;
 	private static final int ACR=0xBFFB;
@@ -18,6 +25,9 @@ public class ZacaViaTest {
 	private static final int T1LL=0xBFF6;
 	private static final int T1LH=0xBFF7;
 	private static final int IER=0xBFFE;
+	
+	@Mock
+	private LCD16x2 lcd;
 	@InjectMocks
 	private ZacaVia via;
 	
@@ -70,5 +80,17 @@ public class ZacaViaTest {
 		Assertions.assertEquals((byte)0xBF, via.peek(IER));
 		via.poke(IER, (byte)0xC0);
 		Assertions.assertEquals((byte)0xFF, via.peek(IER));
+	}
+	
+	@ParameterizedTest
+	@CsvSource({
+		"0x10,0x10,false",
+		"0x11,0x10,true",
+		"0xF1,0xF0,true",
+	})
+	void testLCD(int pa, int lcdData, boolean rs) {
+		via.poke(DDRA, (byte)0xFF);
+		via.poke(DATAA, (byte)pa);
+		Mockito.verify(lcd).setData(Mockito.eq((byte)lcdData));
 	}
 }
