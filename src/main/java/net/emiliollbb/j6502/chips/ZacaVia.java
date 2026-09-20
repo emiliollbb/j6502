@@ -3,7 +3,7 @@ package net.emiliollbb.j6502.chips;
 import net.emiliollbb.j6502.computers.hid.LCD16x2;
 
 public class ZacaVia extends AbstractBusDevice {
-	private static final int ver=10;
+	protected int verbose;
 	public ZacaVia() {
 		super("Zacatecas VIA", 0xBFF0, 16);
 	}
@@ -32,37 +32,36 @@ public class ZacaVia extends AbstractBusDevice {
 	private byte pcr; //$C 12
 	private byte ifr; //$D 13
 	private byte ier; //$E 14
-	
 	private LCD16x2 lcd;
 
 	@Override
 	protected void ioWrite(int addr, byte data) {
 		switch(addr) {
 		case 0:
-			if (ver > 3) System.out.println("DATA B: "+String.format("0x%02X", data));
+			if (verbose > 3) System.out.println("DATA B: "+String.format("0x%02X", data));
 			dataB=data;
 			break;
 		case 1:
-			if (ver > 3) System.out.println("DATA A: "+String.format("0x%02X", data));
+			if (verbose > 3) System.out.println("DATA A: "+String.format("0x%02X", data));
 			dataA=data;
 			lcd.setData((byte)(dataA&0x000000F0));
 			lcd.setRS((dataA&0x00000001)==1);
 			break;
 		case 2:
-			if (ver > 3) System.out.println("DATA DIR B: "+String.format("0x%02X", data));
+			if (verbose > 3) System.out.println("DATA DIR B: "+String.format("0x%02X", data));
 			dataDirB=data;
 			break;
 		case 3:
-			if (ver > 3) System.out.println("DATA DIR A: "+String.format("0x%02X", data));
+			if (verbose > 3) System.out.println("DATA DIR A: "+String.format("0x%02X", data));
 			dataDirA=data;
 			break;
 		case 4:
-			if (ver > 3) System.out.println("T1C-L: "+String.format("0x%02X", data));
+			if (verbose > 3) System.out.println("T1C-L: "+String.format("0x%02X", data));
 			// Escribir en T1CL ($BFF4), que en realidad guardará el valor en T1LL ($BFF6)
 			t1ll=data;
 			break;
 		case 5:
-			if (ver > 3) System.out.println("T1C-H: "+String.format("0x%02X", data));
+			if (verbose > 3) System.out.println("T1C-H: "+String.format("0x%02X", data));
 			// Escribir en T1CH ($BFF5), que iniciará la cuenta y copiará el valor en T1LH ($BFF7)
 			t1lh=data;
 			t1ch=t1lh;
@@ -75,17 +74,17 @@ public class ZacaVia extends AbstractBusDevice {
 			t1lh=data;
 			break;
 		case 11:
-			if (ver > 3) System.out.println("ACR: "+String.format("0x%02X", data));
+			if (verbose > 3) System.out.println("ACR: "+String.format("0x%02X", data));
 			acr=data;
 			break;	
 		case 12:
-			if (ver > 3) System.out.println("PCR: "+String.format("0x%02X", data));
+			if (verbose > 3) System.out.println("PCR: "+String.format("0x%02X", data));
 			pcr=data;
 			break;
 		case 13:
 			//ifr = ifr AND (NOT (x AND $7f))
 			ifr = (byte)((ifr & (~(data & 0x7F)))&0x000000FF);
-			if (ver > 3) System.out.println("IFR: "+String.format("0x%02X", ifr));
+			if (verbose > 3) System.out.println("IFR: "+String.format("0x%02X", ifr));
 			break;
 		case 14:
 			 // x<$80 ? ier = ier AND (NOT (x AND $7f)) : ier = ier OR x
@@ -95,7 +94,7 @@ public class ZacaVia extends AbstractBusDevice {
 			else {
 				ier = (byte)((ier | data)&0x000000FF);
 			}
-			if (ver > 3) System.out.println("IER: "+String.format("0x%02X", ier));
+			if (verbose > 3) System.out.println("IER: "+String.format("0x%02X", ier));
 			break;	
 		}
 	}
@@ -134,4 +133,11 @@ public class ZacaVia extends AbstractBusDevice {
 	public void setLcd(LCD16x2 lcd) {
 		this.lcd = lcd;
 	}
+	public int getVerbose() {
+		return verbose;
+	}
+	public void setVerbose(int ver) {
+		this.verbose = ver;
+	}
+	
 }

@@ -6,6 +6,7 @@ import java.awt.Graphics;
 
 public class LCD16x2 extends Canvas {
 	private static final long serialVersionUID = -8173391079739071510L;
+	protected int verbose;
 	
 	private final Color BACKGROUND_ON=Color.decode("#87ad34");
 
@@ -46,10 +47,10 @@ public class LCD16x2 extends Canvas {
 	}
 	
 	public void setData(byte data) {
-		System.out.println("LCD DATA: "+String.format("0x%02X", data));
+		if (verbose > 3) System.out.println("LCD DATA: "+String.format("0x%02X", data));
 	}
 	public void setRS(boolean rs) {
-		System.out.println("LCD RS: "+rs);
+		if (verbose > 3) System.out.println("LCD RS: "+rs);
 	}
 	
 	@Override
@@ -370,4 +371,12 @@ public class LCD16x2 extends Canvas {
 				{31,31,31,31,31,31,31,0},
 		};
 	}
+
+	public int getVerbose() {
+		return verbose;
+	}
+	public void setVerbose(int verbose) {
+		this.verbose = verbose;
+	}
+	
 }

@@ -28,7 +28,9 @@ public class Zacatecas {
 		
 		cpu = new Cpu65C02(10, Arrays.asList(ram, via, rom));
 		cpu.setSpeed(10);
-		cpu.setVerbose(5);
+		cpu.setVerbose(0);
+		via.setVerbose(5);
+		lcd.setVerbose(5);
 		cpu.listDevices();
 		
 		cpu.reset();
@@ -40,7 +42,7 @@ public class Zacatecas {
 
 	public static void main(String[] args) throws Exception {
 		Zacatecas zacatecas = new Zacatecas();
-		for(int i=0; i<100; i++) {
+		for(int i=0; i<200; i++) {
 			zacatecas.getCpu().step();
 		}
 	}
