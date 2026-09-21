@@ -38,8 +38,9 @@ public class ZacaVia extends AbstractBusDevice {
 	protected void ioWrite(int addr, byte data) {
 		switch(addr) {
 		case 0:
-			if (verbose > 3) System.out.println("DATA B: "+String.format("0x%02X", data));
+			if (verbose > 3) System.out.println("DATA B: "+Integer.toString(data&0x000000FF, 2)+" ("+String.format("0x%02X", data)+")");
 			dataB=data;
+			lcd.setE((dataB&0x000000FF&0x10)!=0);
 			break;
 		case 1:
 			if (verbose > 3) System.out.println("DATA A: "+String.format("0x%02X", data));

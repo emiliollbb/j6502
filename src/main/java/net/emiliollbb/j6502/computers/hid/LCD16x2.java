@@ -52,6 +52,9 @@ public class LCD16x2 extends Canvas {
 	public void setRS(boolean rs) {
 		if (verbose > 3) System.out.println("LCD RS: "+rs);
 	}
+	public void setE(boolean e) {
+		if (verbose > 3) System.out.println("LCD E: "+e);
+	}
 	
 	@Override
     public void paint(Graphics g) {

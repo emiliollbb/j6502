@@ -29,7 +29,7 @@ public class Zacatecas {
 		cpu = new Cpu65C02(10, Arrays.asList(ram, via, rom));
 		cpu.setSpeed(10);
 		cpu.setVerbose(0);
-		via.setVerbose(5);
+		via.setVerbose(0);
 		lcd.setVerbose(5);
 		cpu.listDevices();
 		
