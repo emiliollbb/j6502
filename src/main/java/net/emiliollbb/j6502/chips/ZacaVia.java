@@ -41,6 +41,8 @@ public class ZacaVia extends AbstractBusDevice {
 			if (verbose > 3) System.out.println("DATA B: "+Integer.toString(data&0x000000FF, 2)+" ("+String.format("0x%02X", data)+")");
 			dataB=data;
 			lcd.setE((dataB&0x000000FF&0x10)!=0);
+			lcd.setLight((dataB&0x000000FF&0x20)!=0);
+			//System.out.println("E's LED: "+((dataB&0x000000FF&0x40)!=0));
 			break;
 		case 1:
 			if (verbose > 3) System.out.println("DATA A: "+String.format("0x%02X", data));

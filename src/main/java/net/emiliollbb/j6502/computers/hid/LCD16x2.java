@@ -13,8 +13,17 @@ public class LCD16x2 extends Canvas {
 	private Character[] characters;
 	private String buffer1;
 	private String buffer2;
+	private byte data;
+	private boolean light;
+	private boolean enable;
+	private boolean displayOn;
+	private boolean fourBitsMode;
 	
 	public LCD16x2() {
+		light=false;
+		enable=false;
+		displayOn=false;
+		fourBitsMode=false;
 		characters = new Character[32];
 		buffer1="";
 		buffer2="";
@@ -47,15 +56,39 @@ public class LCD16x2 extends Canvas {
 	}
 	
 	public void setData(byte data) {
-		if (verbose > 3) System.out.println("LCD DATA: "+String.format("0x%02X", data));
+		if (verbose > 4) System.out.println("LCD DATA: "+String.format("0x%02X", data));
+		this.data=data;
 	}
 	public void setRS(boolean rs) {
-		if (verbose > 3) System.out.println("LCD RS: "+rs);
+		if (verbose > 4) System.out.println("LCD RS: "+rs);
 	}
 	public void setE(boolean e) {
-		if (verbose > 3) System.out.println("LCD E: "+e);
+		if (verbose > 4) System.out.println("LCD E: "+e);
+		if(enable && !e) {
+			clock();
+		}
+		this.enable=e;
+	}
+	public void setLight(boolean l) {
+		if (verbose > 3 && light!=l) System.out.println("LCD Light: "+(l?"ON":"OFF"));
+		light=l;
 	}
 	
+	private void clock() {
+		if (verbose > 3) System.out.println("LCD RUN: "+Integer.toString(data&0x000000FF, 2));
+		if(fourBitsMode) {
+			
+		}
+		else {
+			runCommand(data);
+		}
+	}
+	
+	private void runCommand(byte data2) {
+		// TODO Auto-generated method stub
+		
+	}
+
 	@Override
     public void paint(Graphics g) {
 		g.setColor(BACKGROUND_ON);

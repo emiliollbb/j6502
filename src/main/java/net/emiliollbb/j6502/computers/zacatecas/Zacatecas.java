@@ -30,7 +30,7 @@ public class Zacatecas {
 		cpu.setSpeed(10);
 		cpu.setVerbose(0);
 		via.setVerbose(0);
-		lcd.setVerbose(5);
+		lcd.setVerbose(4);
 		cpu.listDevices();
 		
 		cpu.reset();
