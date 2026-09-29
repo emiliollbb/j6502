@@ -77,7 +77,7 @@ public class LCD16x2 extends Canvas {
 	}
 	
 	private void clock() {
-		if (verbose > 3) System.out.println("LCD RUN: "+
+		if (verbose > 6) System.out.println("LCD RUN: "+
 				String.format("%08d", Integer.valueOf(Integer.toString(data&0x000000FF, 2))));
 		if(fourBitsMode) {
 			if(isFirstNibble) {
@@ -102,13 +102,13 @@ public class LCD16x2 extends Canvas {
 		}
 	}
 
-	private void functionSet(byte data2) {
+	private void functionSet(byte data) {
 		if (verbose > 3) System.out.println("Function set");
 		if((data&0x10)==0) {
 			if (verbose > 3) System.out.println("Four bits mode ON");
 			fourBitsMode=true;
 			isFirstNibble=true;
-		} else {
+		} else if((data&0x10)==0x10) {
 			if (verbose > 3) System.out.println("Four bits mode OFF");
 			fourBitsMode=false;
 		}
