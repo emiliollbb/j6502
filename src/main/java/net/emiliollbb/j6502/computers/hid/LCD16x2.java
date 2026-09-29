@@ -100,6 +100,9 @@ public class LCD16x2 extends Canvas {
 		if((data&0xE0)==0x20) {
 			functionSet(data);
 		}
+		else if((data&0x08)==0x08) {
+			displayOnOffControl(data);
+		}
 	}
 
 	private void functionSet(byte data) {
@@ -112,6 +115,11 @@ public class LCD16x2 extends Canvas {
 			if (verbose > 3) System.out.println("Four bits mode OFF");
 			fourBitsMode=false;
 		}
+		
+	}
+	
+	private void displayOnOffControl(byte data2) {
+		if (verbose > 3) System.out.println("Display on/off");
 		
 	}
 
