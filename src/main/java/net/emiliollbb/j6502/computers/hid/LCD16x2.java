@@ -18,6 +18,8 @@ public class LCD16x2 extends Canvas {
 	private boolean enable;
 	private boolean displayOn;
 	private boolean fourBitsMode;
+	private byte highNibble;
+	private boolean isFirstNibble;
 	
 	public LCD16x2() {
 		light=false;
@@ -75,17 +77,41 @@ public class LCD16x2 extends Canvas {
 	}
 	
 	private void clock() {
-		if (verbose > 3) System.out.println("LCD RUN: "+Integer.toString(data&0x000000FF, 2));
+		if (verbose > 3) System.out.println("LCD RUN: "+
+				String.format("%08d", Integer.valueOf(Integer.toString(data&0x000000FF, 2))));
 		if(fourBitsMode) {
-			
+			if(isFirstNibble) {
+				highNibble=data;
+				isFirstNibble=false;
+			}
+			else {
+				runCommand((byte)(highNibble&0x000000F0|(data&0x000000F0)>>4));
+			}
 		}
 		else {
 			runCommand(data);
 		}
 	}
 	
-	private void runCommand(byte data2) {
-		// TODO Auto-generated method stub
+	private void runCommand(byte data) {
+		if (verbose > 3) System.out.println("LCD COMMAND: "+
+				String.format("%08d", Integer.valueOf(Integer.toString(data&0x000000FF, 2))));
+		
+		if((data&0xE0)==0x20) {
+			functionSet(data);
+		}
+	}
+
+	private void functionSet(byte data2) {
+		if (verbose > 3) System.out.println("Function set");
+		if((data&0x10)==0) {
+			if (verbose > 3) System.out.println("Four bits mode ON");
+			fourBitsMode=true;
+			isFirstNibble=true;
+		} else {
+			if (verbose > 3) System.out.println("Four bits mode OFF");
+			fourBitsMode=false;
+		}
 		
 	}
 
