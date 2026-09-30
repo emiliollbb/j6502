@@ -20,6 +20,7 @@ public class LCD16x2 extends Canvas {
 	private boolean fourBitsMode;
 	private byte highNibble;
 	private boolean isFirstNibble;
+	private boolean rs;
 	
 	public LCD16x2() {
 		light=false;
@@ -63,6 +64,7 @@ public class LCD16x2 extends Canvas {
 	}
 	public void setRS(boolean rs) {
 		if (verbose > 4) System.out.println("LCD RS: "+rs);
+		this.rs=rs;
 	}
 	public void setE(boolean e) {
 		if (verbose > 4) System.out.println("LCD E: "+e);
@@ -85,11 +87,20 @@ public class LCD16x2 extends Canvas {
 				isFirstNibble=false;
 			}
 			else {
-				runCommand((byte)(highNibble&0x000000F0|(data&0x000000F0)>>4));
+				runClock((byte)(highNibble&0x000000F0|(data&0x000000F0)>>4));
 			}
 		}
 		else {
+			runClock(data);
+		}
+	}
+	
+	private void runClock(byte data) {
+		if(rs==false) {
 			runCommand(data);
+		}
+		else {
+			runData(data);
 		}
 	}
 	
@@ -103,6 +114,12 @@ public class LCD16x2 extends Canvas {
 		else if((data&0x08)==0x08) {
 			displayOnOffControl(data);
 		}
+	}
+	
+	private void runData(byte data) {
+		if (verbose > 3) System.out.println("LCD DATA: "+
+				String.format("%08d", Integer.valueOf(Integer.toString(data&0x000000FF, 2))));
+		
 	}
 
 	private void functionSet(byte data) {
