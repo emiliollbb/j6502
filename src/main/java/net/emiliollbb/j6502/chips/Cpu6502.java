@@ -1,10 +1,10 @@
 package net.emiliollbb.j6502.chips;
 
-import java.time.Duration;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
 import net.emiliollbb.j6502.interfaces.IBusDevice;
 
@@ -58,7 +58,11 @@ public class Cpu6502 {
 	
 	protected byte peek(int addr) {
 		if(ver>5) System.out.print("peek "+printWord(addr));
-		byte value= busDevices.stream().filter(d -> d.isInRange(addr)).findFirst().get().peek(addr);
+		Optional<IBusDevice> device = busDevices.stream().filter(d -> d.isInRange(addr)).findFirst();
+		if(device.isEmpty()) {
+			throw new RuntimeException("No device available at addr: "+printWord(addr));
+		}
+		byte value= device.get().peek(addr);
 		if(ver>5) System.out.println(" -> "+printByte(value));
 		return value;
 	}
@@ -134,6 +138,10 @@ public class Cpu6502 {
 		int cycles = runOpcode(opcode);
 		
 		return cycles;
+	}
+	
+	public void runUntilBrk() {
+		while(step()>0);
 	}
 	
 	public void triggerNMI() {
@@ -337,8 +345,9 @@ public class Cpu6502 {
 			cycles = 6;
 			break;
 		case (byte) 0xB1:
-			if (ver > 3) System.out.println("["+printWord(pc)+"] [LDA(y)]");
-			a = peek(am_iy());
+			addr = am_iy();
+			if (ver > 3) System.out.println("["+printWord(pc)+"] [LDA(y)] "+printWord(addr));
+			a = peek(addr);
 			bits_nz(a);
 			cycles = 5 + page;
 			break;
@@ -1101,9 +1110,10 @@ public class Cpu6502 {
 			System.out.println("REGISTER Y: "+printByte(y));
 			System.out.println("******************************************");
 			cycles=0;
+			break;
 			
-			default:
-				throw new RuntimeException("Opcode "+printByte(opcode)+" invalid!");
+		default:
+			throw new RuntimeException("Opcode "+printByte(opcode)+" invalid!");
 		}
 		return cycles;
 	}
@@ -1254,7 +1264,7 @@ public class Cpu6502 {
 	
 	/* indirect */
 	protected int am_iz() {
-		int pt = peek(peek(pc)) & 0x000000FF | (peek((peek(pc)+1)&255)<<8 & 0x0000FFFF);	// EEEEEEEK
+		int pt = peek(peek(pc)& 0x000000FF) & 0x000000FF | (peek((peek(pc)+1)&255)<<8 & 0x0000FFFF);	// EEEEEEEK
 		pc++;
 
 		return pt;

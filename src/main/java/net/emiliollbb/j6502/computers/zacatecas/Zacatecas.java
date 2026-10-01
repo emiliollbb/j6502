@@ -24,7 +24,8 @@ public class Zacatecas {
 		via= new ZacaVia();
 		via.setLcd(lcd);
 		// 32K ROM
-		rom = new RomChip(0xC000, 0x4000, new File("/home/emilio/proyectos/j6502/workspace/j6502/src/main/asm/zacatecas.rom"));
+		// proyectos/j6502/workspace/j6502/src/main/asm/zacatecas.rom
+		rom = new RomChip(0xC000, 0x4000, new File("/home/emilio/proyectos/zacatecas/zacatecas/firmware/snippets.bin"));
 		
 		cpu = new Cpu65C02(10, Arrays.asList(ram, via, rom));
 		cpu.setSpeed(10);
@@ -42,8 +43,10 @@ public class Zacatecas {
 
 	public static void main(String[] args) throws Exception {
 		Zacatecas zacatecas = new Zacatecas();
-		for(int i=0; i<200; i++) {
-			zacatecas.getCpu().step();
-		}
+//		for(int i=0; i<500; i++) {
+//			zacatecas.getCpu().step();
+//		}
+		zacatecas.getCpu().runUntilBrk();
+		zacatecas.getCpu().runUntilBrk();
 	}
 }
