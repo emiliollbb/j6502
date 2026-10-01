@@ -16,11 +16,12 @@ public class Zacatecas {
 	/* 32k ROM $8000 - $FFFFF */
 	private RomChip rom;
 	private Cpu65C02 cpu;
+	private LCD16x2 lcd;
 
 	public Zacatecas() throws Exception{
 		// 32K RAM
 		ram = new RamChip(0x0000, 0x8000);
-		LCD16x2 lcd = new LCD16x2();
+		lcd = new LCD16x2();
 		via= new ZacaVia();
 		via.setLcd(lcd);
 		// 32K ROM
@@ -40,13 +41,16 @@ public class Zacatecas {
 	public Cpu65C02 getCpu() {
 		return cpu;
 	}
+	
+	public LCD16x2 getLcd() {
+		return lcd;
+	}
 
 	public static void main(String[] args) throws Exception {
 		Zacatecas zacatecas = new Zacatecas();
 //		for(int i=0; i<500; i++) {
 //			zacatecas.getCpu().step();
 //		}
-		zacatecas.getCpu().runUntilBrk();
 		zacatecas.getCpu().runUntilBrk();
 	}
 }
