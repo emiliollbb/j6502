@@ -1,29 +1,45 @@
 package net.emiliollbb.j6502.computers.zacatecas;
 
-import java.awt.Frame;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.time.Duration;
 
-import net.emiliollbb.j6502.computers.hid.LCD16x2;
+import javax.swing.JFrame;
+import javax.swing.SwingWorker;
 
 // Driver Class
 public class ZacatecasWindow {
 	
     // main function
-    public static void main(String[] args)
+    public static void main(String[] args) throws Exception
     {
         // Declaring a Frame and Label
-        Frame frame = new Frame("Zacatecas");
-        LCD16x2 lcd = new LCD16x2();
+        JFrame frame = new JFrame("Zacatecas");
+        Zacatecas zacatecas = new Zacatecas();
+        //zacatecas.getCpu().runUntilBrk();
 
         // Adding Label and Setting the Size of the Frame
-        frame.add(lcd);
-        frame.setSize(lcd.getWidth(), lcd.getHeight());
+        frame.add(zacatecas.getLcd());
+        frame.setSize(zacatecas.getLcd().getWidth(), zacatecas.getLcd().getHeight());
 
-        // Making the Frame visible
-        frame.setVisible(true);
-        lcd.setText1("Hello!");
-        lcd.setText2("World!");
+        SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
+      	  @Override
+      	  protected Void doInBackground() throws Exception {
+      		  while(true) {
+      			  long wait = 0;
+      			  wait = zacatecas.getCpu().timedStep();
+      			  if(wait>0) {
+	        			  Thread.sleep(Duration.ofMillis(wait));
+	        			  if(zacatecas.getLcd().isDirty()) {
+	        				  zacatecas.getLcd().repaint();
+	        			  }
+      			  }
+      			  else {
+      				  Thread.sleep(Duration.ofMillis(1000));
+      			  }
+      		  }
+      	  }
+      	};
 
         // Using WindowListener for closing the window
         frame.addWindowListener(new WindowAdapter() {
@@ -32,6 +48,14 @@ public class ZacatecasWindow {
             {
                 System.exit(0);
             }
+            @Override
+            public void windowOpened(WindowEvent e) {
+            	System.out.println("Window opened");
+            	worker.execute();
+            }
         });
+        
+        // Making the Frame visible
+        frame.setVisible(true);
     }
 }

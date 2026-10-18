@@ -21,8 +21,10 @@ public class LCD16x2 extends Canvas {
 	private byte highNibble;
 	private boolean isFirstNibble;
 	private boolean rs;
+	private boolean dirty;
 	
 	public LCD16x2() {
+		dirty=false;
 		light=false;
 		enable=false;
 		displayOn=false;
@@ -48,6 +50,7 @@ public class LCD16x2 extends Canvas {
 		for(int i=0; i<data.length && i<16; i++) {
 			characters[i].loadChar(data[i]);
 		}
+		dirty=true;
 	}
 	
 	public void setText2(String text) {
@@ -56,6 +59,7 @@ public class LCD16x2 extends Canvas {
 		for(int i=0; i<data.length && i<16; i++) {
 			characters[i+16].loadChar(data[i]);
 		}
+		dirty=true;
 	}
 	
 	public void setData(byte data) {
@@ -76,6 +80,7 @@ public class LCD16x2 extends Canvas {
 	public void setLight(boolean l) {
 		if (verbose > 3 && light!=l) System.out.println("LCD Light: "+(l?"ON":"OFF"));
 		light=l;
+		dirty=true;
 	}
 	
 	private void clock() {
@@ -123,7 +128,11 @@ public class LCD16x2 extends Canvas {
 		if (verbose > 3) System.out.println("LCD LOAD DATA: "+
 				String.format("%08d", Integer.valueOf(Integer.toString(data&0x000000FF, 2)))+
 				" ("+(char)data+")");
-		
+		buffer1+=(char)data;
+		char[] dataz = buffer1.toCharArray();
+		for(int i=0; i<dataz.length && i<16; i++) {
+			characters[i].loadChar(dataz[i]);
+		}
 	}
 
 	private void functionSet(byte data) {
@@ -151,6 +160,7 @@ public class LCD16x2 extends Canvas {
 		for(int i=0; i<characters.length; i++) {
 			characters[i].paint(g);
 		}
+		dirty=false;
 	}
 	
 	public int getWidth() {
@@ -468,6 +478,14 @@ public class LCD16x2 extends Canvas {
 	}
 	public void setVerbose(int verbose) {
 		this.verbose = verbose;
+	}
+
+	public boolean isDirty() {
+		return dirty;
+	}
+
+	public void setDirty(boolean dirty) {
+		this.dirty = dirty;
 	}
 	
 }

@@ -7,7 +7,7 @@ import net.emiliollbb.j6502.chips.Cpu65C02;
 import net.emiliollbb.j6502.chips.RamChip;
 
 public class Durango {
-	/* 16K RAM $0000 - $7FFF */
+	/* 32K RAM $0000 - $7FFF */
 	private RamChip ram;
 	private DurangoScreen screen;
 	/* 32k ROM $8000 - $FFFFF */

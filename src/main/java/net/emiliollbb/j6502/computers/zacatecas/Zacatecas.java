@@ -29,7 +29,7 @@ public class Zacatecas {
 		rom = new RomChip(0xC000, 0x4000, new File("/home/emilio/proyectos/zacatecas/zacatecas/firmware/snippets.bin"));
 		
 		cpu = new Cpu65C02(10, Arrays.asList(ram, via, rom));
-		cpu.setSpeed(10);
+		cpu.setSpeed(1000);
 		cpu.setVerbose(0);
 		via.setVerbose(0);
 		lcd.setVerbose(4);
@@ -48,9 +48,6 @@ public class Zacatecas {
 
 	public static void main(String[] args) throws Exception {
 		Zacatecas zacatecas = new Zacatecas();
-//		for(int i=0; i<500; i++) {
-//			zacatecas.getCpu().step();
-//		}
 		zacatecas.getCpu().runUntilBrk();
 	}
 }
