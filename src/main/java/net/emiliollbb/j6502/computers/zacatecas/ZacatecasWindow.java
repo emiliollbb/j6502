@@ -1,5 +1,9 @@
 package net.emiliollbb.j6502.computers.zacatecas;
 
+import java.awt.BorderLayout;
+import java.awt.Button;
+import java.awt.Dimension;
+import java.awt.Panel;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.time.Duration;
@@ -20,8 +24,19 @@ public class ZacatecasWindow {
         //zacatecas.getCpu().runUntilBrk();
 
         // Adding Label and Setting the Size of the Frame
-        frame.add(zacatecas.getLcd());
+        frame.add(zacatecas.getLcd(), BorderLayout.CENTER);
+        zacatecas.getLcd().setPreferredSize(new Dimension(zacatecas.getLcd().getWidth(), zacatecas.getLcd().getHeight()));
         frame.setSize(zacatecas.getLcd().getWidth(), zacatecas.getLcd().getHeight());
+        Panel buttonsPanel = new Panel();
+        String[] bLabels = new String[] {"Left","Down","Up","Right","SELECT","START","B","A"};
+        Button[] buttons = new Button[8];
+        for(int i=0; i<8; i++) {
+        	buttons[i] = new Button(bLabels[i]);
+        	buttons[i].setPreferredSize(new Dimension(Math.max(15*bLabels[i].length(),30), 30));
+        	buttonsPanel.add(buttons[i]);
+        }
+        frame.add(buttonsPanel, BorderLayout.PAGE_END);
+        frame.pack();
 
         SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
       	  @Override
