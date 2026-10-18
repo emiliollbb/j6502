@@ -21,7 +21,6 @@ public class ZacatecasWindow {
         JFrame frame = new JFrame("Zacatecas");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         Zacatecas zacatecas = new Zacatecas();
-        //zacatecas.getCpu().runUntilBrk();
 
         // Adding Label and Setting the Size of the Frame
         frame.add(zacatecas.getLcd(), BorderLayout.CENTER);
@@ -55,7 +54,6 @@ public class ZacatecasWindow {
       	  }
       	};
 
-        // Using WindowListener for closing the window
         frame.addWindowListener(new WindowAdapter() {
             @Override
             public void windowOpened(WindowEvent e) {
