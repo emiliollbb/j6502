@@ -15,6 +15,7 @@ public class ZacatecasWindow {
     {
         // Declaring a Frame and Label
         JFrame frame = new JFrame("Zacatecas");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         Zacatecas zacatecas = new Zacatecas();
         //zacatecas.getCpu().runUntilBrk();
 
@@ -44,13 +45,7 @@ public class ZacatecasWindow {
         // Using WindowListener for closing the window
         frame.addWindowListener(new WindowAdapter() {
             @Override
-            public void windowClosing(WindowEvent e)
-            {
-                System.exit(0);
-            }
-            @Override
             public void windowOpened(WindowEvent e) {
-            	System.out.println("Window opened");
             	worker.execute();
             }
         });

@@ -1,10 +1,11 @@
 package net.emiliollbb.j6502.computers.hid;
 
-import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Graphics;
 
-public class LCD16x2 extends Canvas {
+import javax.swing.JPanel;
+
+public class LCD16x2 extends JPanel {
 	private static final long serialVersionUID = -8173391079739071510L;
 	protected int verbose;
 	
@@ -22,6 +23,7 @@ public class LCD16x2 extends Canvas {
 	private boolean isFirstNibble;
 	private boolean rs;
 	private boolean dirty;
+	//private final Timer t  = new Timer(10, this);
 	
 	public LCD16x2() {
 		dirty=false;
@@ -487,5 +489,4 @@ public class LCD16x2 extends Canvas {
 	public void setDirty(boolean dirty) {
 		this.dirty = dirty;
 	}
-	
 }
