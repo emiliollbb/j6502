@@ -30,10 +30,8 @@ public class ZacatecasWindow {
       			  long wait = 0;
       			  wait = zacatecas.getCpu().timedStep();
       			  if(wait>0) {
-	        			  Thread.sleep(Duration.ofMillis(wait));
-	        			  if(zacatecas.getLcd().isDirty()) {
-	        				  zacatecas.getLcd().repaint();
-	        			  }
+	        			Thread.sleep(Duration.ofMillis(wait));
+	        			zacatecas.getLcd().repaint();
       			  }
       			  else {
       				  Thread.sleep(Duration.ofMillis(1000));

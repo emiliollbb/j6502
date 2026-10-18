@@ -23,7 +23,7 @@ public class Durango {
 		screen = new DurangoScreen(2, ram, rom);
 		
 		cpu = new Cpu65C02(10, Arrays.asList(ram, rom));
-		cpu.setSpeed(10);
+		cpu.setSpeed(100);
 		cpu.setVerbose(10);
 		cpu.listDevices();
 		

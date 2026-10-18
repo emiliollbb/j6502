@@ -1,12 +1,13 @@
 package net.emiliollbb.j6502.computers.durango;
 
-import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Graphics;
 
+import javax.swing.JPanel;
+
 import net.emiliollbb.j6502.chips.RamChip;
 
-public class DurangoScreen extends Canvas{
+public class DurangoScreen extends JPanel{
 	private static final long serialVersionUID = -1643011527112910725L;
 	private int zoom;
 	private RamChip ram;
@@ -17,7 +18,7 @@ public class DurangoScreen extends Canvas{
     	this.zoom=zoom*2;
     	this.ram=ram;
     	this.rom=rom;
-    }
+	}
 	
 	protected void drawPixel(Graphics g, int x, int y, Color color) {
     	g.setColor(color);
