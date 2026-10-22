@@ -52,5 +52,6 @@ public class Zacatecas {
 	public static void main(String[] args) throws Exception {
 		Zacatecas zacatecas = new Zacatecas();
 		zacatecas.getCpu().runUntilBrk();
+		System.out.println(String.format("0x%04X", zacatecas.getCpu().getPc()));
 	}
 }
