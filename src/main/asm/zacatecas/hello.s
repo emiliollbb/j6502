@@ -1,3 +1,7 @@
+l_lcdd=$FFBD
+l_lcdc=$FFBA
+l_pad=$FFB7
+
 ; == 32K ROM ==
 *=$4000
 

@@ -2,6 +2,8 @@ package net.emiliollbb.j6502.computers.hid;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.JPanel;
 
@@ -12,8 +14,8 @@ public class LCD16x2 extends JPanel {
 	private final Color BACKGROUND_ON=Color.decode("#87ad34");
 
 	private Character[] characters;
-	private String buffer1;
-	private String buffer2;
+	private List<Integer> buffer1;
+	private List<Integer> buffer2;
 	private byte data;
 	private boolean light;
 	private boolean enable;
@@ -30,8 +32,8 @@ public class LCD16x2 extends JPanel {
 		displayOn=false;
 		fourBitsMode=false;
 		characters = new Character[32];
-		buffer1="";
-		buffer2="";
+		buffer1=new ArrayList<>(40);
+		buffer2=new ArrayList<>(40);
 		int x=30;
 		int y=30;
 		for(int i=0; i<characters.length; i++) {
@@ -44,19 +46,12 @@ public class LCD16x2 extends JPanel {
 		}
 	}
 	
-	public void setText1(String text) {
-		buffer1 = text;
-		char[] data = buffer1.toCharArray();
-		for(int i=0; i<data.length && i<16; i++) {
-			characters[i].loadChar(data[i]);
+	private void syncBuffers() {
+		for(int i=0; i<buffer1.size() && i<16; i++) {
+			characters[i].loadChar(buffer1.get(i));
 		}
-	}
-	
-	public void setText2(String text) {
-		buffer2 = text;
-		char[] data = buffer2.toCharArray();
-		for(int i=0; i<data.length && i<16; i++) {
-			characters[i+16].loadChar(data[i]);
+		for(int i=0; i<buffer2.size() && i<16; i++) {
+			characters[i+16].loadChar(buffer2.get(i));
 		}
 	}
 	
@@ -119,17 +114,17 @@ public class LCD16x2 extends JPanel {
 		else if((data&0x08)==0x08) {
 			displayOnOffControl(data);
 		}
+		else if(data==0x01) {
+			clearDisplay();
+		}
 	}
 	
 	private void runData(byte data) {
 		if (verbose > 3) System.out.println("LCD LOAD DATA: "+
 				String.format("%08d", Integer.valueOf(Integer.toString(data&0x000000FF, 2)))+
 				" ("+(char)data+")");
-		buffer1+=(char)data;
-		char[] dataz = buffer1.toCharArray();
-		for(int i=0; i<dataz.length && i<16; i++) {
-			characters[i].loadChar(dataz[i]);
-		}
+		buffer1.add(data&0x000000FF);
+		syncBuffers();
 	}
 
 	private void functionSet(byte data) {
@@ -148,6 +143,13 @@ public class LCD16x2 extends JPanel {
 	private void displayOnOffControl(byte data2) {
 		if (verbose > 3) System.out.println("Display on/off");
 		
+	}
+	
+	private void clearDisplay() {
+		if (verbose > 3) System.out.println("Clear Display");
+		buffer1.clear();
+		buffer2.clear();
+		syncBuffers();
 	}
 
 	@Override
@@ -198,7 +200,7 @@ public class LCD16x2 extends JPanel {
 			}
 		}
 		
-		public void loadChar(char character) {
+		public void loadChar(Integer character) {
 			int[] letter = FONT[character];
 			int j=0;
 			for(int i=0; i<7; i++) {
