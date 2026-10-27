@@ -32,9 +32,10 @@ public class ZacaVia extends AbstractBusDevice {
 	private byte t1lh; //$7
 	// Control de sonido e interrupciones (bits 7 y 6)
 	private byte acr; //$B 11
-	// Enable altavoz: 110:on ; 000:off
+	// Enable altavoz: 110XXXXX:on ; 000XXXXX:off
 	private byte pcr; //$C 12
 	private byte ifr; //$D 13
+	// IER = 11XXXXXX para que esté habilitada la interrupcion
 	private byte ier; //$E 14
 	private LCD16x2 lcd;
 
