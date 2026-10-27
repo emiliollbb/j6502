@@ -24,11 +24,15 @@ public class ZacaVia extends AbstractBusDevice {
 	 * Register 3.Data direction of each pin of port A
 	 */
 	private byte dataDirA; //$3
+	// Actual counter T1
 	private byte t1cl; //$4
 	private byte t1ch; //$5
+	// Counter initial value
 	private byte t1ll; //$6
 	private byte t1lh; //$7
+	// Control de sonido e interrupciones (bits 7 y 6)
 	private byte acr; //$B 11
+	// Enable altavoz: 110:on ; 000:off
 	private byte pcr; //$C 12
 	private byte ifr; //$D 13
 	private byte ier; //$E 14
@@ -128,6 +132,13 @@ public class ZacaVia extends AbstractBusDevice {
 				return (byte)((ier | 0x80)&0x000000FF);
 		}
 		return (byte)0xFF;
+	}
+	
+	@Override
+	public void clock() {
+		if((acr&0x00000040)!=0) {
+			System.out.println("Counter");
+		}
 	}
 
 	public LCD16x2 getLcd() {

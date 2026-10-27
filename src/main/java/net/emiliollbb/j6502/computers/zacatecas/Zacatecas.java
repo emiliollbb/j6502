@@ -33,7 +33,7 @@ public class Zacatecas {
 				"/home/emilio/proyectos/j6502/workspace/j6502/src/main/asm/zacatecas.rom"));
 		
 		cpu = new Cpu65C02(1000, Arrays.asList(ram, via, rom));
-		cpu.setVerbose(3);
+		cpu.setVerbose(0);
 		via.setVerbose(0);
 		lcd.setVerbose(0);
 		cpu.listDevices();
@@ -48,10 +48,15 @@ public class Zacatecas {
 	public LCD16x2 getLcd() {
 		return lcd;
 	}
+	
+	public ZacaVia getVia() {
+		return via;
+	}
 
 	public static void main(String[] args) throws Exception {
 		Zacatecas zacatecas = new Zacatecas();
-		zacatecas.getCpu().setVerbose(3);
+		zacatecas.getCpu().setVerbose(0);
+		zacatecas.getVia().setVerbose(10);
 		zacatecas.getCpu().runUntilBrk();
 		System.out.println(String.format("0x%04X", zacatecas.getCpu().getPc()));
 	}

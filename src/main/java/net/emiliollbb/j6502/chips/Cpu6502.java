@@ -136,7 +136,7 @@ public class Cpu6502 {
 		byte opcode = peek(pc++);	// get opcode and point to next one (or operand)
 		if(ver>5) System.out.println("OPCODE: "+printByte(opcode));
 		int cycles = runOpcode(opcode);
-		
+		busDevices.stream().forEach(d -> d.clock());
 		return cycles;
 	}
 	

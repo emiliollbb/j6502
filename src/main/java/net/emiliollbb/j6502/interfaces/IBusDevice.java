@@ -5,4 +5,5 @@ public interface IBusDevice {
 	void poke(int addr, byte data);
 	boolean isInRange(int addr);
 	String getName();
+	void clock();
 }

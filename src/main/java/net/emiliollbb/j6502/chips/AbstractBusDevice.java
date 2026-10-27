@@ -45,6 +45,9 @@ public abstract class AbstractBusDevice implements IBusDevice {
 	private String printAddress(int address) {
 		return String.format("0x%04X", address);
 	}
+	
+	@Override
+	public void clock() {}
 
 	protected abstract byte ioRead(int addr);
 	protected abstract void ioWrite(int addr, byte data);
